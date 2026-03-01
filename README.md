@@ -8,8 +8,9 @@
 
 <p align="center">Zero dependencies. One file. Just run <code>python3 md-viewer.py</code>.</p>
 
-<!-- Add a screenshot: -->
-<!-- ![md-viewer-py screenshot](screenshot.png) -->
+<p align="center">
+  <img src="assets/preview.png" alt="md-viewer-py screenshot" width="800">
+</p>
 
 ---
 
