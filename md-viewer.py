@@ -634,7 +634,7 @@ function createNavItem(f, indent) {
   return item;
 }
 
-function showFile(idx) {
+async function showFile(idx) {
   activeFileIdx = idx;
   const f = FILES[idx];
   window.location.hash = slugify(f.path);
@@ -656,6 +656,12 @@ function showFile(idx) {
     // Scroll nav item into view in sidebar
     navEl.scrollIntoView({ block: 'nearest' });
   }
+
+  // Always fetch fresh content from server
+  try {
+    const resp = await fetch('/files/' + encodeURIComponent(f.path));
+    if (resp.ok) fileContents[idx] = await resp.text();
+  } catch {}
 
   const md = fileContents[idx] || '';
   const html = marked.parse(md, { gfm: true, breaks: false });
@@ -969,6 +975,23 @@ document.addEventListener('keydown', (e) => {
     if (activeFileIdx < FILES.length - 1) { e.preventDefault(); showFile(activeFileIdx + 1); }
   }
 });
+
+// Refresh file list every 3 seconds to pick up new/deleted/renamed files
+setInterval(async () => {
+  try {
+    const resp = await fetch('/api/files');
+    const data = await resp.json();
+    const newPaths = data.files.map(f => f.path).join(',');
+    const oldPaths = FILES.map(f => f.path).join(',');
+    if (newPaths !== oldPaths) {
+      FILES = data.files;
+      renderNav();
+      if (activeFileIdx !== null && activeFileIdx < FILES.length) {
+        document.getElementById('nav-' + activeFileIdx)?.classList.add('active');
+      }
+    }
+  } catch {}
+}, 3000);
 
 init();
 </script>
