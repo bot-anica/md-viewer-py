@@ -1,8 +1,12 @@
-# md-viewer-py
+<p align="center">
+  <img src="assets/logo.png" alt="md-viewer-py" width="120">
+</p>
 
-**Drop-in single-file Markdown viewer for any folder.**
+<h1 align="center">md-viewer-py</h1>
 
-Zero dependencies. One file. Just run `python3 md-viewer.py`.
+<p align="center"><strong>Drop-in single-file Markdown viewer for any folder.</strong></p>
+
+<p align="center">Zero dependencies. One file. Just run <code>python3 md-viewer.py</code>.</p>
 
 <!-- Add a screenshot: -->
 <!-- ![md-viewer-py screenshot](screenshot.png) -->
