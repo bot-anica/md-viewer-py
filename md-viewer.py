@@ -35,21 +35,15 @@ from urllib.parse import unquote
 ROOT_DIR = Path.cwd()
 PORT = 8080
 
-_args = sys.argv[1:]
-_positional = []
-_i = 0
-while _i < len(_args):
-    _positional.append(_args[_i])
-    _i += 1
-
-if len(_positional) >= 1:
-    if _positional[0].isdigit():
-        PORT = int(_positional[0])
+if len(sys.argv) >= 2:
+    arg1 = sys.argv[1]
+    if arg1.isdigit():
+        PORT = int(arg1)
     else:
-        ROOT_DIR = Path(_positional[0]).resolve()
+        ROOT_DIR = Path(arg1).resolve()
 
-if len(_positional) >= 2:
-    PORT = int(_positional[1])
+if len(sys.argv) >= 3:
+    PORT = int(sys.argv[2])
 
 # --- Gitignore parsing -------------------------------------------------------
 
@@ -136,7 +130,6 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Viewer</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@14.1.4/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked-highlight/lib/index.umd.js"></script>
   <link id="hljs-dark-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github-dark.min.css">
   <link id="hljs-light-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github.min.css" disabled>
   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/highlight.min.js"></script>
@@ -511,15 +504,6 @@ let FILES = [];
 let fileContents = {};
 let activeFileIdx = null;
 
-// ---- Configure marked with marked-highlight for syntax highlighting ----
-marked.use(markedHighlight.markedHighlight({
-  langPrefix: 'hljs language-',
-  highlight(code, lang) {
-    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-    return hljs.highlight(code, { language }).value;
-  }
-}));
-
 // ---- Configure marked with mermaid renderer ----
 marked.use({
   renderer: {
@@ -774,6 +758,7 @@ async function showFile(idx) {
   document.getElementById('loading').style.display = 'none';
 
   makeSectionsCollapsible(content);
+  content.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
 
   // Breadcrumb bar (file name + collapse/expand)
   const bc = document.getElementById('breadcrumb');
@@ -823,6 +808,7 @@ function wrapLevel(container, level) {
     if (body.children.length > 0) {
       el.after(body);
       el.onclick = (e) => {
+        if (e.target.closest && e.target.closest('a')) return;
         if (e.target.tagName === 'A') return;
         el.classList.toggle('collapsed');
         body.classList.toggle('collapsed');
@@ -1085,11 +1071,11 @@ function addHeadingAnchors() {
     a.className = 'heading-anchor';
     a.href = '#' + id;
     a.textContent = '#';
-    a.onclick = e => {
-      e.stopPropagation();
-      e.preventDefault();
-      h.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      history.pushState(null, '', '#' + id);
+    a.onclick = function(evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      var targetEl = document.getElementById(id);
+      if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
     h.appendChild(a);
   });
