@@ -15,11 +15,8 @@
 <p align="center">Zero dependencies. Install once, use everywhere as <code>mdview</code>.</p>
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-light.png">
-    <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-dark.png" alt="md-viewer-py screenshot" width="800">
-  </picture>
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-dark.png" alt="Dark theme" width="49%">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-light.png" alt="Light theme" width="49%">
 </p>
 
 ---
