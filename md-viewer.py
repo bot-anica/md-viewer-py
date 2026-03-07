@@ -7,6 +7,7 @@ Usage:
     python3 md-viewer.py 3000         # custom port
     python3 md-viewer.py /some/path   # custom directory
     python3 md-viewer.py /some/path 3000
+    python3 md-viewer.py --css style.css   # inject custom CSS
 
 Notes:
     - Respects .gitignore in the served directory: files and folders matching
@@ -34,16 +35,27 @@ from urllib.parse import unquote
 
 ROOT_DIR = Path.cwd()
 PORT = 8080
+CSS_FILE = None
 
-if len(sys.argv) >= 2:
-    arg1 = sys.argv[1]
-    if arg1.isdigit():
-        PORT = int(arg1)
+_args = sys.argv[1:]
+_positional = []
+_i = 0
+while _i < len(_args):
+    if _args[_i] == "--css" and _i + 1 < len(_args):
+        CSS_FILE = Path(_args[_i + 1])
+        _i += 2
     else:
-        ROOT_DIR = Path(arg1).resolve()
+        _positional.append(_args[_i])
+        _i += 1
 
-if len(sys.argv) >= 3:
-    PORT = int(sys.argv[2])
+if len(_positional) >= 1:
+    if _positional[0].isdigit():
+        PORT = int(_positional[0])
+    else:
+        ROOT_DIR = Path(_positional[0]).resolve()
+
+if len(_positional) >= 2:
+    PORT = int(_positional[1])
 
 # --- Gitignore parsing -------------------------------------------------------
 
@@ -130,6 +142,10 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Viewer</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link id="hljs-dark-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github-dark.min.css">
+  <link id="hljs-light-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github.min.css" disabled>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -390,6 +406,61 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       .md code { background: #f5f5f5; color: #333; border-color: #ddd; }
       .md pre { background: #f5f5f5; border-color: #ddd; }
     }
+
+    /* ---- Light theme ---- */
+    body.light {
+      --bg: #ffffff;
+      --bg-surface: #f6f8fa;
+      --bg-card: #f0f2f5;
+      --bg-hover: #e8eaed;
+      --border: #d0d7de;
+      --text: #24292f;
+      --text-muted: #57606a;
+      --text-heading: #1c2128;
+      --accent: #0969da;
+      --accent-dim: rgba(9, 105, 218, 0.1);
+      --green: #1a7f37;
+      --green-dim: rgba(26, 127, 55, 0.1);
+      --amber: #9a6700;
+      --amber-dim: rgba(154, 103, 0, 0.1);
+      --red: #cf222e;
+      --cyan: #0550ae;
+    }
+
+    /* ---- Heading anchor links ---- */
+    .heading-anchor {
+      opacity: 0;
+      margin-left: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 0.8em;
+      transition: opacity 0.15s;
+      vertical-align: middle;
+    }
+    .md h1:hover .heading-anchor,
+    .md h2:hover .heading-anchor,
+    .md h3:hover .heading-anchor,
+    .md h4:hover .heading-anchor { opacity: 1; }
+
+    /* ---- Theme toggle button ---- */
+    .theme-toggle {
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-muted); padding: 5px 10px; font-size: 11px;
+      cursor: pointer; display: flex; align-items: center; gap: 5px;
+      transition: all 0.15s;
+    }
+    .theme-toggle:hover { color: var(--text); border-color: var(--text-muted); }
+
+    /* ---- Mermaid diagrams ---- */
+    .mermaid { text-align: center; margin: 14px 0; overflow-x: auto; }
+    .mermaid svg { max-width: 100%; }
+
+    /* ---- Syntax highlight override (ensure pre padding not doubled) ---- */
+    .md pre:has(.hljs) { padding: 0; }
+    .md pre .hljs { padding: 18px; display: block; border-radius: 10px; font-size: 12.5px; line-height: 1.7; overflow-x: auto; }
+
+    __CUSTOM_CSS__
   </style>
 </head>
 <body>
@@ -404,6 +475,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       <span class="header-badge badge-files" id="badgeFiles"></span>
       <span class="header-badge badge-lines" id="badgeLines"></span>
       <span class="header-badge badge-path" id="badgePath"></span>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☀️ Light</button>
       <button class="print-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4c0 1.1.9 2 2 2h2v2c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-2h2c1.1 0 2-.9 2-2v-4c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-8H7v4h10V4z"/></svg> Print</button>
     </div>
   </header>
@@ -444,6 +516,73 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 let FILES = [];
 let fileContents = {};
 let activeFileIdx = null;
+
+// ---- Emoji shortcodes ----
+const EMOJI_MAP = {
+  '+1':'👍','-1':'👎','thumbsup':'👍','thumbsdown':'👎','heart':'❤️',
+  'smile':'😊','grinning':'😀','laughing':'😆','joy':'😂','sob':'😭',
+  'thinking':'🤔','heart_eyes':'😍','sweat_smile':'😅','wink':'😉',
+  'fire':'🔥','star':'⭐','sparkles':'✨','rocket':'🚀','tada':'🎉',
+  'warning':'⚠️','x':'❌','white_check_mark':'✅','question':'❓',
+  'bulb':'💡','memo':'📝','bug':'🐛','wrench':'🔧','hammer':'🔨',
+  'package':'📦','link':'🔗','book':'📚','books':'📚','eyes':'👀',
+  'wave':'👋','pray':'🙏','muscle':'💪','art':'🎨','zap':'⚡',
+  'lock':'🔒','key':'🔑','computer':'💻','phone':'📱','email':'📧',
+  'calendar':'📅','chart_increasing':'📈','chart_decreasing':'📉',
+  'trophy':'🏆','pushpin':'📌','pencil':'✏️','mag':'🔍','gear':'⚙️',
+  'clipboard':'📋','file_folder':'📁','open_file_folder':'📂',
+  'recycle':'♻️','loudspeaker':'📢','speech_balloon':'💬',
+  'construction':'🚧','ok_hand':'👌','raised_hands':'🙌','clap':'👏',
+  'point_right':'👉','point_left':'👈','information_source':'ℹ️',
+  'fast_forward':'⏩','rewind':'⏪','new':'🆕','checkered_flag':'🏁',
+  'arrow_up':'⬆️','arrow_down':'⬇️','arrow_right':'➡️','arrow_left':'⬅️',
+};
+function applyEmojiShortcodes(el) {
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+    acceptNode: n => n.parentElement.tagName === 'CODE' || n.parentElement.closest('pre') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    const replaced = node.textContent.replace(/:([a-z0-9_+\-]+):/g, (m, name) => EMOJI_MAP[name] || m);
+    if (replaced !== node.textContent) node.textContent = replaced;
+  });
+}
+
+// ---- Configure marked with mermaid + hljs renderer ----
+marked.use({
+  renderer: {
+    code({ text, lang }) {
+      if (lang === 'mermaid') {
+        return '<div class="mermaid">' + text + '</div>';
+      }
+      if (lang && typeof hljs !== 'undefined' && hljs.getLanguage(lang)) {
+        try {
+          return '<pre><code class="hljs language-' + lang + '">' + hljs.highlight(text, { language: lang }).value + '</code></pre>';
+        } catch (e) {}
+      }
+      if (typeof hljs !== 'undefined') {
+        return '<pre><code class="hljs">' + hljs.highlightAuto(text).value + '</code></pre>';
+      }
+      return false; // fall back to default
+    }
+  }
+});
+
+// ---- Mermaid init ----
+let _mermaidTheme = 'dark';
+function initMermaid(theme) {
+  _mermaidTheme = theme;
+  mermaid.initialize({ startOnLoad: false, theme: theme === 'dark' ? 'dark' : 'default' });
+}
+initMermaid('dark');
+
+async function runMermaid() {
+  const nodes = document.querySelectorAll('.mermaid:not([data-processed])');
+  if (nodes.length === 0) return;
+  nodes.forEach(el => { if (!el.hasAttribute('data-mermaid-src')) el.setAttribute('data-mermaid-src', el.textContent); });
+  try { await mermaid.run({ nodes }); } catch (e) {}
+}
 
 const FILE_COLORS = [
   'linear-gradient(135deg, #7c8aff, #a78bfa)',
@@ -672,6 +811,7 @@ async function showFile(idx) {
   document.getElementById('loading').style.display = 'none';
 
   makeSectionsCollapsible(content);
+  applyEmojiShortcodes(content);
 
   // Breadcrumb bar (file name + collapse/expand)
   const bc = document.getElementById('breadcrumb');
@@ -684,6 +824,8 @@ async function showFile(idx) {
   document.getElementById('breadcrumbBar').style.display = 'flex';
 
   buildToc();
+  addHeadingAnchors();
+  runMermaid();
   window.scrollTo({ top: 0 });
 
   if (window.innerWidth <= 900) {
@@ -946,6 +1088,44 @@ function searchScroll(lineNum) {
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
+function addHeadingAnchors() {
+  document.querySelectorAll('.md h1, .md h2, .md h3, .md h4').forEach(h => {
+    if (h.querySelector('.heading-anchor')) return;
+    const id = h.id || ('ha-' + Math.random().toString(36).slice(2));
+    if (!h.id) h.id = id;
+    const a = document.createElement('a');
+    a.className = 'heading-anchor';
+    a.href = '#' + id;
+    a.textContent = '#';
+    a.onclick = e => e.stopPropagation();
+    h.appendChild(a);
+  });
+}
+
+let _currentTheme = localStorage.getItem('md-viewer-theme') || 'dark';
+function applyTheme(theme) {
+  _currentTheme = theme;
+  document.body.classList.toggle('light', theme === 'light');
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+  const darkCss = document.getElementById('hljs-dark-css');
+  const lightCss = document.getElementById('hljs-light-css');
+  if (darkCss) darkCss.disabled = theme === 'light';
+  if (lightCss) lightCss.disabled = theme === 'dark';
+  initMermaid(theme);
+  // Re-render mermaid diagrams with new theme
+  document.querySelectorAll('.mermaid[data-processed]').forEach(el => {
+    el.removeAttribute('data-processed');
+    const src = el.getAttribute('data-mermaid-src');
+    if (src) el.textContent = src;
+  });
+  runMermaid();
+  localStorage.setItem('md-viewer-theme', theme);
+}
+function toggleTheme() { applyTheme(_currentTheme === 'dark' ? 'light' : 'dark'); }
+// Apply saved theme on load
+if (_currentTheme === 'light') applyTheme('light');
+
 window.addEventListener('scroll', () => {
   const winH = document.documentElement.scrollHeight - window.innerHeight;
   document.getElementById('progressBar').style.width = (winH > 0 ? (window.scrollY / winH) * 100 : 0) + '%';
@@ -998,6 +1178,16 @@ init();
 </body>
 </html>"""
 
+# --- HTML builder ------------------------------------------------------------
+
+def get_html():
+    """Return the viewer HTML, injecting custom CSS if --css was given."""
+    custom = ""
+    if CSS_FILE and CSS_FILE.is_file():
+        custom = CSS_FILE.read_text(encoding="utf-8", errors="replace")
+    return HTML_TEMPLATE.replace("__CUSTOM_CSS__", custom, 1)
+
+
 # --- HTTP Handler ------------------------------------------------------------
 
 class ViewerHandler(http.server.SimpleHTTPRequestHandler):
@@ -1012,7 +1202,7 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
-            self.wfile.write(HTML_TEMPLATE.encode("utf-8"))
+            self.wfile.write(get_html().encode("utf-8"))
             return
 
         # API: list all .md files
