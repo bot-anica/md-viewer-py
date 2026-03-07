@@ -10,6 +10,7 @@ venv/
 .canopy/
 .mulch/
 .seeds/
+.beads/
 AGENTS.md
 .gitattributes
 

@@ -5,7 +5,7 @@
 <h1 align="center">md-viewer-py</h1>
 
 <p align="center">
-  <a href="https://pypi.org/project/md-viewer-py/"><img src="https://img.shields.io/pypi/v/md-viewer-py" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/md-viewer-py/"><img src="https://img.shields.io/pypi/v/md-viewer-py?label=version" alt="PyPI version"></a>
   <img src="https://img.shields.io/pypi/pyversions/md-viewer-py" alt="Python versions">
   <img src="https://img.shields.io/pypi/l/md-viewer-py" alt="License">
 </p>
