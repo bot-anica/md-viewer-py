@@ -318,12 +318,15 @@ function wrapLevel(container, level) {
       };
       // Recurse into this section-body for deeper headings
       if (level < 4) wrapLevel(body, level + 1);
-    }
 
-    // Re-scan since DOM changed
-    children.length = 0;
-    children.push(...Array.from(container.children));
-    i = children.indexOf(body) + 1;
+      // Re-scan since DOM changed
+      children.length = 0;
+      children.push(...Array.from(container.children));
+      i = children.indexOf(body) + 1;
+    } else {
+      // No content to wrap; advance past this heading to avoid infinite loop
+      i++;
+    }
   }
 }
 
