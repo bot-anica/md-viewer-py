@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Viewer</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked@14.1.4/marked.min.js"></script>
+  <link id="hljs-dark-css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css">
+  <link id="hljs-light-css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" disabled>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+__STYLE__
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776;</button>
+    <div class="header-logo">
+      <img class="icon" src="data:image/png;base64,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" alt="MD">
+      <span>Markdown Viewer</span>
+    </div>
+    <div class="header-meta">
+      <span class="header-badge badge-files" id="badgeFiles"></span>
+      <span class="header-badge badge-lines" id="badgeLines"></span>
+      <span class="header-badge badge-path" id="badgePath"></span>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg> Light</button>
+      <button class="print-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4c0 1.1.9 2 2 2h2v2c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-2h2c1.1 0 2-.9 2-2v-4c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-8H7v4h10V4z"/></svg> Print</button>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="search-box">
+      <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+      <input type="text" id="search" placeholder="Search across all files..." oninput="handleSearch(this.value)">
+    </div>
+    <div class="search-results" id="searchResults"></div>
+    <div class="sidebar-toolbar" id="sidebarToolbar" style="display:none">
+      <div class="sidebar-section-label">Explorer</div>
+      <button class="collapse-btn" onclick="collapseAll()" title="Collapse all folders">&#9654; Collapse all</button>
+    </div>
+    <div id="navItems"></div>
+    <div class="toc-container" id="tocContainer"></div>
+  </nav>
+
+  <div class="reading-progress"><div class="reading-progress-bar" id="progressBar"></div></div>
+
+  <main class="main" id="main">
+    <div class="content-wrapper">
+      <div class="loading" id="loading"><div class="spinner"></div><div class="loading-text">Loading...</div></div>
+      <div class="breadcrumb-bar" id="breadcrumbBar" style="display:none">
+        <div class="breadcrumb" id="breadcrumb"></div>
+        <div class="content-toolbar" id="contentToolbar">
+          <button class="collapse-btn" onclick="collapseSections(true)" title="Collapse all sections">&#9654; Collapse</button>
+          <button class="collapse-btn" onclick="collapseSections(false)" title="Expand all sections">&#9660; Expand</button>
+        </div>
+      </div>
+      <article class="md" id="content" style="display:none"></article>
+    </div>
+  </main>
+
+  <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+
+<script>
+__SCRIPT__
+</script>
+</body>
+</html>

@@ -4,9 +4,9 @@
 
 <h1 align="center">md-viewer-py</h1>
 
-<p align="center"><strong>Drop-in single-file Markdown viewer for any folder.</strong></p>
+<p align="center"><strong>Drop-in Markdown viewer for any folder — installable via pip.</strong></p>
 
-<p align="center">Zero dependencies. One file. Just run <code>mdview</code>.</p>
+<p align="center">Zero dependencies. Install once, use everywhere as <code>mdview</code>.</p>
 
 <p align="center">
   <img src="assets/preview.png" alt="md-viewer-py screenshot" width="800">
@@ -14,10 +14,43 @@
 
 ---
 
+## Install
+
+```bash
+pip install md-viewer
+```
+
+Or with pipx (recommended for CLI tools):
+
+```bash
+pipx install md-viewer
+```
+
+Or install directly from source:
+
+```bash
+pip install .
+```
+
+Then run from any directory:
+
+```bash
+mdview                        # serve current directory on port 8080
+mdview 3000                   # custom port
+mdview /path/to/docs          # custom directory
+mdview /path/to/docs 3000     # both
+```
+
+Or run as a Python module without installing:
+
+```bash
+python -m md_viewer
+```
+
 ## Features
 
 - **Zero dependencies** — Python standard library only, nothing to install
-- **Single file** — drop `md-viewer.py` into any folder and run
+- **pip/pipx installable** — install once, use anywhere as `mdview`
 - **Dark theme UI** — polished dark interface, easy on the eyes
 - **File tree sidebar** — folder navigation with collapsible directories
 - **Full-text search** — search across all Markdown files instantly
@@ -33,86 +66,16 @@
 
 ## Quick Start
 
-Install once, use everywhere as `mdview`:
-
-### macOS / Linux
-
 ```bash
-curl -o ~/bin/md-viewer.py https://raw.githubusercontent.com/your-username/md-viewer-py/main/md-viewer.py
-chmod +x ~/bin/md-viewer.py
-```
-
-Add an alias for your shell:
-
-#### zsh
-
-```bash
-echo 'alias mdview="/full/path/to/md-viewer.py"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-#### bash
-
-```bash
-echo 'alias mdview="/full/path/to/md-viewer.py"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-### Windows
-
-#### CMD
-
-Create a `mdview.bat` file somewhere in your `PATH` (e.g. `C:\Users\<you>\bin\`):
-
-```bat
-@echo off
-python "%~dp0md-viewer.py" %*
-```
-
-#### PowerShell
-
-1. Open PowerShell and run:
-   ```powershell
-   notepad $PROFILE
-   ```
-2. Add this line to the opened file, save and close:
-   ```powershell
-   function mdview { python "C:\full\path\to\md-viewer.py" @args }
-   ```
-3. Back in PowerShell, run this to reload the profile:
-   ```powershell
-   . $PROFILE
-   ```
-
-### Usage
-
-Once installed, use `mdview` from any directory:
-
-```bash
-mdview                        # serve current directory on port 8080
-mdview 3000                   # custom port
-mdview /path/to/docs          # custom directory
-mdview /path/to/docs 3000     # both
+pip install md-viewer
+mdview
 ```
 
 A browser tab opens automatically at `http://localhost:8080`.
 
-## Alternative: Copy and Run
+## Examples
 
-No install needed — just drop the file into any folder:
-
-```bash
-# 1. Copy md-viewer.py into your project (or any folder with .md files)
-# 2. Run it
-python3 md-viewer.py
-```
-
-```bash
-python3 md-viewer.py                     # serve current directory on port 8080
-python3 md-viewer.py 3000                # custom port
-python3 md-viewer.py /path/to/docs       # custom directory
-python3 md-viewer.py /path/to/docs 3000  # both
-```
+- [Mermaid Diagrams](examples/mermaid-examples.md) — flowcharts, sequence diagrams, gantt charts, and more
 
 ## Keyboard Shortcuts
 
@@ -124,7 +87,15 @@ python3 md-viewer.py /path/to/docs 3000  # both
 
 ## How It Works
 
-`md-viewer.py` is a self-contained HTTP server built on Python's `http.server`. It scans the directory for `.md` files, serves a single-page dark-themed UI, and renders Markdown client-side using [marked.js](https://github.com/markedjs/marked) from a CDN. No build step, no config files, no virtual environments.
+`md-viewer` is a pip-installable HTTP server built on Python's `http.server`. It scans the directory for `.md` files, serves a single-page dark-themed UI, and renders Markdown client-side using [marked.js](https://github.com/markedjs/marked) from a CDN. No build step, no config files, no virtual environments beyond the install itself.
+
+## Alternative: Copy and Run
+
+No install needed — just drop the wrapper into any folder:
+
+```bash
+python3 md-viewer.py
+```
 
 ## Contributing
 
