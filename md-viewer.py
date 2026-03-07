@@ -141,7 +141,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Viewer</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@14.3.0/marked.min.js"></script>
   <link id="hljs-dark-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github-dark.min.css">
   <link id="hljs-light-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github.min.css" disabled>
   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/highlight.min.js"></script>
@@ -343,6 +343,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     .md code { background: var(--bg-card); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace; color: var(--cyan); border: 1px solid var(--border); }
     .md pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 14px 0; overflow-x: auto; }
     .md pre code:not(.hljs) { background: none; border: none; padding: 0; font-size: 12.5px; color: var(--text); line-height: 1.7; }
+    .md pre code.hljs { background: none; border: none; color: unset; }
     .md table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0 20px; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     .md thead th { background: var(--bg-card); padding: 9px 12px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
     .md tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -1123,7 +1124,12 @@ function addHeadingAnchors() {
     a.className = 'heading-anchor';
     a.href = '#' + id;
     a.textContent = '#';
-    a.onclick = e => e.stopPropagation();
+    a.onclick = e => {
+      e.stopPropagation();
+      e.preventDefault();
+      h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.pushState(null, '', '#' + id);
+    };
     h.appendChild(a);
   });
 }
