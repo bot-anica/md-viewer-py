@@ -12,3 +12,8 @@ venv/
 .seeds/
 AGENTS.md
 .gitattributes
+
+# Build artifacts
+*.egg-info/
+build/
+dist/
