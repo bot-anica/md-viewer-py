@@ -1,3 +1,4 @@
+import base64
 import http.server
 import json
 import os
@@ -15,7 +16,13 @@ def _build_html():
     html = (_STATIC_DIR / "index.html").read_text(encoding="utf-8")
     css = (_STATIC_DIR / "style.css").read_text(encoding="utf-8")
     js = (_STATIC_DIR / "app.js").read_text(encoding="utf-8")
-    return html.replace("__STYLE__", css).replace("__SCRIPT__", js).encode("utf-8")
+    logo = base64.b64encode((_STATIC_DIR / "logo.png").read_bytes()).decode("ascii")
+    return (
+        html.replace("__STYLE__", css)
+        .replace("__SCRIPT__", js)
+        .replace("__LOGO__", logo)
+        .encode("utf-8")
+    )
 
 
 _HTML_BYTES = _build_html()
