@@ -13,10 +13,10 @@ Code blocks are highlighted via [highlight.js](https://highlightjs.org/) loaded 
 **CDN setup:**
 ```html
 <link id="hljs-dark-css" rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github-dark.min.css">
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css">
 <link id="hljs-light-css" rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github.min.css" disabled>
-<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/highlight.min.js"></script>
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" disabled>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
 ```
 
 **Custom renderer:**
