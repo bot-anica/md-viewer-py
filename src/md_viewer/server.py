@@ -90,7 +90,16 @@ def main():
     os.chdir(root_dir)
     ViewerHandler.root_dir = root_dir
 
-    server = http.server.HTTPServer(("", port), ViewerHandler)
+    max_attempts = 10
+    for attempt in range(max_attempts):
+        try:
+            server = http.server.HTTPServer(("", port), ViewerHandler)
+            break
+        except OSError:
+            port += 1
+    else:
+        print(f"  Error: Could not find an available port after {max_attempts} attempts.")
+        sys.exit(1)
     url = f"http://localhost:{port}"
     print(f"\n  Markdown Viewer")
     print(f"  {'─' * 40}")
