@@ -342,7 +342,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     .md hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
     .md code { background: var(--bg-card); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace; color: var(--cyan); border: 1px solid var(--border); }
     .md pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 14px 0; overflow-x: auto; }
-    .md pre code { background: none; border: none; padding: 0; font-size: 12.5px; color: var(--text); line-height: 1.7; }
+    .md pre code:not(.hljs) { background: none; border: none; padding: 0; font-size: 12.5px; color: var(--text); line-height: 1.7; }
     .md table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0 20px; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     .md thead th { background: var(--bg-card); padding: 9px 12px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
     .md tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
