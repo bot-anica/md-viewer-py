@@ -29,6 +29,13 @@ async function runMermaid() {
   try { await mermaid.run({ nodes }); } catch (e) {}
 }
 
+function stripFrontmatter(text) {
+  if (!text.startsWith('---')) return text;
+  const idx = text.indexOf('\n---', 3);
+  if (idx < 0) return text;
+  return text.slice(idx + 4);
+}
+
 const FILE_COLORS = [
   'linear-gradient(135deg, #7c8aff, #a78bfa)',
   'linear-gradient(135deg, #4ade80, #22d3ee)',
@@ -83,7 +90,7 @@ function slugify(s) { return s.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-')
 async function loadAllFiles() {
   const loads = FILES.map(async (f, i) => {
     try {
-      const resp = await fetch('/files/' + encodeURIComponent(f.path));
+      const resp = await fetch('/files/' + f.path.split('/').map(encodeURIComponent).join('/'));
       if (!resp.ok) throw new Error(resp.status);
       fileContents[i] = await resp.text();
     } catch {
@@ -240,11 +247,11 @@ async function showFile(idx) {
 
   // Always fetch fresh content from server
   try {
-    const resp = await fetch('/files/' + encodeURIComponent(f.path));
+    const resp = await fetch('/files/' + f.path.split('/').map(encodeURIComponent).join('/'));
     if (resp.ok) fileContents[idx] = await resp.text();
   } catch {}
 
-  const md = fileContents[idx] || '';
+  const md = stripFrontmatter(fileContents[idx] || '');
   const html = marked.parse(md, { gfm: true, breaks: false });
 
   const content = document.getElementById('content');
@@ -522,7 +529,7 @@ function handleSearch(query) {
   const q = query.toLowerCase();
   let items = [];
   FILES.forEach((f, idx) => {
-    const text = fileContents[idx] || '';
+    const text = stripFrontmatter(fileContents[idx] || '');
     text.split('\n').forEach((line, lineNum) => {
       if (line.toLowerCase().includes(q)) {
         const clean = line.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim();
