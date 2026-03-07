@@ -475,7 +475,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       <span class="header-badge badge-files" id="badgeFiles"></span>
       <span class="header-badge badge-lines" id="badgeLines"></span>
       <span class="header-badge badge-path" id="badgePath"></span>
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☀️ Light</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg> Light</button>
       <button class="print-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4c0 1.1.9 2 2 2h2v2c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-2h2c1.1 0 2-.9 2-2v-4c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-8H7v4h10V4z"/></svg> Print</button>
     </div>
   </header>
@@ -825,6 +825,7 @@ async function showFile(idx) {
 
   buildToc();
   addHeadingAnchors();
+  interceptMdLinks(content, f.path);
   runMermaid();
   window.scrollTo({ top: 0 });
 
@@ -1088,6 +1089,31 @@ function searchScroll(lineNum) {
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
+function interceptMdLinks(container, currentFilePath) {
+  container.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || /^https?:\/\//.test(href) || href.startsWith('mailto:')) return;
+    const [filePart] = href.split('#');
+    if (!filePart.endsWith('.md')) return;
+    // Resolve relative path against current file's directory
+    const dir = currentFilePath && currentFilePath.includes('/')
+      ? currentFilePath.substring(0, currentFilePath.lastIndexOf('/'))
+      : '';
+    const raw = dir ? dir + '/' + filePart : filePart;
+    // Normalize path segments (handle ../ and ./)
+    const parts = raw.split('/');
+    const norm = [];
+    for (const p of parts) {
+      if (p === '..') norm.pop();
+      else if (p !== '.') norm.push(p);
+    }
+    const resolvedPath = norm.join('/');
+    const targetIdx = FILES.findIndex(f => f.path === resolvedPath);
+    if (targetIdx < 0) return;
+    a.addEventListener('click', e => { e.preventDefault(); showFile(targetIdx); });
+  });
+}
+
 function addHeadingAnchors() {
   document.querySelectorAll('.md h1, .md h2, .md h3, .md h4').forEach(h => {
     if (h.querySelector('.heading-anchor')) return;
@@ -1107,7 +1133,9 @@ function applyTheme(theme) {
   _currentTheme = theme;
   document.body.classList.toggle('light', theme === 'light');
   const btn = document.getElementById('themeToggle');
-  if (btn) btn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+  if (btn) btn.innerHTML = theme === 'dark'
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg> Light'
+    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Dark';
   const darkCss = document.getElementById('hljs-dark-css');
   const lightCss = document.getElementById('hljs-light-css');
   if (darkCss) darkCss.disabled = theme === 'light';
