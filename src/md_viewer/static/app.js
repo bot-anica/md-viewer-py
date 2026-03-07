@@ -343,17 +343,32 @@ function buildToc() {
   container.innerHTML = '';
   tocHeadings = [];
 
-  // Toolbar
+  // Toolbar with collapsible "On this page" header
   const toolbar = document.createElement('div');
   toolbar.className = 'toc-toolbar';
   toolbar.innerHTML = `
-    <div class="sidebar-section-label">On this page</div>
+    <div class="sidebar-section-label toc-toggle">
+      <span class="toc-header-chevron collapsed">&#9660;</span>On this page
+    </div>
     <div class="toc-btns">
       <button class="collapse-btn" onclick="tocCollapseAll()" title="Collapse TOC"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 8,5 2,10" fill="currentColor"/></svg></button>
       <button class="collapse-btn" onclick="tocExpandAll()" title="Expand TOC"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="0,2 10,2 5,8" fill="currentColor"/></svg></button>
     </div>
   `;
   container.appendChild(toolbar);
+
+  // Content wrapper — starts collapsed
+  const tocContent = document.createElement('div');
+  tocContent.className = 'toc-content collapsed';
+  container.appendChild(tocContent);
+
+  // Toggle toc-content on "On this page" label click
+  const toggleLabel = toolbar.querySelector('.toc-toggle');
+  const headerChevron = toolbar.querySelector('.toc-header-chevron');
+  toggleLabel.onclick = () => {
+    tocContent.classList.toggle('collapsed');
+    headerChevron.classList.toggle('collapsed');
+  };
 
   const headings = document.querySelectorAll('.md h2, .md h3');
   let currentGroup = null;
@@ -365,7 +380,6 @@ function buildToc() {
     h.id = slug;
 
     if (h.tagName === 'H2') {
-      // Create collapsible group
       const group = document.createElement('div');
       group.className = 'toc-group';
 
@@ -384,7 +398,7 @@ function buildToc() {
 
       group.appendChild(h2Link);
       group.appendChild(children);
-      container.appendChild(group);
+      tocContent.appendChild(group);
 
       currentGroup = group;
       currentChildren = children;
@@ -404,10 +418,23 @@ function buildToc() {
       if (currentChildren) {
         currentChildren.appendChild(h3Link);
       } else {
-        container.appendChild(h3Link);
+        tocContent.appendChild(h3Link);
       }
 
       tocHeadings.push({ el: h, slug, level: 3, tocEl: h3Link, parentH2: currentH2Entry });
+    }
+  });
+
+  // Replace chevron with spacer for H2s that have no H3 children (Change 1)
+  tocHeadings.forEach(entry => {
+    if (entry.level !== 2) return;
+    if (!entry.childrenEl || entry.childrenEl.children.length === 0) {
+      const chevron = entry.tocEl.querySelector('.toc-chevron');
+      if (chevron) {
+        const spacer = document.createElement('span');
+        spacer.className = 'toc-chevron-spacer';
+        chevron.replaceWith(spacer);
+      }
     }
   });
 
