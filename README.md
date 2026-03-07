@@ -93,7 +93,6 @@ mdview                        # serve current directory on port 8080
 mdview 3000                   # custom port
 mdview /path/to/docs          # custom directory
 mdview /path/to/docs 3000     # both
-mdview --css style.css        # inject custom CSS
 ```
 
 A browser tab opens automatically at `http://localhost:8080`.
@@ -113,7 +112,6 @@ python3 md-viewer.py                     # serve current directory on port 8080
 python3 md-viewer.py 3000                # custom port
 python3 md-viewer.py /path/to/docs       # custom directory
 python3 md-viewer.py /path/to/docs 3000  # both
-python3 md-viewer.py --css style.css     # inject custom CSS
 ```
 
 ## Keyboard Shortcuts
@@ -136,9 +134,7 @@ If you'd like to help but aren't sure where to start, here are some ideas:
 
 - [x] Light theme / theme switcher
 - [x] Syntax highlighting for code blocks (highlight.js)
-- [x] Custom CSS injection via CLI flag
 - [x] Mermaid diagram support
-- [x] Emoji shortcode support
 - [x] Anchor links on headings
 - [x] Live reload on file changes
 - [ ] Export to PDF or static HTML

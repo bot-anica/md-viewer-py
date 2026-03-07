@@ -7,7 +7,6 @@ Usage:
     python3 md-viewer.py 3000         # custom port
     python3 md-viewer.py /some/path   # custom directory
     python3 md-viewer.py /some/path 3000
-    python3 md-viewer.py --css style.css   # inject custom CSS
 
 Notes:
     - Respects .gitignore in the served directory: files and folders matching
@@ -35,18 +34,13 @@ from urllib.parse import unquote
 
 ROOT_DIR = Path.cwd()
 PORT = 8080
-CSS_FILE = None
 
 _args = sys.argv[1:]
 _positional = []
 _i = 0
 while _i < len(_args):
-    if _args[_i] == "--css" and _i + 1 < len(_args):
-        CSS_FILE = Path(_args[_i + 1])
-        _i += 2
-    else:
-        _positional.append(_args[_i])
-        _i += 1
+    _positional.append(_args[_i])
+    _i += 1
 
 if len(_positional) >= 1:
     if _positional[0].isdigit():
@@ -141,7 +135,8 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Viewer</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked@14.3.0/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@14.1.4/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked-highlight/lib/index.umd.js"></script>
   <link id="hljs-dark-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github-dark.min.css">
   <link id="hljs-light-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github.min.css" disabled>
   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/highlight.min.js"></script>
@@ -343,7 +338,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     .md code { background: var(--bg-card); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace; color: var(--cyan); border: 1px solid var(--border); }
     .md pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 14px 0; overflow-x: auto; }
     .md pre code:not(.hljs) { background: none; border: none; padding: 0; font-size: 12.5px; color: var(--text); line-height: 1.7; }
-    .md pre code.hljs { background: none; border: none; color: unset; }
+    .md pre code.hljs { background: none; border: none; color: unset; padding: 0; }
     .md table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0 20px; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     .md thead th { background: var(--bg-card); padding: 9px 12px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
     .md tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -460,8 +455,6 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     /* ---- Syntax highlight override (ensure pre padding not doubled) ---- */
     .md pre:has(.hljs) { padding: 0; }
     .md pre .hljs { padding: 18px; display: block; border-radius: 10px; font-size: 12.5px; line-height: 1.7; overflow-x: auto; }
-
-    __CUSTOM_CSS__
   </style>
 </head>
 <body>
@@ -518,52 +511,21 @@ let FILES = [];
 let fileContents = {};
 let activeFileIdx = null;
 
-// ---- Emoji shortcodes ----
-const EMOJI_MAP = {
-  '+1':'👍','-1':'👎','thumbsup':'👍','thumbsdown':'👎','heart':'❤️',
-  'smile':'😊','grinning':'😀','laughing':'😆','joy':'😂','sob':'😭',
-  'thinking':'🤔','heart_eyes':'😍','sweat_smile':'😅','wink':'😉',
-  'fire':'🔥','star':'⭐','sparkles':'✨','rocket':'🚀','tada':'🎉',
-  'warning':'⚠️','x':'❌','white_check_mark':'✅','question':'❓',
-  'bulb':'💡','memo':'📝','bug':'🐛','wrench':'🔧','hammer':'🔨',
-  'package':'📦','link':'🔗','book':'📚','books':'📚','eyes':'👀',
-  'wave':'👋','pray':'🙏','muscle':'💪','art':'🎨','zap':'⚡',
-  'lock':'🔒','key':'🔑','computer':'💻','phone':'📱','email':'📧',
-  'calendar':'📅','chart_increasing':'📈','chart_decreasing':'📉',
-  'trophy':'🏆','pushpin':'📌','pencil':'✏️','mag':'🔍','gear':'⚙️',
-  'clipboard':'📋','file_folder':'📁','open_file_folder':'📂',
-  'recycle':'♻️','loudspeaker':'📢','speech_balloon':'💬',
-  'construction':'🚧','ok_hand':'👌','raised_hands':'🙌','clap':'👏',
-  'point_right':'👉','point_left':'👈','information_source':'ℹ️',
-  'fast_forward':'⏩','rewind':'⏪','new':'🆕','checkered_flag':'🏁',
-  'arrow_up':'⬆️','arrow_down':'⬇️','arrow_right':'➡️','arrow_left':'⬅️',
-};
-function applyEmojiShortcodes(el) {
-  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
-    acceptNode: n => n.parentElement.tagName === 'CODE' || n.parentElement.closest('pre') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
-  });
-  const nodes = [];
-  while (walker.nextNode()) nodes.push(walker.currentNode);
-  nodes.forEach(node => {
-    const replaced = node.textContent.replace(/:([a-z0-9_+\-]+):/g, (m, name) => EMOJI_MAP[name] || m);
-    if (replaced !== node.textContent) node.textContent = replaced;
-  });
-}
+// ---- Configure marked with marked-highlight for syntax highlighting ----
+marked.use(markedHighlight.markedHighlight({
+  langPrefix: 'hljs language-',
+  highlight(code, lang) {
+    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+    return hljs.highlight(code, { language }).value;
+  }
+}));
 
-// ---- Configure marked with mermaid + hljs renderer ----
+// ---- Configure marked with mermaid renderer ----
 marked.use({
   renderer: {
     code({ text, lang }) {
       if (lang === 'mermaid') {
         return '<div class="mermaid">' + text + '</div>';
-      }
-      if (lang && typeof hljs !== 'undefined' && hljs.getLanguage(lang)) {
-        try {
-          return '<pre><code class="hljs language-' + lang + '">' + hljs.highlight(text, { language: lang }).value + '</code></pre>';
-        } catch (e) {}
-      }
-      if (typeof hljs !== 'undefined') {
-        return '<pre><code class="hljs">' + hljs.highlightAuto(text).value + '</code></pre>';
       }
       return false; // fall back to default
     }
@@ -812,7 +774,6 @@ async function showFile(idx) {
   document.getElementById('loading').style.display = 'none';
 
   makeSectionsCollapsible(content);
-  applyEmojiShortcodes(content);
 
   // Breadcrumb bar (file name + collapse/expand)
   const bc = document.getElementById('breadcrumb');
@@ -1212,16 +1173,6 @@ init();
 </body>
 </html>"""
 
-# --- HTML builder ------------------------------------------------------------
-
-def get_html():
-    """Return the viewer HTML, injecting custom CSS if --css was given."""
-    custom = ""
-    if CSS_FILE and CSS_FILE.is_file():
-        custom = CSS_FILE.read_text(encoding="utf-8", errors="replace")
-    return HTML_TEMPLATE.replace("__CUSTOM_CSS__", custom, 1)
-
-
 # --- HTTP Handler ------------------------------------------------------------
 
 class ViewerHandler(http.server.SimpleHTTPRequestHandler):
@@ -1236,7 +1187,7 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
-            self.wfile.write(get_html().encode("utf-8"))
+            self.wfile.write(HTML_TEMPLATE.encode("utf-8"))
             return
 
         # API: list all .md files
