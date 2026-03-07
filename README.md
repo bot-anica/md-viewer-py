@@ -135,11 +135,8 @@ If you'd like to help but aren't sure where to start, here are some ideas:
 - [x] Light theme / theme switcher
 - [x] Syntax highlighting for code blocks (highlight.js)
 - [x] Mermaid diagram support
-- [x] Anchor links on headings
 - [x] Live reload on file changes
 - [ ] Export to PDF or static HTML
-- [ ] Plugin system for custom renderers
-- [ ] Multi-language UI support
 
 Feel free to [open an issue](../../issues) to discuss ideas before starting work.
 
