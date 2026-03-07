@@ -3,7 +3,7 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "md-viewer"
+name = "md-viewer-py"
 dynamic = ["version"]
 description = "Drop-in single-file Markdown viewer for any folder"
 readme = "README.md"
