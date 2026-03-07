@@ -368,6 +368,7 @@ function buildToc() {
   toggleLabel.onclick = () => {
     tocContent.classList.toggle('collapsed');
     headerChevron.classList.toggle('collapsed');
+    container.classList.toggle('toc-expanded');
   };
 
   const headings = document.querySelectorAll('.md h2, .md h3');
