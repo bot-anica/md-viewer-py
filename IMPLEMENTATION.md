@@ -37,12 +37,12 @@ marked.use({
 
 **Usage:** Fenced code blocks with a language tag are highlighted automatically.
 
-````markdown
+~~~markdown
 ```python
 def hello(name: str) -> str:
     return f"Hello, {name}!"
 ```
-````
+~~~
 
 ---
 
@@ -121,14 +121,14 @@ async function runMermaid() {
 
 **Usage:**
 
-````markdown
+~~~markdown
 ```mermaid
 graph TD
   A[Start] --> B{Decision}
   B -->|Yes| C[Do it]
   B -->|No| D[Skip]
 ```
-````
+~~~
 
 ---
 
