@@ -62,7 +62,7 @@
     .search-box input { width: 100%; padding: 7px 10px 7px 32px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 12.5px; outline: none; transition: border-color 0.15s; }
     .search-box input:focus { border-color: var(--accent); }
     .search-box input::placeholder { color: var(--text-muted); }
-    .search-box .search-icon { position: absolute; left: 26px; top: 15px; pointer-events: none; color: var(--text-muted); }
+    .search-box .search-icon { position: absolute; left: 26px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); }
 
     .search-results { display: none; padding: 0 14px 12px; max-height: 320px; overflow-y: auto; }
     .search-results.active { display: block; }
