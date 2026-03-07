@@ -82,7 +82,12 @@ async function init() {
   // Check URL hash
   const hash = window.location.hash.slice(1);
   const hashIdx = FILES.findIndex(f => slugify(f.path) === hash);
-  showFile(hashIdx >= 0 ? hashIdx : 0);
+  if (hashIdx >= 0) {
+    showFile(hashIdx);
+  } else {
+    const rootIdx = FILES.findIndex(f => !f.folder);
+    showFile(rootIdx >= 0 ? rootIdx : 0);
+  }
 }
 
 function slugify(s) { return s.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase(); }
@@ -178,12 +183,12 @@ function renderTreeNode(parent, node, depth, isRoot) {
     wrapper.className = 'tree-node';
 
     const header = document.createElement('div');
-    header.className = 'tree-folder' + (depth > 0 ? ' collapsed' : '');
+    header.className = 'tree-folder collapsed';
     header.style.paddingLeft = indent + 'px';
     header.innerHTML = `<span class="chevron"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="0,2 10,2 5,8" fill="currentColor"/></svg></span><span class="folder-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></span><span class="folder-name">${name}</span><span class="folder-count">${count}</span>`;
 
     const children = document.createElement('div');
-    children.className = 'tree-children' + (depth > 0 ? ' collapsed' : '');
+    children.className = 'tree-children collapsed';
 
     header.onclick = () => {
       header.classList.toggle('collapsed');
