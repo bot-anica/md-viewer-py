@@ -6,7 +6,7 @@
 
 <p align="center"><strong>Drop-in single-file Markdown viewer for any folder.</strong></p>
 
-<p align="center">Zero dependencies. One file. Just run <code>python3 md-viewer.py</code>.</p>
+<p align="center">Zero dependencies. One file. Just run <code>mdview</code>.</p>
 
 <p align="center">
   <img src="assets/preview.png" alt="md-viewer-py screenshot" width="800">
@@ -29,37 +29,20 @@
 - **Mobile responsive** — works on small screens with hamburger menu
 - **Print-friendly** — clean print stylesheet for hard copies
 - **Custom port and directory** — point it at any folder, pick any port
+- **Live content refresh** — file list and content auto-refresh as files change
 
 ## Quick Start
 
-```bash
-# 1. Download md-viewer.py into your project (or any folder with .md files)
-# 2. Run it
-python3 md-viewer.py
-```
-
-A browser tab opens automatically at `http://localhost:8080`.
-
-## Usage
-
-```bash
-python3 md-viewer.py                  # serve current directory on port 8080
-python3 md-viewer.py 3000             # custom port
-python3 md-viewer.py /path/to/docs    # custom directory
-python3 md-viewer.py /path/to/docs 3000  # both
-```
-
-## Global Install (run from anywhere)
+Install once, use everywhere as `mdview`:
 
 ### macOS / Linux
 
-Make the script executable:
-
 ```bash
-chmod +x md-viewer.py
+curl -o ~/bin/md-viewer.py https://raw.githubusercontent.com/your-username/md-viewer-py/main/md-viewer.py
+chmod +x ~/bin/md-viewer.py
 ```
 
-Then add an alias for your shell:
+Add an alias for your shell:
 
 #### zsh
 
@@ -96,19 +79,39 @@ python "%~dp0md-viewer.py" %*
    ```powershell
    function mdview { python "C:\full\path\to\md-viewer.py" @args }
    ```
-3. Back in PowerShell, and run command to reload the profile:
+3. Back in PowerShell, run this to reload the profile:
    ```powershell
    . $PROFILE
    ```
 
-### Result
+### Usage
 
-Now you can use `mdview` from any directory:
+Once installed, use `mdview` from any directory:
 
 ```bash
-mdview                  # serve current directory
-mdview 3000             # custom port
-mdview /path/to/docs    # custom directory
+mdview                        # serve current directory on port 8080
+mdview 3000                   # custom port
+mdview /path/to/docs          # custom directory
+mdview /path/to/docs 3000     # both
+```
+
+A browser tab opens automatically at `http://localhost:8080`.
+
+## Alternative: Copy and Run
+
+No install needed — just drop the file into any folder:
+
+```bash
+# 1. Copy md-viewer.py into your project (or any folder with .md files)
+# 2. Run it
+python3 md-viewer.py
+```
+
+```bash
+python3 md-viewer.py                     # serve current directory on port 8080
+python3 md-viewer.py 3000                # custom port
+python3 md-viewer.py /path/to/docs       # custom directory
+python3 md-viewer.py /path/to/docs 3000  # both
 ```
 
 ## Keyboard Shortcuts
@@ -129,16 +132,11 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 
 If you'd like to help but aren't sure where to start, here are some ideas:
 
-- Light theme / theme switcher
-- Syntax highlighting for code blocks (e.g. Prism.js or highlight.js)
-- Live reload on file changes
-- Export to PDF or static HTML
-- Plugin system for custom renderers
-- Multi-language UI support
-- Custom CSS injection via CLI flag
-- Mermaid diagram support
-- Emoji shortcode support
-- Anchor links on headings
+- [x] Light theme / theme switcher
+- [x] Syntax highlighting for code blocks (highlight.js)
+- [x] Mermaid diagram support
+- [x] Live reload on file changes
+- [ ] Export to PDF or static HTML
 
 Feel free to [open an issue](../../issues) to discuss ideas before starting work.
 

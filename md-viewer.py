@@ -129,7 +129,11 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Viewer</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@14.1.4/marked.min.js"></script>
+  <link id="hljs-dark-css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css">
+  <link id="hljs-light-css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" disabled>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -325,8 +329,9 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     .md blockquote { border-left: 3px solid var(--accent); padding: 10px 18px; margin: 14px 0; background: var(--accent-dim); border-radius: 0 8px 8px 0; font-style: italic; color: var(--text-muted); }
     .md hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
     .md code { background: var(--bg-card); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace; color: var(--cyan); border: 1px solid var(--border); }
-    .md pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 14px 0; overflow-x: auto; }
-    .md pre code { background: none; border: none; padding: 0; font-size: 12.5px; color: var(--text); line-height: 1.7; }
+    .md pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 14px 0; overflow-x: auto; position: relative; }
+    .md pre code:not(.hljs) { background: none; border: none; padding: 0; font-size: 12.5px; color: var(--text); line-height: 1.7; }
+    .md pre code.hljs { background: none; border: none; color: unset; padding: 18px; display: block; }
     .md table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0 20px; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     .md thead th { background: var(--bg-card); padding: 9px 12px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
     .md tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -390,6 +395,74 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       .md code { background: #f5f5f5; color: #333; border-color: #ddd; }
       .md pre { background: #f5f5f5; border-color: #ddd; }
     }
+
+    /* ---- Light theme ---- */
+    body.light {
+      --bg: #ffffff;
+      --bg-surface: #f6f8fa;
+      --bg-card: #f0f2f5;
+      --bg-hover: #e8eaed;
+      --border: #d0d7de;
+      --text: #24292f;
+      --text-muted: #57606a;
+      --text-heading: #1c2128;
+      --accent: #0969da;
+      --accent-dim: rgba(9, 105, 218, 0.1);
+      --green: #1a7f37;
+      --green-dim: rgba(26, 127, 55, 0.1);
+      --amber: #9a6700;
+      --amber-dim: rgba(154, 103, 0, 0.1);
+      --red: #cf222e;
+      --cyan: #0550ae;
+    }
+
+    /* ---- Heading anchor links ---- */
+    .heading-anchor {
+      opacity: 0;
+      margin-left: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 0.8em;
+      transition: opacity 0.15s;
+      vertical-align: middle;
+    }
+    .md h1:hover .heading-anchor,
+    .md h2:hover .heading-anchor,
+    .md h3:hover .heading-anchor,
+    .md h4:hover .heading-anchor { opacity: 1; }
+
+    /* ---- Theme toggle button ---- */
+    .theme-toggle {
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-muted); padding: 5px 10px; font-size: 11px;
+      cursor: pointer; display: flex; align-items: center; gap: 5px;
+      transition: all 0.15s;
+    }
+    .theme-toggle:hover { color: var(--text); border-color: var(--text-muted); }
+
+    /* ---- Mermaid diagrams ---- */
+    .mermaid { text-align: center; margin: 14px 0; overflow-x: auto; }
+    .mermaid svg { max-width: 100%; }
+
+    /* ---- Syntax highlight override (ensure pre padding not doubled) ---- */
+    .md pre:has(.hljs) { padding: 0; }
+    .md pre .hljs { padding: 18px; display: block; border-radius: 10px; font-size: 12.5px; line-height: 1.7; overflow-x: auto; }
+
+    /* ---- Copy button ---- */
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text-muted); padding: 4px 7px;
+      font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;
+      opacity: 0; transition: opacity 0.15s, background 0.15s, color 0.15s;
+      z-index: 10; line-height: 1;
+    }
+    .md pre:hover .copy-btn { opacity: 1; }
+    .copy-btn:hover { background: rgba(255,255,255,0.12); color: var(--text); border-color: var(--text-muted); }
+    .copy-btn.copied { color: var(--green); border-color: var(--green); }
+    body.light .copy-btn { background: rgba(0,0,0,0.04); }
+    body.light .copy-btn:hover { background: rgba(0,0,0,0.08); }
   </style>
 </head>
 <body>
@@ -404,6 +477,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
       <span class="header-badge badge-files" id="badgeFiles"></span>
       <span class="header-badge badge-lines" id="badgeLines"></span>
       <span class="header-badge badge-path" id="badgePath"></span>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg> Light</button>
       <button class="print-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4c0 1.1.9 2 2 2h2v2c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-2h2c1.1 0 2-.9 2-2v-4c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-8H7v4h10V4z"/></svg> Print</button>
     </div>
   </header>
@@ -444,6 +518,33 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 let FILES = [];
 let fileContents = {};
 let activeFileIdx = null;
+
+// ---- Configure marked with mermaid renderer ----
+marked.use({
+  renderer: {
+    code({ text, lang }) {
+      if (lang === 'mermaid') {
+        return '<div class="mermaid">' + text + '</div>';
+      }
+      return false; // fall back to default
+    }
+  }
+});
+
+// ---- Mermaid init ----
+let _mermaidTheme = 'dark';
+function initMermaid(theme) {
+  _mermaidTheme = theme;
+  mermaid.initialize({ startOnLoad: false, theme: theme === 'dark' ? 'dark' : 'default' });
+}
+initMermaid('dark');
+
+async function runMermaid() {
+  const nodes = document.querySelectorAll('.mermaid:not([data-processed])');
+  if (nodes.length === 0) return;
+  nodes.forEach(el => { if (!el.hasAttribute('data-mermaid-src')) el.setAttribute('data-mermaid-src', el.textContent); });
+  try { await mermaid.run({ nodes }); } catch (e) {}
+}
 
 const FILE_COLORS = [
   'linear-gradient(135deg, #7c8aff, #a78bfa)',
@@ -672,6 +773,8 @@ async function showFile(idx) {
   document.getElementById('loading').style.display = 'none';
 
   makeSectionsCollapsible(content);
+  content.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+  addCopyButtons(content);
 
   // Breadcrumb bar (file name + collapse/expand)
   const bc = document.getElementById('breadcrumb');
@@ -684,6 +787,9 @@ async function showFile(idx) {
   document.getElementById('breadcrumbBar').style.display = 'flex';
 
   buildToc();
+  addHeadingAnchors();
+  interceptMdLinks(content, f.path);
+  runMermaid();
   window.scrollTo({ top: 0 });
 
   if (window.innerWidth <= 900) {
@@ -718,6 +824,7 @@ function wrapLevel(container, level) {
     if (body.children.length > 0) {
       el.after(body);
       el.onclick = (e) => {
+        if (e.target.closest && e.target.closest('a')) return;
         if (e.target.tagName === 'A') return;
         el.classList.toggle('collapsed');
         body.classList.toggle('collapsed');
@@ -945,6 +1052,100 @@ function searchScroll(lineNum) {
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+function interceptMdLinks(container, currentFilePath) {
+  container.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || /^https?:\/\//.test(href) || href.startsWith('mailto:')) return;
+    const [filePart] = href.split('#');
+    if (!filePart.endsWith('.md')) return;
+    // Resolve relative path against current file's directory
+    const dir = currentFilePath && currentFilePath.includes('/')
+      ? currentFilePath.substring(0, currentFilePath.lastIndexOf('/'))
+      : '';
+    const raw = dir ? dir + '/' + filePart : filePart;
+    // Normalize path segments (handle ../ and ./)
+    const parts = raw.split('/');
+    const norm = [];
+    for (const p of parts) {
+      if (p === '..') norm.pop();
+      else if (p !== '.') norm.push(p);
+    }
+    const resolvedPath = norm.join('/');
+    const targetIdx = FILES.findIndex(f => f.path === resolvedPath);
+    if (targetIdx < 0) return;
+    a.addEventListener('click', e => { e.preventDefault(); showFile(targetIdx); });
+  });
+}
+
+function addCopyButtons(container) {
+  container.querySelectorAll('pre').forEach(pre => {
+    if (pre.querySelector('.copy-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.title = 'Copy code';
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    btn.addEventListener('click', async () => {
+      const code = pre.querySelector('code');
+      const text = code ? code.innerText : pre.innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch {}
+    });
+    pre.appendChild(btn);
+  });
+}
+
+function addHeadingAnchors() {
+  document.querySelectorAll('.md h1, .md h2, .md h3, .md h4').forEach(h => {
+    if (h.querySelector('.heading-anchor')) return;
+    const id = h.id || ('ha-' + Math.random().toString(36).slice(2));
+    if (!h.id) h.id = id;
+    const a = document.createElement('a');
+    a.className = 'heading-anchor';
+    a.href = '#' + id;
+    a.textContent = '#';
+    a.onclick = function(evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      var targetEl = document.getElementById(id);
+      if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    h.appendChild(a);
+  });
+}
+
+let _currentTheme = localStorage.getItem('md-viewer-theme') || 'dark';
+function applyTheme(theme) {
+  _currentTheme = theme;
+  document.body.classList.toggle('light', theme === 'light');
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.innerHTML = theme === 'dark'
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg> Light'
+    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Dark';
+  const darkCss = document.getElementById('hljs-dark-css');
+  const lightCss = document.getElementById('hljs-light-css');
+  if (darkCss) darkCss.disabled = theme === 'light';
+  if (lightCss) lightCss.disabled = theme === 'dark';
+  initMermaid(theme);
+  // Re-render mermaid diagrams with new theme
+  document.querySelectorAll('.mermaid[data-processed]').forEach(el => {
+    el.removeAttribute('data-processed');
+    const src = el.getAttribute('data-mermaid-src');
+    if (src) el.textContent = src;
+  });
+  runMermaid();
+  localStorage.setItem('md-viewer-theme', theme);
+}
+function toggleTheme() { applyTheme(_currentTheme === 'dark' ? 'light' : 'dark'); }
+// Apply saved theme on load
+if (_currentTheme === 'light') applyTheme('light');
 
 window.addEventListener('scroll', () => {
   const winH = document.documentElement.scrollHeight - window.innerHeight;

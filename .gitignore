@@ -4,3 +4,11 @@ __pycache__/
 .DS_Store
 .venv/
 venv/
+
+# Overstory orchestration artifacts
+.overstory/
+.canopy/
+.mulch/
+.seeds/
+AGENTS.md
+.gitattributes
