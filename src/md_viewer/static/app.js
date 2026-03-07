@@ -173,7 +173,7 @@ function renderTreeNode(parent, node, depth, isRoot) {
     const header = document.createElement('div');
     header.className = 'tree-folder' + (depth > 0 ? ' collapsed' : '');
     header.style.paddingLeft = indent + 'px';
-    header.innerHTML = `<span class="chevron">&#9660;</span><span class="folder-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></span><span class="folder-name">${name}</span><span class="folder-count">${count}</span>`;
+    header.innerHTML = `<span class="chevron"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="0,2 10,2 5,8" fill="currentColor"/></svg></span><span class="folder-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></span><span class="folder-name">${name}</span><span class="folder-count">${count}</span>`;
 
     const children = document.createElement('div');
     children.className = 'tree-children' + (depth > 0 ? ' collapsed' : '');
@@ -349,8 +349,8 @@ function buildToc() {
   toolbar.innerHTML = `
     <div class="sidebar-section-label">On this page</div>
     <div class="toc-btns">
-      <button class="collapse-btn" onclick="tocCollapseAll()" title="Collapse TOC">&#9654;</button>
-      <button class="collapse-btn" onclick="tocExpandAll()" title="Expand TOC">&#9660;</button>
+      <button class="collapse-btn" onclick="tocCollapseAll()" title="Collapse TOC"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 8,5 2,10" fill="currentColor"/></svg></button>
+      <button class="collapse-btn" onclick="tocExpandAll()" title="Expand TOC"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="0,2 10,2 5,8" fill="currentColor"/></svg></button>
     </div>
   `;
   container.appendChild(toolbar);

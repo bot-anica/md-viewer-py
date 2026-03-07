@@ -74,8 +74,8 @@
     .search-result-item mark { background: var(--amber-dim); color: var(--amber); border-radius: 2px; padding: 0 2px; }
 
     .sidebar-section-label {
-      padding: 10px 18px 5px; font-size: 9px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted);
+      padding: 10px 18px 5px; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.3px; color: var(--text-muted);
     }
 
     .sidebar-toolbar {
@@ -86,7 +86,7 @@
     .file-count { font-size: 9px; color: var(--text-muted); font-weight: 400; letter-spacing: 0; }
     .collapse-btn {
       background: none; border: 1px solid var(--border); border-radius: 6px;
-      color: var(--text-muted); padding: 3px 8px; font-size: 10px; cursor: pointer;
+      color: var(--text-muted); padding: 5px 12px; font-size: 12px; cursor: pointer;
       display: flex; align-items: center; gap: 4px; transition: all 0.15s;
       white-space: nowrap;
     }
@@ -129,7 +129,7 @@
     .toc-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 14px 6px; }
     .toc-toolbar .sidebar-section-label { padding: 0; }
     .toc-toolbar .toc-btns { display: flex; gap: 4px; }
-    .toc-toolbar .collapse-btn { padding: 2px 6px; font-size: 9px; }
+    .toc-toolbar .collapse-btn { padding: 4px 8px; font-size: 11px; }
 
     .toc-group { }
     .toc-h2 {
@@ -228,7 +228,7 @@
       display: flex; align-items: center; gap: 8px;
       margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
     }
-    .breadcrumb { font-size: 12px; color: var(--text-muted); flex: 1; min-width: 0; }
+    .breadcrumb { font-size: 14px; font-weight: 500; color: var(--text-muted); flex: 1; min-width: 0; }
     .breadcrumb span { cursor: default; }
     .breadcrumb .sep { margin: 0 6px; opacity: 0.4; }
     .content-toolbar { display: flex; gap: 6px; flex-shrink: 0; }
