@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="md-viewer-py" width="120">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/logo.png" alt="md-viewer-py" width="120">
 </p>
 
 <h1 align="center">md-viewer-py</h1>
@@ -9,7 +9,7 @@
 <p align="center">Zero dependencies. Install once, use everywhere as <code>mdview</code>.</p>
 
 <p align="center">
-  <img src="assets/preview.png" alt="md-viewer-py screenshot" width="800">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview.png" alt="md-viewer-py screenshot" width="800">
 </p>
 
 ---
@@ -17,13 +17,13 @@
 ## Install
 
 ```bash
-pip install md-viewer
+pip install md-viewer-py
 ```
 
 Or with pipx (recommended for CLI tools):
 
 ```bash
-pipx install md-viewer
+pipx install md-viewer-py
 ```
 
 Or install directly from source:
@@ -67,7 +67,7 @@ python -m md_viewer
 ## Quick Start
 
 ```bash
-pip install md-viewer
+pip install md-viewer-py
 mdview
 ```
 
@@ -87,7 +87,7 @@ A browser tab opens automatically at `http://localhost:8080`.
 
 ## How It Works
 
-`md-viewer` is a pip-installable HTTP server built on Python's `http.server`. It scans the directory for `.md` files, serves a single-page dark-themed UI, and renders Markdown client-side using [marked.js](https://github.com/markedjs/marked) from a CDN. No build step, no config files, no virtual environments beyond the install itself.
+`md-viewer-py` is a pip-installable HTTP server built on Python's `http.server`. It scans the directory for `.md` files, serves a single-page dark-themed UI, and renders Markdown client-side using [marked.js](https://github.com/markedjs/marked) from a CDN. No build step, no config files, no virtual environments beyond the install itself.
 
 ## Alternative: Copy and Run
 
