@@ -329,7 +329,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     .md blockquote { border-left: 3px solid var(--accent); padding: 10px 18px; margin: 14px 0; background: var(--accent-dim); border-radius: 0 8px 8px 0; font-style: italic; color: var(--text-muted); }
     .md hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
     .md code { background: var(--bg-card); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace; color: var(--cyan); border: 1px solid var(--border); }
-    .md pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 14px 0; overflow-x: auto; }
+    .md pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 14px 0; overflow-x: auto; position: relative; }
     .md pre code:not(.hljs) { background: none; border: none; padding: 0; font-size: 12.5px; color: var(--text); line-height: 1.7; }
     .md pre code.hljs { background: none; border: none; color: unset; padding: 18px; display: block; }
     .md table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0 20px; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
@@ -448,6 +448,21 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     /* ---- Syntax highlight override (ensure pre padding not doubled) ---- */
     .md pre:has(.hljs) { padding: 0; }
     .md pre .hljs { padding: 18px; display: block; border-radius: 10px; font-size: 12.5px; line-height: 1.7; overflow-x: auto; }
+
+    /* ---- Copy button ---- */
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text-muted); padding: 4px 7px;
+      font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;
+      opacity: 0; transition: opacity 0.15s, background 0.15s, color 0.15s;
+      z-index: 10; line-height: 1;
+    }
+    .md pre:hover .copy-btn { opacity: 1; }
+    .copy-btn:hover { background: rgba(255,255,255,0.12); color: var(--text); border-color: var(--text-muted); }
+    .copy-btn.copied { color: var(--green); border-color: var(--green); }
+    body.light .copy-btn { background: rgba(0,0,0,0.04); }
+    body.light .copy-btn:hover { background: rgba(0,0,0,0.08); }
   </style>
 </head>
 <body>
@@ -759,6 +774,7 @@ async function showFile(idx) {
 
   makeSectionsCollapsible(content);
   content.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+  addCopyButtons(content);
 
   // Breadcrumb bar (file name + collapse/expand)
   const bc = document.getElementById('breadcrumb');
@@ -1059,6 +1075,30 @@ function interceptMdLinks(container, currentFilePath) {
     const targetIdx = FILES.findIndex(f => f.path === resolvedPath);
     if (targetIdx < 0) return;
     a.addEventListener('click', e => { e.preventDefault(); showFile(targetIdx); });
+  });
+}
+
+function addCopyButtons(container) {
+  container.querySelectorAll('pre').forEach(pre => {
+    if (pre.querySelector('.copy-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.title = 'Copy code';
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    btn.addEventListener('click', async () => {
+      const code = pre.querySelector('code');
+      const text = code ? code.innerText : pre.innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch {}
+    });
+    pre.appendChild(btn);
   });
 }
 
