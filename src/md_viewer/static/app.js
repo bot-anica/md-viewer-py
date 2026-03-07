@@ -68,11 +68,8 @@ async function init() {
     return;
   }
 
-  const totalLines = FILES.reduce((s, f) => s + f.lines, 0);
-  document.getElementById('badgeFiles').innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4z"/></svg> ' + FILES.length + ' file' + (FILES.length !== 1 ? 's' : '');
-  document.getElementById('badgeLines').innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg> ' + totalLines.toLocaleString() + ' lines';
-
   renderNav();
+  document.getElementById('fileCount').textContent = '(' + FILES.length + ')';
   await loadAllFiles();
 
   // Check URL hash
@@ -670,6 +667,7 @@ setInterval(async () => {
     if (newPaths !== oldPaths) {
       FILES = data.files;
       renderNav();
+      document.getElementById('fileCount').textContent = '(' + data.files.length + ')';
       if (activeFileIdx !== null && activeFileIdx < FILES.length) {
         document.getElementById('nav-' + activeFileIdx)?.classList.add('active');
       }

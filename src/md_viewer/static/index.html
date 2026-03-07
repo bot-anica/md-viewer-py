@@ -22,8 +22,6 @@ __STYLE__
       <span>Markdown Viewer</span>
     </div>
     <div class="header-meta">
-      <span class="header-badge badge-files" id="badgeFiles"></span>
-      <span class="header-badge badge-lines" id="badgeLines"></span>
       <span class="header-badge badge-path" id="badgePath"></span>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg> Light</button>
       <button class="print-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4c0 1.1.9 2 2 2h2v2c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-2h2c1.1 0 2-.9 2-2v-4c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-8H7v4h10V4z"/></svg> Print</button>
@@ -37,7 +35,7 @@ __STYLE__
     </div>
     <div class="search-results" id="searchResults"></div>
     <div class="sidebar-toolbar" id="sidebarToolbar" style="display:none">
-      <div class="sidebar-section-label">Explorer</div>
+      <div class="sidebar-section-label">Explorer <span id="fileCount" class="file-count"></span></div>
       <button class="collapse-btn" onclick="collapseAll()" title="Collapse all folders">&#9654; Collapse all</button>
     </div>
     <div id="navItems"></div>
