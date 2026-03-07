@@ -42,8 +42,6 @@
     .header-logo .icon { width: 30px; height: 30px; border-radius: 8px; object-fit: contain; }
     .header-meta { margin-left: auto; display: flex; align-items: center; gap: 12px; }
     .header-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-    .badge-files { background: var(--accent-dim); color: var(--accent); }
-    .badge-lines { background: var(--green-dim); color: var(--green); }
     .badge-path { background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border); max-width: 40vw; overflow: hidden; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
     .badge-path .path-text { overflow: hidden; text-overflow: ellipsis; direction: rtl; text-align: left; }
     .menu-toggle { display: none; background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 5px 9px; cursor: pointer; font-size: 16px; }
@@ -85,6 +83,7 @@
       padding: 4px 14px 8px; border-bottom: 1px solid var(--border); margin-bottom: 4px;
     }
     .sidebar-toolbar .sidebar-section-label { padding: 0; margin: 0; }
+    .file-count { font-size: 9px; color: var(--text-muted); font-weight: 400; letter-spacing: 0; }
     .collapse-btn {
       background: none; border: 1px solid var(--border); border-radius: 6px;
       color: var(--text-muted); padding: 3px 8px; font-size: 10px; cursor: pointer;
