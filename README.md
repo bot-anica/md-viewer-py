@@ -108,7 +108,7 @@ python3 md-viewer.py
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-If you'd like to help but aren't sure where to start, here are some ideas:
+If you'd like to help but aren't sure where to start, see the full [improvements & ideas list](IMPROVEMENTS.md) or pick from these highlights:
 
 - [x] Light theme / theme switcher
 - [x] Syntax highlighting for code blocks (highlight.js)
