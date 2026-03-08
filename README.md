@@ -82,7 +82,7 @@ A browser tab opens automatically at `http://localhost:8080`.
 
 ## Examples
 
-- [Mermaid Diagrams](examples/mermaid-examples.md) — flowcharts, sequence diagrams, gantt charts, and more
+- [Mermaid Diagrams](https://github.com/bot-anica/md-viewer-py/blob/main/examples/mermaid-examples.md) — flowcharts, sequence diagrams, gantt charts, and more
 
 ## Keyboard Shortcuts
 
@@ -106,9 +106,9 @@ python3 md-viewer.py
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! See [CONTRIBUTING.md](https://github.com/bot-anica/md-viewer-py/blob/main/CONTRIBUTING.md) for guidelines.
 
-If you'd like to help but aren't sure where to start, see the full [improvements & ideas list](IMPROVEMENTS.md) or pick from these highlights:
+If you'd like to help but aren't sure where to start, see the full [improvements & ideas list](https://github.com/bot-anica/md-viewer-py/blob/main/IMPROVEMENTS.md) or pick from these highlights:
 
 - [x] Light theme / theme switcher
 - [x] Syntax highlighting for code blocks (highlight.js)
@@ -116,8 +116,8 @@ If you'd like to help but aren't sure where to start, see the full [improvements
 - [x] Live reload on file changes
 - [ ] Export to PDF or static HTML
 
-Feel free to [open an issue](../../issues) to discuss ideas before starting work.
+Feel free to [open an issue](https://github.com/bot-anica/md-viewer-py/issues) to discuss ideas before starting work.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/bot-anica/md-viewer-py/blob/main/LICENSE)
