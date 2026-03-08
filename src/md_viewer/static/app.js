@@ -29,6 +29,13 @@ async function runMermaid() {
   try { await mermaid.run({ nodes }); } catch (e) {}
 }
 
+function stripFrontmatter(text) {
+  if (!text.startsWith('---')) return text;
+  const idx = text.indexOf('\n---', 3);
+  if (idx < 0) return text;
+  return text.slice(idx + 4);
+}
+
 const FILE_COLORS = [
   'linear-gradient(135deg, #7c8aff, #a78bfa)',
   'linear-gradient(135deg, #4ade80, #22d3ee)',
@@ -68,17 +75,19 @@ async function init() {
     return;
   }
 
-  const totalLines = FILES.reduce((s, f) => s + f.lines, 0);
-  document.getElementById('badgeFiles').innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4z"/></svg> ' + FILES.length + ' file' + (FILES.length !== 1 ? 's' : '');
-  document.getElementById('badgeLines').innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg> ' + totalLines.toLocaleString() + ' lines';
-
   renderNav();
+  document.getElementById('fileCount').textContent = '(' + FILES.length + ')';
   await loadAllFiles();
 
   // Check URL hash
   const hash = window.location.hash.slice(1);
   const hashIdx = FILES.findIndex(f => slugify(f.path) === hash);
-  showFile(hashIdx >= 0 ? hashIdx : 0);
+  if (hashIdx >= 0) {
+    showFile(hashIdx);
+  } else {
+    const rootIdx = FILES.findIndex(f => !f.folder);
+    showFile(rootIdx >= 0 ? rootIdx : 0);
+  }
 }
 
 function slugify(s) { return s.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase(); }
@@ -86,7 +95,7 @@ function slugify(s) { return s.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-')
 async function loadAllFiles() {
   const loads = FILES.map(async (f, i) => {
     try {
-      const resp = await fetch('/files/' + encodeURIComponent(f.path));
+      const resp = await fetch('/files/' + f.path.split('/').map(encodeURIComponent).join('/'));
       if (!resp.ok) throw new Error(resp.status);
       fileContents[i] = await resp.text();
     } catch {
@@ -174,12 +183,12 @@ function renderTreeNode(parent, node, depth, isRoot) {
     wrapper.className = 'tree-node';
 
     const header = document.createElement('div');
-    header.className = 'tree-folder' + (depth > 0 ? ' collapsed' : '');
+    header.className = 'tree-folder collapsed';
     header.style.paddingLeft = indent + 'px';
-    header.innerHTML = `<span class="chevron">&#9660;</span><span class="folder-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></span><span class="folder-name">${name}</span><span class="folder-count">${count}</span>`;
+    header.innerHTML = `<span class="chevron"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="0,2 10,2 5,8" fill="currentColor"/></svg></span><span class="folder-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></span><span class="folder-name">${name}</span><span class="folder-count">${count}</span>`;
 
     const children = document.createElement('div');
-    children.className = 'tree-children' + (depth > 0 ? ' collapsed' : '');
+    children.className = 'tree-children collapsed';
 
     header.onclick = () => {
       header.classList.toggle('collapsed');
@@ -243,11 +252,11 @@ async function showFile(idx) {
 
   // Always fetch fresh content from server
   try {
-    const resp = await fetch('/files/' + encodeURIComponent(f.path));
+    const resp = await fetch('/files/' + f.path.split('/').map(encodeURIComponent).join('/'));
     if (resp.ok) fileContents[idx] = await resp.text();
   } catch {}
 
-  const md = fileContents[idx] || '';
+  const md = stripFrontmatter(fileContents[idx] || '');
   const html = marked.parse(md, { gfm: true, breaks: false });
 
   const content = document.getElementById('content');
@@ -314,12 +323,15 @@ function wrapLevel(container, level) {
       };
       // Recurse into this section-body for deeper headings
       if (level < 4) wrapLevel(body, level + 1);
-    }
 
-    // Re-scan since DOM changed
-    children.length = 0;
-    children.push(...Array.from(container.children));
-    i = children.indexOf(body) + 1;
+      // Re-scan since DOM changed
+      children.length = 0;
+      children.push(...Array.from(container.children));
+      i = children.indexOf(body) + 1;
+    } else {
+      // No content to wrap; advance past this heading to avoid infinite loop
+      i++;
+    }
   }
 }
 
@@ -346,17 +358,33 @@ function buildToc() {
   container.innerHTML = '';
   tocHeadings = [];
 
-  // Toolbar
+  // Toolbar with collapsible "On this page" header
   const toolbar = document.createElement('div');
   toolbar.className = 'toc-toolbar';
   toolbar.innerHTML = `
-    <div class="sidebar-section-label">On this page</div>
+    <div class="sidebar-section-label toc-toggle">
+      <span class="toc-header-chevron collapsed">&#9660;</span>On this page
+    </div>
     <div class="toc-btns">
-      <button class="collapse-btn" onclick="tocCollapseAll()" title="Collapse TOC">&#9654;</button>
-      <button class="collapse-btn" onclick="tocExpandAll()" title="Expand TOC">&#9660;</button>
+      <button class="collapse-btn" onclick="tocCollapseAll()" title="Collapse TOC"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 8,5 2,10" fill="currentColor"/></svg></button>
+      <button class="collapse-btn" onclick="tocExpandAll()" title="Expand TOC"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="0,2 10,2 5,8" fill="currentColor"/></svg></button>
     </div>
   `;
   container.appendChild(toolbar);
+
+  // Content wrapper — starts collapsed
+  const tocContent = document.createElement('div');
+  tocContent.className = 'toc-content collapsed';
+  container.appendChild(tocContent);
+
+  // Toggle toc-content on "On this page" label click
+  const toggleLabel = toolbar.querySelector('.toc-toggle');
+  const headerChevron = toolbar.querySelector('.toc-header-chevron');
+  toggleLabel.onclick = () => {
+    tocContent.classList.toggle('collapsed');
+    headerChevron.classList.toggle('collapsed');
+    container.classList.toggle('toc-expanded');
+  };
 
   const headings = document.querySelectorAll('.md h2, .md h3');
   let currentGroup = null;
@@ -368,7 +396,6 @@ function buildToc() {
     h.id = slug;
 
     if (h.tagName === 'H2') {
-      // Create collapsible group
       const group = document.createElement('div');
       group.className = 'toc-group';
 
@@ -387,7 +414,7 @@ function buildToc() {
 
       group.appendChild(h2Link);
       group.appendChild(children);
-      container.appendChild(group);
+      tocContent.appendChild(group);
 
       currentGroup = group;
       currentChildren = children;
@@ -407,10 +434,23 @@ function buildToc() {
       if (currentChildren) {
         currentChildren.appendChild(h3Link);
       } else {
-        container.appendChild(h3Link);
+        tocContent.appendChild(h3Link);
       }
 
       tocHeadings.push({ el: h, slug, level: 3, tocEl: h3Link, parentH2: currentH2Entry });
+    }
+  });
+
+  // Replace chevron with spacer for H2s that have no H3 children (Change 1)
+  tocHeadings.forEach(entry => {
+    if (entry.level !== 2) return;
+    if (!entry.childrenEl || entry.childrenEl.children.length === 0) {
+      const chevron = entry.tocEl.querySelector('.toc-chevron');
+      if (chevron) {
+        const spacer = document.createElement('span');
+        spacer.className = 'toc-chevron-spacer';
+        chevron.replaceWith(spacer);
+      }
     }
   });
 
@@ -497,7 +537,7 @@ function handleSearch(query) {
   const q = query.toLowerCase();
   let items = [];
   FILES.forEach((f, idx) => {
-    const text = fileContents[idx] || '';
+    const text = stripFrontmatter(fileContents[idx] || '');
     text.split('\n').forEach((line, lineNum) => {
       if (line.toLowerCase().includes(q)) {
         const clean = line.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim();
@@ -670,6 +710,7 @@ setInterval(async () => {
     if (newPaths !== oldPaths) {
       FILES = data.files;
       renderNav();
+      document.getElementById('fileCount').textContent = '(' + data.files.length + ')';
       if (activeFileIdx !== null && activeFileIdx < FILES.length) {
         document.getElementById('nav-' + activeFileIdx)?.classList.add('active');
       }

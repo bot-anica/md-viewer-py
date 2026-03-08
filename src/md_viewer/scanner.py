@@ -14,7 +14,7 @@ def parse_gitignore(root):
             patterns.append(line)
 
     # Always exclude common non-content directories
-    defaults = [".git", "node_modules", "__pycache__", ".venv", "venv", ".next", "dist", ".astro"]
+    defaults = [".*", "node_modules", "__pycache__", "venv", "dist"]
     for d in defaults:
         if d not in patterns:
             patterns.append(d)
