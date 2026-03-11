@@ -340,3 +340,143 @@
     .copy-btn.copied { color: var(--green); border-color: var(--green); }
     body.light .copy-btn { background: rgba(0,0,0,0.04); }
     body.light .copy-btn:hover { background: rgba(0,0,0,0.08); }
+
+    /* ---- Editor styles ---- */
+    .edit-btn {
+      background: none; border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text-muted); padding: 5px 12px; font-size: 12px;
+      cursor: pointer; display: flex; align-items: center; gap: 4px;
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .edit-btn:hover { color: var(--text); border-color: var(--text-muted); }
+    .edit-btn.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+
+    .editor-wrapper { margin-top: 8px; }
+    .editor-status {
+      padding: 8px 0; font-size: 12px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .editor-status .saved { color: var(--green); }
+    .editor-status .error { color: var(--red); }
+
+    /* EasyMDE dark theme overrides - Based on https://github.com/Ionaru/easy-markdown-editor/issues/131 */
+    .EasyMDEContainer .CodeMirror {
+      background: var(--bg-surface) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px;
+      font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px;
+    }
+    .EasyMDEContainer .CodeMirror-gutters {
+      background: var(--bg-surface) !important;
+      border-right: 1px solid var(--border) !important;
+    }
+    .EasyMDEContainer .CodeMirror-linenumber { color: var(--text-muted) !important; }
+    .EasyMDEContainer .CodeMirror-cursor {
+      border-left-color: var(--text) !important;
+    }
+    .EasyMDEContainer .CodeMirror-selected {
+      background: rgba(124, 138, 255, 0.3) !important;
+    }
+
+    /* Toolbar */
+    .EasyMDEContainer .editor-toolbar {
+      background: var(--bg-surface) !important;
+      border: 1px solid var(--border) !important;
+      border-bottom: none !important;
+      border-radius: 8px 8px 0 0;
+    }
+    .EasyMDEContainer .editor-toolbar a,
+    .EasyMDEContainer .editor-toolbar button {
+      color: var(--text) !important;
+    }
+    .EasyMDEContainer .editor-toolbar a i,
+    .EasyMDEContainer .editor-toolbar button i {
+      color: var(--text) !important;
+    }
+    .EasyMDEContainer .editor-toolbar a:hover,
+    .EasyMDEContainer .editor-toolbar button:hover {
+      background: var(--bg-hover) !important;
+      border-color: var(--text-muted) !important;
+    }
+    .EasyMDEContainer .editor-toolbar > .active {
+      background: var(--bg-hover) !important;
+      border-color: var(--border) !important;
+    }
+    .EasyMDEContainer .editor-toolbar.disabled-for-preview a:not(.no-disable) {
+      color: var(--text-muted) !important;
+      opacity: 0.5;
+    }
+    .EasyMDEContainer .editor-toolbar::before,
+    .EasyMDEContainer .editor-toolbar::after {
+      background: var(--border) !important;
+    }
+
+    /* Preview panel */
+    .EasyMDEContainer .editor-preview {
+      background: var(--bg-surface) !important;
+      color: var(--text) !important;
+    }
+    .EasyMDEContainer .editor-preview pre {
+      background: var(--bg-card) !important;
+      color: var(--text) !important;
+    }
+    .EasyMDEContainer .editor-preview-side {
+      background: var(--bg-surface) !important;
+      border: 1px solid var(--border) !important;
+    }
+
+    /* Status bar */
+    .EasyMDEContainer .editor-statusbar {
+      background: var(--bg-surface) !important;
+      border: 1px solid var(--border) !important;
+      border-top: none !important;
+      border-radius: 0 0 8px 8px;
+      color: var(--text-muted) !important;
+    }
+
+    /* Fullscreen mode */
+    .EasyMDEContainer .CodeMirror-fullscreen {
+      background: var(--bg-surface) !important;
+    }
+    .EasyMDEContainer .editor-toolbar-fullscreen {
+      background: var(--bg-surface) !important;
+    }
+
+    /* EasyMDE light theme overrides */
+    body.light .EasyMDEContainer .CodeMirror {
+      background: #f6f8fa !important;
+      color: #24292f !important;
+    }
+    body.light .EasyMDEContainer .CodeMirror-gutters {
+      background: #f6f8fa !important;
+    }
+    body.light .EasyMDEContainer .CodeMirror-cursor {
+      border-left-color: #24292f !important;
+    }
+    body.light .EasyMDEContainer .editor-toolbar {
+      background: #f6f8fa !important;
+    }
+    body.light .EasyMDEContainer .editor-toolbar a,
+    body.light .EasyMDEContainer .editor-toolbar button {
+      color: #24292f !important;
+    }
+    body.light .EasyMDEContainer .editor-toolbar a i,
+    body.light .EasyMDEContainer .editor-toolbar button i {
+      color: #24292f !important;
+    }
+    body.light .EasyMDEContainer .editor-toolbar a:hover,
+    body.light .EasyMDEContainer .editor-toolbar button:hover {
+      background: #e8eaed !important;
+    }
+    body.light .EasyMDEContainer .editor-preview {
+      background: #f6f8fa !important;
+      color: #24292f !important;
+    }
+    body.light .EasyMDEContainer .editor-statusbar {
+      background: #f6f8fa !important;
+      color: #57606a !important;
+    }
+
+    /* Dirty indicator */
+    .editor-status .dirty { color: var(--amber); font-weight: 500; }

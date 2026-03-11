@@ -67,6 +67,43 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
 
         super().do_GET()
 
+    def do_PUT(self):
+        """Handle file save requests."""
+        path = unquote(self.path)
+
+        if path.startswith("/files/"):
+            rel_path = path[7:]
+            file_path = self.root_dir / rel_path
+
+            # Security: ensure path is within root_dir
+            try:
+                file_path.resolve().relative_to(self.root_dir.resolve())
+            except ValueError:
+                self.send_error(403, "Access denied")
+                return
+
+            if file_path.suffix != ".md":
+                self.send_error(400, "Only .md files are allowed")
+                return
+
+            # Read request body
+            content_length = int(self.headers.get("Content-Length", 0))
+            content = self.rfile.read(content_length)
+
+            try:
+                # Ensure parent directory exists
+                file_path.parent.mkdir(parents=True, exist_ok=True)
+                file_path.write_bytes(content)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True}).encode("utf-8"))
+            except Exception as e:
+                self.send_error(500, f"Failed to save file: {e}")
+            return
+
+        self.send_error(404, "Not found")
+
     def log_message(self, format, *args):
         if "api" in str(args) or "files" in str(args):
             return

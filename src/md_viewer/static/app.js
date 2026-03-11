@@ -2,6 +2,11 @@ let FILES = [];
 let fileContents = {};
 let activeFileIdx = null;
 
+// ---- Editor state ----
+let isEditMode = false;
+let easyMDE = null;
+let originalContent = '';
+
 // ---- Configure marked with mermaid renderer ----
 marked.use({
   renderer: {
@@ -228,6 +233,17 @@ function createNavItem(f, indent) {
 }
 
 async function showFile(idx) {
+  // Exit edit mode when switching files
+  if (isEditMode && idx !== activeFileIdx) {
+    const currentContent = easyMDE ? easyMDE.value() : '';
+    if (currentContent !== originalContent) {
+      if (!confirm('You have unsaved changes. Discard them?')) {
+        return;
+      }
+    }
+    exitEditMode();
+  }
+
   activeFileIdx = idx;
   const f = FILES[idx];
   window.location.hash = slugify(f.path);
@@ -717,5 +733,158 @@ setInterval(async () => {
     }
   } catch {}
 }, 3000);
+
+// ---- Editor functions ----
+function toggleEditMode() {
+  if (activeFileIdx === null) return;
+
+  if (!isEditMode) {
+    enterEditMode();
+  } else {
+    exitEditMode();
+  }
+}
+
+function enterEditMode() {
+  if (activeFileIdx === null) return;
+
+  const content = document.getElementById('content');
+  const editorWrapper = document.getElementById('editorWrapper');
+  const editBtn = document.getElementById('editBtn');
+
+  // Get current file content
+  const f = FILES[activeFileIdx];
+  originalContent = fileContents[activeFileIdx] || '';
+
+  // Hide content, show editor
+  content.style.display = 'none';
+  editorWrapper.style.display = 'block';
+  editBtn.classList.add('active');
+  editBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> View';
+
+  // Initialize EasyMDE
+  const textarea = document.getElementById('editor');
+  textarea.value = originalContent;
+
+  easyMDE = new EasyMDE({
+    element: textarea,
+    initialValue: originalContent,
+    autofocus: true,
+    spellChecker: false,
+    status: ['autosave', 'lines', 'words'],
+    toolbar: [
+      'bold', 'italic', 'heading', '|',
+      'quote', 'code', 'link', 'image', '|',
+      'unordered-list', 'ordered-list', '|',
+      'preview', 'side-by-side', 'fullscreen', '|',
+      {
+        name: 'save',
+        action: saveFile,
+        className: 'fa fa-floppy-o',
+        title: 'Save (Ctrl+S)',
+      }
+    ],
+    previewRender: (plainText) => {
+      return marked.parse(stripFrontmatter(plainText), { gfm: true, breaks: false });
+    }
+  });
+
+  // Bind Ctrl+S to save
+  easyMDE.codemirror.on('keydown', (cm, event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+      event.preventDefault();
+      saveFile();
+    }
+  });
+
+  // Update status on change
+  easyMDE.codemirror.on('change', () => {
+    updateEditorStatus();
+  });
+
+  isEditMode = true;
+  updateEditorStatus();
+}
+
+function exitEditMode() {
+  const content = document.getElementById('content');
+  const editorWrapper = document.getElementById('editorWrapper');
+  const editBtn = document.getElementById('editBtn');
+
+  // Check for unsaved changes
+  const currentContent = easyMDE ? easyMDE.value() : '';
+  if (currentContent !== originalContent) {
+    if (!confirm('You have unsaved changes. Discard them?')) {
+      return;
+    }
+  }
+
+  // Clean up editor
+  if (easyMDE) {
+    easyMDE.toTextArea();
+    easyMDE = null;
+  }
+
+  // Show content, hide editor
+  editorWrapper.style.display = 'none';
+  content.style.display = 'block';
+  editBtn.classList.remove('active');
+  editBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit';
+
+  isEditMode = false;
+
+  // Refresh content
+  showFile(activeFileIdx);
+}
+
+async function saveFile() {
+  if (!easyMDE || activeFileIdx === null) return;
+
+  const f = FILES[activeFileIdx];
+  const content = easyMDE.value();
+  const statusEl = document.getElementById('editorStatus');
+
+  // Don't save if nothing changed
+  if (content === originalContent) {
+    statusEl.innerHTML = '<span style="color:var(--text-muted)">No changes to save</span>';
+    setTimeout(() => { statusEl.innerHTML = ''; }, 1500);
+    return;
+  }
+
+  statusEl.innerHTML = '<span style="color:var(--accent)">⏳ Saving...</span>';
+
+  try {
+    const resp = await fetch('/files/' + f.path.split('/').map(encodeURIComponent).join('/'), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      body: content
+    });
+
+    if (resp.ok) {
+      originalContent = content;
+      fileContents[activeFileIdx] = content;
+      statusEl.innerHTML = '<span class="saved">✓ Saved successfully!</span>';
+      setTimeout(() => { statusEl.innerHTML = ''; }, 2000);
+    } else {
+      const err = await resp.text();
+      statusEl.innerHTML = `<span class="error">✗ Save failed: ${resp.status}</span>`;
+    }
+  } catch (e) {
+    statusEl.innerHTML = `<span class="error">✗ Network error: ${e.message || 'Unknown error'}</span>`;
+  }
+}
+
+function updateEditorStatus() {
+  if (!easyMDE) return;
+  const currentContent = easyMDE.value();
+  const statusEl = document.getElementById('editorStatus');
+  const isDirty = currentContent !== originalContent;
+
+  if (isDirty) {
+    statusEl.innerHTML = '<span class="dirty">● Modified (Ctrl+S to save)</span>';
+  } else {
+    statusEl.innerHTML = '';
+  }
+}
 
 init();
