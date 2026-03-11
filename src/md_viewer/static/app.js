@@ -233,8 +233,11 @@ function createNavItem(f, indent) {
 }
 
 async function showFile(idx) {
+  // Skip re-render if clicking the same file while in edit mode
+  if (isEditMode && idx === activeFileIdx) return;
+
   // Exit edit mode when switching files
-  if (isEditMode && idx !== activeFileIdx) {
+  if (isEditMode) {
     const currentContent = easyMDE ? easyMDE.value() : '';
     if (currentContent !== originalContent) {
       if (!confirm('You have unsaved changes. Discard them?')) {
@@ -704,6 +707,8 @@ document.addEventListener('click', (e) => {
 // Keyboard nav
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT') return;
+  // Disable file navigation keys when in edit mode
+  if (isEditMode) return;
   if (e.key === '/' || e.key === 'k' && (e.metaKey || e.ctrlKey)) {
     e.preventDefault();
     document.getElementById('search').focus();
@@ -735,6 +740,8 @@ setInterval(async () => {
 }, 3000);
 
 // ---- Editor functions ----
+const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.includes('Mac');
+
 function toggleEditMode() {
   if (activeFileIdx === null) return;
 
@@ -776,12 +783,12 @@ function enterEditMode() {
       'bold', 'italic', 'heading', '|',
       'quote', 'code', 'link', 'image', '|',
       'unordered-list', 'ordered-list', '|',
-      'preview', 'side-by-side', 'fullscreen', '|',
+      'preview', '|',
       {
         name: 'save',
         action: saveFile,
         className: 'fa fa-floppy-o',
-        title: 'Save (Ctrl+S)',
+        title: 'Save (' + (isMac ? 'Cmd' : 'Ctrl') + '+S)',
       }
     ],
     previewRender: (plainText) => {
@@ -804,6 +811,7 @@ function enterEditMode() {
 
   isEditMode = true;
   updateEditorStatus();
+  updateSaveBtn();
 }
 
 function exitEditMode() {
@@ -863,8 +871,8 @@ async function saveFile() {
     if (resp.ok) {
       originalContent = content;
       fileContents[activeFileIdx] = content;
-      statusEl.innerHTML = '<span class="saved">✓ Saved successfully!</span>';
-      setTimeout(() => { statusEl.innerHTML = ''; }, 2000);
+      exitEditMode();
+      showToast('File saved successfully');
     } else {
       const err = await resp.text();
       statusEl.innerHTML = `<span class="error">✗ Save failed: ${resp.status}</span>`;
@@ -880,11 +888,39 @@ function updateEditorStatus() {
   const statusEl = document.getElementById('editorStatus');
   const isDirty = currentContent !== originalContent;
 
-  if (isDirty) {
-    statusEl.innerHTML = '<span class="dirty">● Modified (Ctrl+S to save)</span>';
-  } else {
-    statusEl.innerHTML = '';
+  const modKey = isMac ? 'Cmd' : 'Ctrl';
+  const msg = isDirty ? '<span class="dirty">● Modified (' + modKey + '+S to save)</span>' : '';
+  if (statusEl) statusEl.innerHTML = msg;
+  updateSaveBtn();
+}
+
+function updateSaveBtn() {
+  if (!easyMDE) return;
+  const isDirty = easyMDE.value() !== originalContent;
+  const btn = document.getElementById('editorSaveBtn');
+  if (btn) btn.disabled = !isDirty;
+}
+
+function showToast(message, type = 'success') {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
   }
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-' + type;
+  toast.innerHTML = (type === 'success'
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>')
+    + '<span>' + message + '</span>';
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => {
+    toast.classList.remove('show');
+    toast.addEventListener('transitionend', () => toast.remove());
+  }, 5000);
 }
 
 init();
