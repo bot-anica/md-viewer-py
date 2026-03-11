@@ -9,6 +9,10 @@
   <link id="hljs-light-css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" disabled>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <!-- EasyMDE Editor -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css">
   <style>
 __STYLE__
   </style>
@@ -50,11 +54,25 @@ __STYLE__
       <div class="breadcrumb-bar" id="breadcrumbBar" style="display:none">
         <div class="breadcrumb" id="breadcrumb"></div>
         <div class="content-toolbar" id="contentToolbar">
+          <button class="edit-btn" id="editBtn" onclick="toggleEditMode()" title="Toggle edit mode"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>
           <button class="collapse-btn" onclick="collapseSections(true)" title="Collapse all sections"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 8,5 2,10" fill="currentColor"/></svg> Collapse</button>
           <button class="collapse-btn" onclick="collapseSections(false)" title="Expand all sections"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="0,2 10,2 5,8" fill="currentColor"/></svg> Expand</button>
         </div>
       </div>
       <article class="md" id="content" style="display:none"></article>
+      <!-- Editor container -->
+      <div class="editor-wrapper" id="editorWrapper" style="display:none">
+        <div class="editor-scroll-area">
+          <textarea id="editor"></textarea>
+        </div>
+        <div class="editor-footer">
+          <div class="editor-status" id="editorStatus"></div>
+          <button class="editor-save-btn" id="editorSaveBtn" onclick="saveFile()" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save
+          </button>
+        </div>
+      </div>
     </div>
   </main>
 
