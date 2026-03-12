@@ -56,6 +56,11 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
         if path.startswith("/files/"):
             rel_path = path[7:]
             file_path = self.root_dir / rel_path
+            try:
+                file_path.resolve().relative_to(self.root_dir.resolve())
+            except ValueError:
+                self.send_error(403, "Access denied")
+                return
             if file_path.is_file() and file_path.suffix == ".md":
                 self.send_response(200)
                 self.send_header("Content-Type", "text/plain; charset=utf-8")
