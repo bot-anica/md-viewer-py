@@ -12,11 +12,19 @@
 
 <p align="center"><strong>Drop-in Markdown viewer for any folder — installable via pip.</strong></p>
 
-<p align="center">Zero dependencies. Install once, use everywhere as <code>mdview</code>.</p>
+<p align="center">Install once, use everywhere as <code>mdview</code>.</p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-dark.png" alt="Dark theme" width="49%">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-light.png" alt="Light theme" width="49%">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-light.jpg" alt="Dashboard — Light theme" width="100%">
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-light.jpg" alt="File view — Light theme" width="100%">
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-dark.jpg" alt="Dashboard — Dark theme" width="100%">
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-dark.jpg" alt="File view — Dark theme" width="100%">
 </p>
 
 ---
@@ -56,7 +64,7 @@ python -m md_viewer
 
 ## Features
 
-- **Zero dependencies** — Python standard library only, nothing to install
+- **Minimal dependencies** — only `watchdog` for live reload, auto-installed with pip
 - **pip/pipx installable** — install once, use anywhere as `mdview`
 - **Dark theme UI** — polished dark interface, easy on the eyes
 - **File tree sidebar** — folder navigation with collapsible directories
