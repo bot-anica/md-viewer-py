@@ -38,4 +38,4 @@
 25. [ ] **File metadata from frontmatter** — parse YAML frontmatter for title, author, date instead of stripping it
 26. [ ] **Custom sidebar ordering** — config file (`.mdview.yml`) for sidebar structure
 27. [ ] **PDF export** — print-to-PDF with proper page breaks
-28. [ ] **WebSocket live reload** — replace polling with instant file change notifications 
+28. [x] **WebSocket live reload** — replace polling with instant file change notifications 

@@ -734,23 +734,49 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Refresh file list every 3 seconds to pick up new/deleted/renamed files
-setInterval(async () => {
-  try {
-    const resp = await fetch('/api/files');
-    const data = await resp.json();
-    const newPaths = data.files.map(f => f.path).join(',');
-    const oldPaths = FILES.map(f => f.path).join(',');
-    if (newPaths !== oldPaths) {
-      FILES = data.files;
-      renderNav();
-      document.getElementById('fileCount').textContent = '(' + data.files.length + ')';
-      if (activeFileIdx !== null && activeFileIdx < FILES.length) {
-        document.getElementById('nav-' + activeFileIdx)?.classList.add('active');
+// Live reload via Server-Sent Events
+function connectSSE() {
+  const es = new EventSource('/api/events');
+  es.onmessage = async () => {
+    // Refresh file list
+    try {
+      const resp = await fetch('/api/files');
+      const data = await resp.json();
+      const newPaths = data.files.map(f => f.path).join(',');
+      const oldPaths = FILES.map(f => f.path).join(',');
+      if (newPaths !== oldPaths) {
+        FILES = data.files;
+        renderNav();
+        document.getElementById('fileCount').textContent = '(' + data.files.length + ')';
+        if (activeFileIdx !== null && activeFileIdx < FILES.length) {
+          document.getElementById('nav-' + activeFileIdx)?.classList.add('active');
+        }
       }
+    } catch {}
+    // Reload currently viewed file (skip if editing)
+    if (activeFileIdx !== null && !isEditMode) {
+      delete fileContents[activeFileIdx];
+      await loadFile(activeFileIdx);
+      const md = stripFrontmatter(fileContents[activeFileIdx] || '');
+      const html = marked.parse(md, { gfm: true, breaks: false });
+      const content = document.getElementById('content');
+      content.innerHTML = html;
+      makeSectionsCollapsible(content);
+      content.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+      addCopyButtons(content);
+      addHeadingAnchors();
+      const f = FILES[activeFileIdx];
+      if (f) interceptMdLinks(content, f.path);
+      buildToc();
+      runMermaid();
     }
-  } catch {}
-}, 3000);
+  };
+  es.onerror = () => {
+    es.close();
+    setTimeout(connectSSE, 3000);
+  };
+}
+connectSSE();
 
 // ---- Editor functions ----
 const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.includes('Mac');

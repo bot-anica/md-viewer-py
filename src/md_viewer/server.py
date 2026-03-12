@@ -3,9 +3,13 @@ import http.server
 import json
 import os
 import sys
+import threading
 import webbrowser
 from pathlib import Path
 from urllib.parse import unquote
+
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 from .scanner import scan_md_files
 
@@ -26,6 +30,35 @@ def _build_html():
 
 
 _HTML_BYTES = _build_html()
+
+
+class _ChangeTracker(FileSystemEventHandler):
+    """Tracks .md file changes and notifies SSE clients."""
+
+    def __init__(self):
+        self._event = threading.Event()
+
+    def _handle(self, event):
+        if event.is_directory:
+            return
+        src = getattr(event, "src_path", "") or ""
+        dest = getattr(event, "dest_path", "") or ""
+        if src.endswith(".md") or dest.endswith(".md"):
+            self._event.set()
+
+    on_created = _handle
+    on_modified = _handle
+    on_deleted = _handle
+    on_moved = _handle
+
+    def wait(self, timeout=30):
+        """Block until a change occurs or timeout. Returns True if changed."""
+        triggered = self._event.wait(timeout=timeout)
+        self._event.clear()
+        return triggered
+
+
+_change_tracker = _ChangeTracker()
 
 
 class ViewerHandler(http.server.SimpleHTTPRequestHandler):
@@ -53,6 +86,24 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 self.wfile.write(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
             except BrokenPipeError:
+                pass
+            return
+
+        if path == "/api/events":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "keep-alive")
+            self.end_headers()
+            try:
+                while True:
+                    if _change_tracker.wait(timeout=30):
+                        self.wfile.write(b"data: changed\n\n")
+                        self.wfile.flush()
+                    else:
+                        self.wfile.write(b": keepalive\n\n")
+                        self.wfile.flush()
+            except (BrokenPipeError, ConnectionResetError, OSError):
                 pass
             return
 
@@ -113,7 +164,8 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
         self.send_error(404, "Not found")
 
     def log_message(self, format, *args):
-        if "api" in str(args) or "files" in str(args):
+        msg = str(args)
+        if "api" in msg or "files" in msg or "events" in msg:
             return
         super().log_message(format, *args)
 
@@ -135,10 +187,16 @@ def main():
     os.chdir(root_dir)
     ViewerHandler.root_dir = root_dir
 
+    # Start file watcher
+    observer = Observer()
+    observer.schedule(_change_tracker, str(root_dir), recursive=True)
+    observer.daemon = True
+    observer.start()
+
     max_attempts = 10
     for attempt in range(max_attempts):
         try:
-            server = http.server.HTTPServer(("", port), ViewerHandler)
+            server = http.server.ThreadingHTTPServer(("", port), ViewerHandler)
             break
         except OSError:
             port += 1
@@ -163,4 +221,6 @@ def main():
         server.serve_forever()
     except KeyboardInterrupt:
         print("\n  Stopped.")
+        observer.stop()
+        observer.join(timeout=2)
         server.server_close()
