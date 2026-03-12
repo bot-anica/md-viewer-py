@@ -4,9 +4,9 @@
 
 1. [x] **Loads ALL files on startup** (`app.js:95-105`) — fetches every markdown file's content immediately. Should lazy-load on demand
 2. [ ] **Linear search, no debounce** (`app.js:533-566`) — debounce added (200ms). Still does linear scan — consider a search index (lunr.js)
-3. [ ] **3-second polling** (`app.js:704`) — unconditional polling. Could use WebSocket or `watchdog` file watcher on the server side
-4. [ ] **No gzip compression** (`server.py`) — ~50KB of inlined HTML/CSS/JS sent uncompressed on every request
-5. [ ] **No cache headers** — static assets and API responses lack `Cache-Control`
+3. [x] **3-second polling** (`app.js:704`) — replaced with SSE + watchdog file watcher
+4. [x] **No gzip compression** (`server.py`) — gzip compression added for HTML, API, and file responses
+5. [x] **No cache headers** — Cache-Control and ETag headers added for HTML page
 6. [ ] **O(n^2) section wrapping** (`app.js:296-336`) — `wrapLevel()` re-scans DOM children after each heading
 
 ## Medium: UX/UI

@@ -1,4 +1,6 @@
 import base64
+import gzip
+import hashlib
 import http.server
 import json
 import os
@@ -30,6 +32,8 @@ def _build_html():
 
 
 _HTML_BYTES = _build_html()
+_HTML_GZIP = gzip.compress(_HTML_BYTES)
+_HTML_ETAG = '"' + hashlib.md5(_HTML_BYTES).hexdigest() + '"'
 
 
 class _ChangeTracker(FileSystemEventHandler):
@@ -67,26 +71,53 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(self.root_dir), **kwargs)
 
+    def _accepts_gzip(self):
+        ae = self.headers.get("Accept-Encoding", "")
+        return "gzip" in ae
+
+    def _send_gzip(self, data, content_type, cache="no-cache"):
+        """Send a response with gzip compression if the client supports it."""
+        use_gzip = self._accepts_gzip() and len(data) > 256
+        body = gzip.compress(data) if use_gzip else data
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", cache)
+        if use_gzip:
+            self.send_header("Content-Encoding", "gzip")
+        self.end_headers()
+        try:
+            self.wfile.write(body)
+        except BrokenPipeError:
+            pass
+
     def do_GET(self):
         path = unquote(self.path)
 
         if path == "/" or path == "/index.html":
+            # Check If-None-Match for 304
+            if self.headers.get("If-None-Match") == _HTML_ETAG:
+                self.send_response(304)
+                self.end_headers()
+                return
+            use_gzip = self._accepts_gzip()
+            body = _HTML_GZIP if use_gzip else _HTML_BYTES
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("ETag", _HTML_ETAG)
+            if use_gzip:
+                self.send_header("Content-Encoding", "gzip")
             self.end_headers()
-            self.wfile.write(_HTML_BYTES)
+            self.wfile.write(body)
             return
 
         if path == "/api/files":
             files = scan_md_files(self.root_dir)
             payload = {"root": str(self.root_dir), "files": files}
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            try:
-                self.wfile.write(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
-            except BrokenPipeError:
-                pass
+            data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+            self._send_gzip(data, "application/json")
             return
 
         if path == "/api/events":
@@ -116,10 +147,8 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(403, "Access denied")
                 return
             if file_path.is_file() and file_path.suffix == ".md":
-                self.send_response(200)
-                self.send_header("Content-Type", "text/plain; charset=utf-8")
-                self.end_headers()
-                self.wfile.write(file_path.read_bytes())
+                data = file_path.read_bytes()
+                self._send_gzip(data, "text/plain; charset=utf-8")
                 return
             self.send_error(404, f"File not found: {rel_path}")
             return
