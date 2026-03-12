@@ -66,18 +66,23 @@ python -m md_viewer
 
 - **Minimal dependencies** — only `watchdog` for live reload, auto-installed with pip
 - **pip/pipx installable** — install once, use anywhere as `mdview`
-- **Dark theme UI** — polished dark interface, easy on the eyes
+- **Dashboard landing page** — grid view of folders and files, macOS Finder-style
+- **Dark & light themes** — polished UI with OS-aware theme toggle
 - **File tree sidebar** — folder navigation with collapsible directories
-- **Full-text search** — search across all Markdown files instantly
+- **Full-text search** — debounced search across all Markdown files with lazy loading
 - **Table of contents** — auto-generated with scroll spy and collapsible groups
 - **Collapsible sections** — click any heading to collapse/expand its content
-- **`.gitignore` support** — respects ignore patterns, skips `.git`, `node_modules`, etc.
+- **In-browser editing** — toggle edit mode with toolbar, live preview, and save to disk
+- **Live reload** — instant updates via SSE and native file system watching (watchdog)
+- **Syntax highlighting** — code blocks highlighted with highlight.js
+- **Mermaid diagrams** — flowcharts, sequence diagrams, and more rendered inline
+- **`.gitignore` support** — respects ignore patterns from root and subdirectories
+- **Gzip compression** — all responses compressed, ETag caching for the HTML page
 - **Keyboard shortcuts** — arrow keys to navigate, `/` to search
 - **Reading progress bar** — visual indicator of scroll position
 - **Mobile responsive** — works on small screens with hamburger menu
 - **Print-friendly** — clean print stylesheet for hard copies
 - **Custom port and directory** — point it at any folder, pick any port
-- **Live content refresh** — file list and content auto-refresh as files change
 
 ## Quick Start
 
@@ -114,15 +119,7 @@ python3 md-viewer.py
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](https://github.com/bot-anica/md-viewer-py/blob/main/CONTRIBUTING.md) for guidelines.
-
-If you'd like to help but aren't sure where to start, see the full [improvements & ideas list](https://github.com/bot-anica/md-viewer-py/blob/main/IMPROVEMENTS.md) or pick from these highlights:
-
-- [x] Light theme / theme switcher
-- [x] Syntax highlighting for code blocks (highlight.js)
-- [x] Mermaid diagram support
-- [x] Live reload on file changes
-- [ ] Export to PDF or static HTML
+Contributions are welcome! See [CONTRIBUTING.md](https://github.com/bot-anica/md-viewer-py/blob/main/CONTRIBUTING.md) for guidelines and the [improvements & ideas list](https://github.com/bot-anica/md-viewer-py/blob/main/IMPROVEMENTS.md) for open tasks.
 
 Feel free to [open an issue](https://github.com/bot-anica/md-viewer-py/issues) to discuss ideas before starting work.
 
