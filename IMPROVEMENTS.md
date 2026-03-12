@@ -2,8 +2,8 @@
 
 ## High: Performance
 
-1. [ ] **Loads ALL files on startup** (`app.js:95-105`) — fetches every markdown file's content immediately. Should lazy-load on demand
-2. [ ] **Linear search, no debounce** (`app.js:533-566`) — scans every file on every keystroke. Add debounce + consider a search index (lunr.js)
+1. [x] **Loads ALL files on startup** (`app.js:95-105`) — fetches every markdown file's content immediately. Should lazy-load on demand
+2. [ ] **Linear search, no debounce** (`app.js:533-566`) — debounce added (200ms). Still does linear scan — consider a search index (lunr.js)
 3. [ ] **3-second polling** (`app.js:704`) — unconditional polling. Could use WebSocket or `watchdog` file watcher on the server side
 4. [ ] **No gzip compression** (`server.py`) — ~50KB of inlined HTML/CSS/JS sent uncompressed on every request
 5. [ ] **No cache headers** — static assets and API responses lack `Cache-Control`
@@ -28,7 +28,7 @@
 18. [ ] **Global JS state** (`app.js:1-4`) — `FILES`, `fileContents`, `activeFileIdx` as globals with no encapsulation
 19. [ ] **Mermaid errors silently swallowed** (`app.js:29`) — empty `catch` block, user gets no feedback on diagram syntax errors
 20. [ ] **Python 3.8 minimum** (`pyproject.toml:11`) — 3.8 is EOL since Nov 2024, bump to 3.10+
-21. [ ] **No symlink protection** (`scanner.py:57`) — `rglob` follows symlinks, could loop or escape root directory
+21. [x] **No symlink protection** (`scanner.py:57`) — `rglob` follows symlinks, could loop or escape root directory
 
 ## Ideas: New Features
 
