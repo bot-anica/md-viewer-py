@@ -35,16 +35,22 @@
 pip install md-viewer-py
 ```
 
-Or with pipx (recommended for CLI tools):
+Or with [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv tool install md-viewer-py
+```
+
+Or run without installing:
+
+```bash
+uvx --from md-viewer-py mdview
+```
+
+Or with pipx:
 
 ```bash
 pipx install md-viewer-py
-```
-
-Or install directly from source:
-
-```bash
-pip install .
 ```
 
 Then run from any directory:
