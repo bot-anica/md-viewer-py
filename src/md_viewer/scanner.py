@@ -61,21 +61,39 @@ def _is_dir_ignored(name, patterns):
     return False
 
 
+def _read_gitignore(directory):
+    """Read .gitignore patterns from a directory, if present."""
+    gitignore = directory / ".gitignore"
+    if not gitignore.is_file():
+        return []
+    patterns = []
+    for line in gitignore.read_text(encoding="utf-8", errors="replace").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        patterns.append(line)
+    return patterns
+
+
 def scan_md_files(root):
     """Recursively find all .md files, skipping ignored directories."""
-    patterns = parse_gitignore(root)
+    root_patterns = parse_gitignore(root)
     files = []
-    dirs = [root]
+    # Each entry: (directory, accumulated_patterns)
+    dirs = [(root, root_patterns)]
     while dirs:
-        d = dirs.pop()
+        d, parent_patterns = dirs.pop()
         try:
             entries = sorted(d.iterdir())
         except OSError:
             continue
+        # Merge parent patterns with local .gitignore
+        local = _read_gitignore(d) if d != root else []
+        patterns = parent_patterns + local if local else parent_patterns
         for entry in entries:
             if entry.is_dir():
                 if not _is_dir_ignored(entry.name, patterns):
-                    dirs.append(entry)
+                    dirs.append((entry, patterns))
             elif entry.suffix == ".md" and entry.is_file():
                 rel = entry.relative_to(root)
                 if is_ignored(rel, patterns):

@@ -23,7 +23,7 @@
 ## Low: Code Quality & Tech Debt
 
 15. [ ] **Naive argument parsing** (`server.py:80-88`) — no `--help`, no port range validation, order-dependent args. Consider `argparse`
-16. [ ] **Incomplete .gitignore parsing** (`scanner.py:33`) — negation patterns (`!pattern`) skipped, subdirectory patterns not supported
+16. [ ] **Incomplete .gitignore parsing** (`scanner.py:33`) — negation patterns (`!pattern`) skipped. Subdirectory .gitignore files now supported
 17. [ ] **No max file size limit** (`server.py:63`) — `read_bytes()` loads entire file into memory, large files could OOM
 18. [ ] **Global JS state** (`app.js:1-4`) — `FILES`, `fileContents`, `activeFileIdx` as globals with no encapsulation
 19. [ ] **Mermaid errors silently swallowed** (`app.js:29`) — empty `catch` block, user gets no feedback on diagram syntax errors
