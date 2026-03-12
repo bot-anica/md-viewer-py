@@ -83,18 +83,128 @@ async function init() {
   renderNav();
   document.getElementById('fileCount').textContent = '(' + FILES.length + ')';
 
-  // Check URL hash
+  // Check URL hash — open file if specified, otherwise show dashboard
   const hash = window.location.hash.slice(1);
   const hashIdx = FILES.findIndex(f => slugify(f.path) === hash);
   if (hashIdx >= 0) {
     showFile(hashIdx);
   } else {
-    const rootIdx = FILES.findIndex(f => !f.folder);
-    showFile(rootIdx >= 0 ? rootIdx : 0);
+    showDashboard();
   }
 }
 
 function slugify(s) { return s.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase(); }
+
+let _dashboardFolder = null; // null = root, string = subfolder path
+
+function showDashboard(folder) {
+  _dashboardFolder = folder || null;
+  activeFileIdx = null;
+  window.location.hash = '';
+
+  // Hide file view elements
+  document.getElementById('breadcrumbBar').style.display = 'none';
+  document.getElementById('content').style.display = 'none';
+  document.getElementById('editorWrapper').style.display = 'none';
+  document.getElementById('tocContainer').innerHTML = '';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const loading = document.getElementById('loading');
+  loading.style.display = 'none';
+
+  // Build dashboard grid
+  let dashboard = document.getElementById('dashboard');
+  if (!dashboard) {
+    dashboard = document.createElement('div');
+    dashboard.id = 'dashboard';
+    dashboard.className = 'dashboard';
+    document.querySelector('.content-wrapper').appendChild(dashboard);
+  }
+  dashboard.style.display = 'block';
+  dashboard.innerHTML = '';
+
+  // Build folder/file structure for current level
+  const tree = buildTree(FILES);
+  let node = tree;
+  let breadcrumbParts = [];
+
+  if (folder) {
+    const parts = folder.split('/');
+    for (const part of parts) {
+      if (node[part]) {
+        node = node[part];
+        breadcrumbParts.push(part);
+      }
+    }
+  }
+
+  // Breadcrumb navigation for dashboard
+  if (breadcrumbParts.length > 0) {
+    const bc = document.createElement('div');
+    bc.className = 'dashboard-breadcrumb';
+    let html = '<a class="dashboard-bc-link" onclick="showDashboard()">Home</a>';
+    for (let i = 0; i < breadcrumbParts.length; i++) {
+      const path = breadcrumbParts.slice(0, i + 1).join('/');
+      html += '<span class="sep">/</span>';
+      if (i < breadcrumbParts.length - 1) {
+        html += `<a class="dashboard-bc-link" onclick="showDashboard('${path}')">${breadcrumbParts[i]}</a>`;
+      } else {
+        html += `<span>${breadcrumbParts[i]}</span>`;
+      }
+    }
+    bc.innerHTML = html;
+    dashboard.appendChild(bc);
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'dashboard-grid';
+
+  // Render folder cards
+  const folderKeys = Object.keys(node).filter(k => k !== '_files').sort();
+  folderKeys.forEach(name => {
+    const count = countFiles(node[name]);
+    const folderPath = folder ? folder + '/' + name : name;
+    const card = document.createElement('div');
+    card.className = 'dashboard-card dashboard-folder';
+    card.onclick = () => showDashboard(folderPath);
+    card.innerHTML = `
+      <div class="dashboard-card-icon folder-icon-large">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+      </div>
+      <div class="dashboard-card-name">${name}</div>
+      <div class="dashboard-card-meta">${count} file${count !== 1 ? 's' : ''}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Render file cards
+  if (node._files) {
+    node._files.forEach(f => {
+      const colorIdx = f._idx % FILE_COLORS.length;
+      const card = document.createElement('div');
+      card.className = 'dashboard-card dashboard-file';
+      card.onclick = () => showFile(f._idx);
+      card.innerHTML = `
+        <div class="dashboard-card-icon">
+          <svg width="48" height="56" viewBox="0 0 48 56" fill="none">
+            <path d="M4 4a4 4 0 0 1 4-4h22l14 14v38a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4z" fill="url(#fg${f._idx})"/>
+            <path d="M26 0l14 14H30a4 4 0 0 1-4-4V0z" fill="rgba(255,255,255,0.25)"/>
+            <line x1="14" y1="28" x2="34" y2="28" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="14" y1="34" x2="34" y2="34" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="14" y1="40" x2="28" y2="40" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
+            <defs><linearGradient id="fg${f._idx}" x1="0" y1="0" x2="48" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="${FILE_COLORS[colorIdx].match(/#[a-f0-9]+/gi)[0]}"/><stop offset="1" stop-color="${FILE_COLORS[colorIdx].match(/#[a-f0-9]+/gi)[1]}"/></linearGradient></defs>
+          </svg>
+        </div>
+        <div class="dashboard-card-name">${f.title}</div>
+        <div class="dashboard-card-meta">${f.lines} lines</div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  dashboard.appendChild(grid);
+  window.scrollTo({ top: 0 });
+}
 
 async function loadFile(idx) {
   if (fileContents[idx] !== undefined) return fileContents[idx];
@@ -232,6 +342,10 @@ function createNavItem(f, indent) {
 }
 
 async function showFile(idx) {
+  // Hide dashboard
+  const dashboard = document.getElementById('dashboard');
+  if (dashboard) dashboard.style.display = 'none';
+
   // Skip re-render if clicking the same file while in edit mode
   if (isEditMode && idx === activeFileIdx) return;
 

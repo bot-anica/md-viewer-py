@@ -38,4 +38,7 @@
 25. [ ] **File metadata from frontmatter** — parse YAML frontmatter for title, author, date instead of stripping it
 26. [ ] **Custom sidebar ordering** — config file (`.mdview.yml`) for sidebar structure
 27. [ ] **PDF export** — print-to-PDF with proper page breaks
-28. [x] **WebSocket live reload** — replace polling with instant file change notifications 
+28. [x] **WebSocket live reload** — replace polling with instant file change notifications
+29. [x] **Dashboard page** — grid view of folders and files on startup instead of auto-opening first file
+30. [x] **Styled scrollbars** — thin themed scrollbars for code blocks and page, replacing system defaults
+31. [x] **Favicon** — browser tab icon using existing logo
