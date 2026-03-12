@@ -82,7 +82,6 @@ async function init() {
 
   renderNav();
   document.getElementById('fileCount').textContent = '(' + FILES.length + ')';
-  await loadAllFiles();
 
   // Check URL hash
   const hash = window.location.hash.slice(1);
@@ -97,17 +96,17 @@ async function init() {
 
 function slugify(s) { return s.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase(); }
 
-async function loadAllFiles() {
-  const loads = FILES.map(async (f, i) => {
-    try {
-      const resp = await fetch('/files/' + f.path.split('/').map(encodeURIComponent).join('/'));
-      if (!resp.ok) throw new Error(resp.status);
-      fileContents[i] = await resp.text();
-    } catch {
-      fileContents[i] = `# Error loading ${f.path}`;
-    }
-  });
-  await Promise.all(loads);
+async function loadFile(idx) {
+  if (fileContents[idx] !== undefined) return fileContents[idx];
+  const f = FILES[idx];
+  try {
+    const resp = await fetch('/files/' + f.path.split('/').map(encodeURIComponent).join('/'));
+    if (!resp.ok) throw new Error(resp.status);
+    fileContents[idx] = await resp.text();
+  } catch {
+    fileContents[idx] = `# Error loading ${f.path}`;
+  }
+  return fileContents[idx];
 }
 
 function buildTree(files) {
@@ -269,11 +268,8 @@ async function showFile(idx) {
     navEl.scrollIntoView({ block: 'nearest' });
   }
 
-  // Always fetch fresh content from server
-  try {
-    const resp = await fetch('/files/' + f.path.split('/').map(encodeURIComponent).join('/'));
-    if (resp.ok) fileContents[idx] = await resp.text();
-  } catch {}
+  // Lazy-load content on first view
+  await loadFile(idx);
 
   const md = stripFrontmatter(fileContents[idx] || '');
   const html = marked.parse(md, { gfm: true, breaks: false });
@@ -549,9 +545,26 @@ function updateScrollSpy() {
   active.tocEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
+let _searchDebounce = null;
 function handleSearch(query) {
   const results = document.getElementById('searchResults');
   if (query.length < 2) { results.classList.remove('active'); results.innerHTML = ''; return; }
+
+  clearTimeout(_searchDebounce);
+  _searchDebounce = setTimeout(() => _doSearch(query), 200);
+}
+
+async function _doSearch(query) {
+  const results = document.getElementById('searchResults');
+  if (query.length < 2) { results.classList.remove('active'); results.innerHTML = ''; return; }
+
+  // Load all files that haven't been fetched yet
+  const unloaded = FILES.map((f, i) => fileContents[i] === undefined ? i : null).filter(i => i !== null);
+  if (unloaded.length > 0) {
+    results.innerHTML = '<div style="padding:6px 10px;font-size:12px;color:var(--text-muted)">Loading files...</div>';
+    results.classList.add('active');
+    await Promise.all(unloaded.map(i => loadFile(i)));
+  }
 
   const q = query.toLowerCase();
   let items = [];

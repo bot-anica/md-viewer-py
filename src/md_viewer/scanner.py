@@ -50,26 +50,53 @@ def is_ignored(rel_path, patterns):
     return False
 
 
+def _is_dir_ignored(name, patterns):
+    """Check if a directory name matches any ignore pattern."""
+    for pattern in patterns:
+        if pattern.startswith("!"):
+            continue
+        pat = pattern.rstrip("/")
+        if fnmatch.fnmatch(name, pat):
+            return True
+    return False
+
+
 def scan_md_files(root):
-    """Recursively find all .md files, respecting .gitignore."""
+    """Recursively find all .md files, skipping ignored directories."""
     patterns = parse_gitignore(root)
     files = []
-    for p in sorted(root.rglob("*.md")):
-        rel = p.relative_to(root)
-        if is_ignored(rel, patterns):
+    dirs = [root]
+    while dirs:
+        d = dirs.pop()
+        try:
+            entries = sorted(d.iterdir())
+        except OSError:
             continue
-        lines = p.read_text(encoding="utf-8", errors="replace").split("\n")
-        # Extract first H1 as title
-        title = rel.stem.replace("-", " ").replace("_", " ").title()
-        for line in lines[:20]:
-            if line.startswith("# "):
-                title = line[2:].strip()
-                break
-        files.append({
-            "path": str(rel),
-            "folder": str(rel.parent) if str(rel.parent) != "." else "",
-            "name": rel.name,
-            "title": title,
-            "lines": len(lines),
-        })
+        for entry in entries:
+            if entry.is_dir():
+                if not _is_dir_ignored(entry.name, patterns):
+                    dirs.append(entry)
+            elif entry.suffix == ".md" and entry.is_file():
+                rel = entry.relative_to(root)
+                if is_ignored(rel, patterns):
+                    continue
+                # Read only first 20 lines for title extraction
+                title = rel.stem.replace("-", " ").replace("_", " ").title()
+                try:
+                    with entry.open(encoding="utf-8", errors="replace") as fh:
+                        line_count = 0
+                        for i, line in enumerate(fh):
+                            if i < 20 and line.startswith("# "):
+                                title = line[2:].strip()
+                            line_count += 1
+                except OSError:
+                    line_count = 0
+                files.append({
+                    "path": str(rel),
+                    "folder": str(rel.parent) if str(rel.parent) != "." else "",
+                    "name": rel.name,
+                    "title": title,
+                    "lines": line_count,
+                })
+    files.sort(key=lambda f: f["path"])
     return files
