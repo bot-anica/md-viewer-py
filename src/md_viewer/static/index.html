@@ -79,6 +79,15 @@ __STYLE__
 
   <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
 
+  <div class="whats-new-overlay" id="whatsNewOverlay" style="display:none" onclick="if(event.target===this)closeWhatsNew()">
+    <div class="whats-new-modal">
+      <h2>What's New</h2>
+      <span class="version-badge" id="whatsNewVersion"></span>
+      <ul id="whatsNewList"></ul>
+      <button onclick="closeWhatsNew()">Got it</button>
+    </div>
+  </div>
+
 <script>
 __SCRIPT__
 </script>

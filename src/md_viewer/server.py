@@ -10,8 +10,12 @@ import webbrowser
 from pathlib import Path
 from urllib.parse import unquote
 
+from urllib.request import urlopen
+
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
+
+from md_viewer import __version__
 
 from .scanner import scan_md_files
 
@@ -113,6 +117,13 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(body)
             return
 
+        if path == "/api/version":
+            from md_viewer.changelog import CHANGELOG
+            payload = {"version": __version__, "changelog": CHANGELOG}
+            data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+            self._send_gzip(data, "application/json")
+            return
+
         if path == "/api/files":
             files = scan_md_files(self.root_dir)
             payload = {"root": str(self.root_dir), "files": files}
@@ -199,6 +210,17 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
         super().log_message(format, *args)
 
 
+def _check_for_update():
+    try:
+        with urlopen("https://pypi.org/pypi/md-viewer-py/json", timeout=2) as resp:
+            latest = json.loads(resp.read())["info"]["version"]
+        if latest != __version__:
+            return f"v{latest} available (pip install -U md-viewer-py)"
+    except Exception:
+        pass
+    return None
+
+
 def main():
     root_dir = Path.cwd()
     port = 8080
@@ -233,11 +255,14 @@ def main():
         print(f"  Error: Could not find an available port after {max_attempts} attempts.")
         sys.exit(1)
     url = f"http://localhost:{port}"
-    print(f"\n  Markdown Viewer")
+    update_msg = _check_for_update()
+    print(f"\n  Markdown Viewer v{__version__}")
     print(f"  {'─' * 40}")
     print(f"  Directory:  {root_dir}")
     print(f"  Files:      {len(scan_md_files(root_dir))} .md files found")
     print(f"  URL:        {url}")
+    if update_msg:
+        print(f"  Update:     {update_msg}")
     print(f"  {'─' * 40}")
     print(f"  Press Ctrl+C to stop\n")
 

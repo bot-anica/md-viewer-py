@@ -853,8 +853,29 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Live reload via Server-Sent Events
+let _sseRetries = 0;
+const _SSE_MAX_RETRIES = 3;
+
+function showServerStopped() {
+  if (document.getElementById('serverStoppedBanner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'serverStoppedBanner';
+  banner.className = 'server-stopped';
+  banner.innerHTML = 'Server has been stopped. Restart with <code>mdview</code> and refresh the page.';
+  document.body.appendChild(banner);
+}
+
+function hideServerStopped() {
+  const banner = document.getElementById('serverStoppedBanner');
+  if (banner) banner.remove();
+}
+
 function connectSSE() {
   const es = new EventSource('/api/events');
+  es.onopen = () => {
+    _sseRetries = 0;
+    hideServerStopped();
+  };
   es.onmessage = async () => {
     // Refresh file list
     try {
@@ -891,6 +912,10 @@ function connectSSE() {
   };
   es.onerror = () => {
     es.close();
+    _sseRetries++;
+    if (_sseRetries >= _SSE_MAX_RETRIES) {
+      showServerStopped();
+    }
     setTimeout(connectSSE, 3000);
   };
 }
@@ -1080,4 +1105,45 @@ function showToast(message, type = 'success') {
   }, 5000);
 }
 
+// ---- What's New modal ----
+async function checkWhatsNew() {
+  try {
+    const resp = await fetch('/api/version');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const lastSeen = localStorage.getItem('mdviewer_last_version');
+    if (lastSeen === data.version) return;
+    // Collect changes from versions newer than lastSeen
+    const items = [];
+    for (const [ver, changes] of Object.entries(data.changelog)) {
+      if (!lastSeen || ver > lastSeen) {
+        changes.forEach(c => items.push(c));
+      }
+    }
+    if (items.length === 0) {
+      localStorage.setItem('mdviewer_last_version', data.version);
+      return;
+    }
+    const list = document.getElementById('whatsNewList');
+    list.innerHTML = '';
+    items.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      list.appendChild(li);
+    });
+    document.getElementById('whatsNewVersion').textContent = 'v' + data.version;
+    const overlay = document.getElementById('whatsNewOverlay');
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => overlay.classList.add('show'));
+    localStorage.setItem('mdviewer_last_version', data.version);
+  } catch {}
+}
+
+function closeWhatsNew() {
+  const overlay = document.getElementById('whatsNewOverlay');
+  overlay.classList.remove('show');
+  overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
+}
+
 init();
+checkWhatsNew();

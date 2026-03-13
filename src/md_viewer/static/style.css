@@ -1,6 +1,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
+      color-scheme: dark;
       --bg: #0f1117;
       --bg-surface: #161922;
       --bg-card: #1c1f2e;
@@ -21,11 +22,12 @@
       --header-h: 56px;
     }
 
-    html { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-    html::-webkit-scrollbar { width: 6px; }
-    html::-webkit-scrollbar-track { background: transparent; }
-    html::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    html::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    *, html, body { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 6px; height: 6px; }
+    *::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    *::-webkit-scrollbar-thumb:hover, html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    html { overflow-y: auto; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
@@ -155,13 +157,9 @@
     .toc-children.collapsed { display: none; }
 
     #navItems { flex: 1; overflow-y: auto; min-height: 0; }
-    #navItems::-webkit-scrollbar { width: 5px; }
-    #navItems::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
     .toc-chevron-spacer { width: 10px; flex-shrink: 0; display: inline-block; }
     .toc-content { overflow-y: auto; flex: 1; min-height: 0; }
-    .toc-content::-webkit-scrollbar { width: 5px; }
-    .toc-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
     .toc-content.collapsed { display: none; }
     .toc-toggle { cursor: pointer; display: flex !important; align-items: center; user-select: none; }
     .toc-toggle:hover { color: var(--text); }
@@ -178,7 +176,7 @@
     .toc-h3.active { color: var(--accent); border-left-color: var(--accent); }
 
     /* ---- Main ---- */
-    .main { margin-left: var(--sidebar-w); margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+    .main { margin-left: var(--sidebar-w); padding-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
     .content-wrapper { max-width: 860px; margin: 0 auto; padding: 36px 44px 80px; }
 
     /* ---- Markdown ---- */
@@ -212,18 +210,11 @@
     .md blockquote { border-left: 3px solid var(--accent); padding: 10px 18px; margin: 14px 0; background: var(--accent-dim); border-radius: 0 8px 8px 0; font-style: italic; color: var(--text-muted); }
     .md hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
     .md code { background: var(--bg-card); padding: 2px 6px; border-radius: 4px; font-size: 12.5px; font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace; color: var(--cyan); border: 1px solid var(--border); }
-    .md pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 14px 0; overflow-x: auto; position: relative; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-    .md pre::-webkit-scrollbar { height: 6px; }
-    .md pre::-webkit-scrollbar-track { background: transparent; margin: 0 8px; }
-    .md pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    .md pre::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    .md pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin: 14px 0; overflow-x: auto; position: relative; }
+    .md pre::-webkit-scrollbar-track { margin: 0 8px; }
     .md pre code:not(.hljs) { background: none; border: none; padding: 0; font-size: 12.5px; color: var(--text); line-height: 1.7; }
     .md pre code.hljs { background: none; border: none; color: unset; padding: 18px; display: block; }
-    .md table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0 20px; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-    .md table::-webkit-scrollbar { height: 6px; }
-    .md table::-webkit-scrollbar-track { background: transparent; }
-    .md table::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    .md table::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    .md table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 14px 0 20px; font-size: 13px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     .md thead th { background: var(--bg-card); padding: 9px 12px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
     .md tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
     .md tbody tr:last-child td { border-bottom: none; }
@@ -289,6 +280,7 @@
 
     /* ---- Light theme ---- */
     body.light {
+      color-scheme: light;
       --bg: #ffffff;
       --bg-surface: #f6f8fa;
       --bg-card: #f0f2f5;
@@ -604,3 +596,45 @@
     .toast-success svg { color: var(--green); }
     .toast-error svg { color: var(--red); }
     body.light .toast { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+
+    /* ---- What's New modal ---- */
+    .whats-new-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s ease;
+    }
+    .whats-new-overlay.show { opacity: 1; }
+    .whats-new-modal {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 28px 32px; max-width: 480px; width: 90%;
+      max-height: 70vh; overflow-y: auto;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+      transform: scale(0.95); transition: transform 0.2s ease;
+    }
+    .whats-new-overlay.show .whats-new-modal { transform: scale(1); }
+    .whats-new-modal h2 { font-size: 20px; font-weight: 700; color: var(--text-heading); margin: 0 0 4px; }
+    .whats-new-modal .version-badge { font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 18px; display: block; }
+    .whats-new-modal ul { list-style: none; padding: 0; margin: 0 0 20px; }
+    .whats-new-modal li { padding: 6px 0; font-size: 13.5px; color: var(--text); border-bottom: 1px solid var(--border); }
+    .whats-new-modal li:last-child { border-bottom: none; }
+    .whats-new-modal li::before { content: "•"; color: var(--accent); font-weight: 700; margin-right: 8px; }
+    .whats-new-modal button {
+      background: var(--accent); color: #fff; border: none; border-radius: 8px;
+      padding: 8px 24px; font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .whats-new-modal button:hover { opacity: 0.85; }
+    body.light .whats-new-overlay { background: rgba(0,0,0,0.3); }
+    body.light .whats-new-modal { box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+
+    /* ---- Server stopped banner ---- */
+    .server-stopped {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
+      padding: 14px 24px; text-align: center;
+      font-size: 14px; font-weight: 600;
+      background: var(--red, #e05252); color: #fff;
+    }
+    .server-stopped code {
+      background: rgba(255,255,255,0.2); padding: 2px 7px; border-radius: 4px;
+      font-size: 13px;
+    }
