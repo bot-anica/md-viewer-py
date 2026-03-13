@@ -14,14 +14,12 @@
 
 <p align="center">Install once, use everywhere as <code>mdview</code>.</p>
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-light.jpg" alt="Dashboard — Light theme" width="49%">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-light.jpg" alt="File view — Light theme" width="49%">
-</div>
-<div align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-dark.jpg" alt="Dashboard — Dark theme" width="49%">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-dark.jpg" alt="File view — Dark theme" width="49%">
-</div>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-light.jpg" alt="File view — Light theme" width="100%">
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-dark.jpg" alt="File view — Dark theme" width="100%">
+</p>
 
 ---
 
@@ -66,9 +64,16 @@ python -m md_viewer
 
 ## Features
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-light.jpg" alt="Dashboard — Light theme" width="100%">
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-dark.jpg" alt="Dashboard — Dark theme" width="100%">
+</p>
+
 - **Minimal dependencies** — only `watchdog` for live reload, auto-installed with pip
 - **pip/pipx installable** — install once, use anywhere as `mdview`
-- **Dashboard landing page** — grid view of folders and files, macOS Finder-style
+- **Dashboard page** — grid view of folders and files, macOS Finder-style
 - **Dark & light themes** — polished UI with OS-aware theme toggle
 - **File tree sidebar** — folder navigation with collapsible directories
 - **Full-text search** — debounced search across all Markdown files with lazy loading
