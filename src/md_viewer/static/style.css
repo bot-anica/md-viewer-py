@@ -627,10 +627,11 @@
     .whats-new-overlay.show .whats-new-modal { transform: scale(1); }
     .whats-new-modal h2 { font-size: 20px; font-weight: 700; color: var(--text-heading); margin: 0 0 4px; }
     .whats-new-modal .version-badge { font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 18px; display: block; }
-    .whats-new-modal ul { list-style: none; padding: 0; margin: 0 0 20px; }
-    .whats-new-modal li { padding: 6px 0; font-size: 13.5px; color: var(--text); border-bottom: 1px solid var(--border); }
-    .whats-new-modal li:last-child { border-bottom: none; }
-    .whats-new-modal li::before { content: "•"; color: var(--accent); font-weight: 700; margin-right: 8px; }
+    .whats-new-body { font-size: 13.5px; color: var(--text); margin-bottom: 20px; line-height: 1.6; }
+    .whats-new-body h2 { font-size: 14px; font-weight: 600; color: var(--text-heading); margin: 12px 0 6px; }
+    .whats-new-body ul { padding-left: 20px; margin: 6px 0; }
+    .whats-new-body li { padding: 3px 0; }
+    .whats-new-body strong { color: var(--text-heading); }
     .whats-new-modal button {
       background: var(--accent); color: #fff; border: none; border-radius: 8px;
       padding: 8px 24px; font-size: 13px; font-weight: 600; cursor: pointer;

@@ -1113,24 +1113,12 @@ async function checkWhatsNew() {
     const data = await resp.json();
     const lastSeen = localStorage.getItem('mdviewer_last_version');
     if (lastSeen === data.version) return;
-    // Collect changes from versions newer than lastSeen
-    const items = [];
-    for (const [ver, changes] of Object.entries(data.changelog)) {
-      if (!lastSeen || ver > lastSeen) {
-        changes.forEach(c => items.push(c));
-      }
-    }
-    if (items.length === 0) {
+    if (!data.release_notes) {
       localStorage.setItem('mdviewer_last_version', data.version);
       return;
     }
-    const list = document.getElementById('whatsNewList');
-    list.innerHTML = '';
-    items.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = item;
-      list.appendChild(li);
-    });
+    const notes = data.release_notes.replace(/^##?\s+What'?s\s+New\s*/im, '');
+    document.getElementById('whatsNewBody').innerHTML = marked.parse(notes, { gfm: true, breaks: false });
     document.getElementById('whatsNewVersion').textContent = 'v' + data.version;
     const overlay = document.getElementById('whatsNewOverlay');
     overlay.style.display = 'flex';
