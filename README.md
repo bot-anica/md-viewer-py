@@ -14,26 +14,14 @@
 
 <p align="center">Install once, use everywhere as <code>mdview</code>.</p>
 
-<table>
+<table cellpadding="0" cellspacing="0" style="border:none;">
   <tr>
-    <td width="50%">
-      <p align="center"><strong>Dashboard — Light</strong></p>
-      <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-light.jpg" alt="Dashboard — Light theme" width="100%">
-    </td>
-    <td width="50%">
-      <p align="center"><strong>File view — Light</strong></p>
-      <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-light.jpg" alt="File view — Light theme" width="100%">
-    </td>
+    <td width="50%" style="border:none;padding:0;"><img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-light.jpg" alt="Dashboard — Light theme" width="100%"></td>
+    <td width="50%" style="border:none;padding:0;"><img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-light.jpg" alt="File view — Light theme" width="100%"></td>
   </tr>
   <tr>
-    <td width="50%">
-      <p align="center"><strong>Dashboard — Dark</strong></p>
-      <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-dark.jpg" alt="Dashboard — Dark theme" width="100%">
-    </td>
-    <td width="50%">
-      <p align="center"><strong>File view — Dark</strong></p>
-      <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-dark.jpg" alt="File view — Dark theme" width="100%">
-    </td>
+    <td width="50%" style="border:none;padding:0;"><img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-dark.jpg" alt="Dashboard — Dark theme" width="100%"></td>
+    <td width="50%" style="border:none;padding:0;"><img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-dark.jpg" alt="File view — Dark theme" width="100%"></td>
   </tr>
 </table>
 
