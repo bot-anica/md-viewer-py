@@ -271,10 +271,15 @@ def main():
     print(f"  {'─' * 40}")
     print(f"  Press Ctrl+C to stop\n")
 
-    try:
-        webbrowser.open(url)
-    except Exception:
-        pass
+    def _open_browser():
+        import time
+        time.sleep(0.5)
+        try:
+            webbrowser.open(url)
+        except Exception:
+            pass
+
+    threading.Thread(target=_open_browser, daemon=True).start()
 
     try:
         server.serve_forever()
