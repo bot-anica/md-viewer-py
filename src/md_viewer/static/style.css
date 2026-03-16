@@ -137,6 +137,7 @@
 
     .toc-container { margin-top: 8px; border-top: 1px solid var(--border); padding-top: 4px; flex: 0 0 auto; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
     .toc-container.toc-expanded { flex: 0 0 50%; }
+    body.toc-right .toc-right-panel .toc-container { margin-top: 0; border-top: none; padding-top: 0; }
     .toc-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 14px 6px; }
     .toc-toolbar .sidebar-section-label { padding: 0; }
     .toc-toolbar .toc-btns { display: flex; gap: 4px; }

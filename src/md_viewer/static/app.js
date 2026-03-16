@@ -59,7 +59,7 @@ let _tocPosition = localStorage.getItem('mdviewer_toc_position') || 'sidebar';
 function buildNavIconHtml(idx) {
   const colorIdx = idx % FILE_COLORS.length;
   if (_iconStyle === 'monochrome') {
-    return `<div class="nav-icon-sm" style="background:var(--accent-dim);width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex-shrink:0;border:1px solid var(--border);color:var(--accent);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></div>`;
+    return `<div class="nav-icon-sm" style="background:var(--accent-dim);width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex-shrink:0;color:var(--accent);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></div>`;
   }
   return `<div class="nav-icon-sm" style="background:${FILE_COLORS[colorIdx]};width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></div>`;
 }
