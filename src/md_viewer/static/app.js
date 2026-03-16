@@ -203,7 +203,7 @@ function showDashboard(folder) {
   }
 
   dashboard.appendChild(grid);
-  window.scrollTo({ top: 0 });
+  document.body.scrollTo({ top: 0 });
 }
 
 async function loadFile(idx) {
@@ -411,7 +411,7 @@ async function showFile(idx) {
   addHeadingAnchors();
   interceptMdLinks(content, f.path);
   runMermaid();
-  window.scrollTo({ top: 0 });
+  document.body.scrollTo({ top: 0 });
 
   if (window.innerWidth <= 900) {
     document.getElementById('sidebar').classList.remove('open');
@@ -721,7 +721,7 @@ function searchScroll(lineNum) {
   const content = document.getElementById('content');
   const total = (fileContents[activeFileIdx] || '').split('\n').length;
   const pct = lineNum / total;
-  window.scrollTo({ top: content.offsetTop + content.scrollHeight * pct - 100, behavior: 'smooth' });
+  document.body.scrollTo({ top: content.offsetTop + content.scrollHeight * pct - 100, behavior: 'smooth' });
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -820,11 +820,11 @@ function toggleTheme() { applyTheme(_currentTheme === 'dark' ? 'light' : 'dark')
 // Apply saved theme on load
 if (_currentTheme === 'light') applyTheme('light');
 
-window.addEventListener('scroll', () => {
-  const winH = document.documentElement.scrollHeight - window.innerHeight;
-  document.getElementById('progressBar').style.width = (winH > 0 ? (window.scrollY / winH) * 100 : 0) + '%';
+document.body.addEventListener('scroll', () => {
+  const winH = document.body.scrollHeight - document.body.clientHeight;
+  document.getElementById('progressBar').style.width = (winH > 0 ? (document.body.scrollTop / winH) * 100 : 0) + '%';
   const btn = document.getElementById('backToTop');
-  window.scrollY > 300 ? btn.classList.add('visible') : btn.classList.remove('visible');
+  document.body.scrollTop > 300 ? btn.classList.add('visible') : btn.classList.remove('visible');
   updateScrollSpy();
 });
 
