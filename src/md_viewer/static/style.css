@@ -824,17 +824,6 @@
     body.toc-right.no-active-file .reading-progress { right: 0; }
     body.toc-right.no-active-file .back-to-top { right: 28px; }
 
-    /* ---- Sidebar collapse button ---- */
-    .sidebar-collapser {
-      position: absolute; bottom: 12px; right: 8px;
-      background: none; border: 1px solid var(--border); border-radius: 6px;
-      color: var(--text-muted); width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.15s; z-index: 1; padding: 0; flex-shrink: 0;
-    }
-    .sidebar-collapser:hover { color: var(--text); border-color: var(--text-muted); }
-    body.sidebar-collapsed .sidebar-collapser svg { transform: rotate(180deg); }
-
     /* ---- Sidebar mini (collapsed) view ---- */
     .sidebar-mini {
       display: none; flex-direction: column; align-items: center;
