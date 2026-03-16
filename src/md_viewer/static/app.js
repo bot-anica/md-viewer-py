@@ -267,6 +267,7 @@ function showDashboard(folder) {
   _dashboardFolder = folder || null;
   activeFileIdx = null;
   window.location.hash = '';
+  document.body.classList.add('no-active-file');
   renderTabBar();
 
   // Hide file view elements
@@ -531,6 +532,7 @@ async function showFile(idx) {
   }
 
   activeFileIdx = idx;
+  document.body.classList.remove('no-active-file');
   const f = FILES[idx];
   window.location.hash = slugify(f.path);
 
@@ -669,6 +671,9 @@ function buildToc() {
   // Toolbar with collapsible "On this page" header
   const toolbar = document.createElement('div');
   toolbar.className = 'toc-toolbar';
+  const tocCollapserBtn = inRightPanel
+    ? `<button class="toc-panel-collapser" onclick="toggleTocCollapse()" title="Collapse TOC panel"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,18 15,12 9,6"/></svg></button>`
+    : '';
   toolbar.innerHTML = `
     <div class="sidebar-section-label toc-toggle">
       <span class="toc-header-chevron${_tocExpanded ? '' : ' collapsed'}">&#9660;</span>On this page
@@ -676,6 +681,7 @@ function buildToc() {
     <div class="toc-btns">
       <button class="collapse-btn" onclick="tocCollapseAll()" title="Collapse TOC"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 8,5 2,10" fill="currentColor"/></svg></button>
       <button class="collapse-btn" onclick="tocExpandAll()" title="Expand TOC"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="0,2 10,2 5,8" fill="currentColor"/></svg></button>
+      ${tocCollapserBtn}
     </div>
   `;
   container.appendChild(toolbar);
@@ -1320,9 +1326,28 @@ function closeWhatsNew() {
   overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
 }
 
+// ---- Sidebar collapse ----
+let _sidebarCollapsed = localStorage.getItem('mdviewer_sidebar_collapsed') === 'true';
+function toggleSidebarCollapse() {
+  _sidebarCollapsed = !_sidebarCollapsed;
+  localStorage.setItem('mdviewer_sidebar_collapsed', _sidebarCollapsed);
+  document.body.classList.toggle('sidebar-collapsed', _sidebarCollapsed);
+}
+
+// ---- TOC right panel collapse ----
+let _tocCollapsed = localStorage.getItem('mdviewer_toc_collapsed') === 'true';
+function toggleTocCollapse() {
+  _tocCollapsed = !_tocCollapsed;
+  localStorage.setItem('mdviewer_toc_collapsed', _tocCollapsed);
+  document.body.classList.toggle('toc-collapsed', _tocCollapsed);
+}
+
 // ---- Settings ----
 function initSettings() {
   if (_iconStyle === 'monochrome') document.body.classList.add('monochrome-icons');
+  if (_sidebarCollapsed) document.body.classList.add('sidebar-collapsed');
+  if (_tocCollapsed) document.body.classList.add('toc-collapsed');
+  document.body.classList.add('no-active-file');
   const isMobile = window.innerWidth <= 900;
   if (_tocPosition === 'right' && !isMobile) {
     document.body.classList.add('toc-right');
