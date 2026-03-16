@@ -59,14 +59,14 @@ let _tocPosition = localStorage.getItem('mdviewer_toc_position') || 'sidebar';
 function buildNavIconHtml(idx) {
   const colorIdx = idx % FILE_COLORS.length;
   if (_iconStyle === 'monochrome') {
-    return `<div class="nav-icon-sm" style="background:var(--bg-card);width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex-shrink:0;border:1px solid var(--border);color:var(--text-muted);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></div>`;
+    return `<div class="nav-icon-sm" style="background:var(--accent-dim);width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex-shrink:0;border:1px solid var(--border);color:var(--accent);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></div>`;
   }
   return `<div class="nav-icon-sm" style="background:${FILE_COLORS[colorIdx]};width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></div>`;
 }
 
 function buildFileIconSvg(idx) {
   if (_iconStyle === 'monochrome') {
-    return `<svg width="48" height="56" viewBox="0 0 48 56" fill="none"><path d="M4 4a4 4 0 0 1 4-4h22l14 14v38a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4z" style="fill:var(--bg-card);stroke:var(--border);stroke-width:1.5"/><path d="M26 0l14 14H30a4 4 0 0 1-4-4V0z" style="fill:var(--border)"/><line x1="14" y1="28" x2="34" y2="28" style="stroke:var(--text-muted)" stroke-width="2" stroke-linecap="round" opacity="0.5"/><line x1="14" y1="34" x2="34" y2="34" style="stroke:var(--text-muted)" stroke-width="2" stroke-linecap="round" opacity="0.5"/><line x1="14" y1="40" x2="28" y2="40" style="stroke:var(--text-muted)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>`;
+    return `<svg width="48" height="56" viewBox="0 0 48 56" fill="none"><path d="M4 4a4 4 0 0 1 4-4h22l14 14v38a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4z" style="fill:var(--accent-dim);stroke:var(--accent);stroke-width:1.5"/><path d="M26 0l14 14H30a4 4 0 0 1-4-4V0z" style="fill:var(--accent)"/><line x1="14" y1="28" x2="34" y2="28" style="stroke:var(--accent)" stroke-width="2" stroke-linecap="round" opacity="0.5"/><line x1="14" y1="34" x2="34" y2="34" style="stroke:var(--accent)" stroke-width="2" stroke-linecap="round" opacity="0.5"/><line x1="14" y1="40" x2="28" y2="40" style="stroke:var(--accent)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>`;
   }
   const colorIdx = idx % FILE_COLORS.length;
   const colors = FILE_COLORS[colorIdx].match(/#[a-f0-9]+/gi);
@@ -522,10 +522,12 @@ function buildToc() {
   container.appendChild(tocContent);
   if (_tocExpanded) container.classList.add('toc-expanded');
 
-  // Toggle toc-content on "On this page" label click
+  // Toggle toc-content on "On this page" label click (disabled in right panel)
   const toggleLabel = toolbar.querySelector('.toc-toggle');
   const headerChevron = toolbar.querySelector('.toc-header-chevron');
   toggleLabel.onclick = () => {
+    const inRightPanel = document.getElementById('tocRightPanel')?.contains(container);
+    if (inRightPanel) return;
     tocContent.classList.toggle('collapsed');
     headerChevron.classList.toggle('collapsed');
     container.classList.toggle('toc-expanded');
@@ -1166,6 +1168,14 @@ function moveTocToPosition() {
     rightPanel.appendChild(tocContainer);
   } else if (!useRight && !sidebar.contains(tocContainer)) {
     sidebar.appendChild(tocContainer);
+  }
+  // Force TOC expanded when in right panel
+  if (useRight) {
+    const tocContent = tocContainer.querySelector('.toc-content');
+    const headerChevron = tocContainer.querySelector('.toc-header-chevron');
+    if (tocContent) tocContent.classList.remove('collapsed');
+    if (headerChevron) headerChevron.classList.remove('collapsed');
+    tocContainer.classList.add('toc-expanded');
   }
 }
 
