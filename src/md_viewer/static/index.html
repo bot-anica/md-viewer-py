@@ -142,6 +142,15 @@ __STYLE__
     </div>
   </div>
 
+  <div class="tab-context-menu" id="tabContextMenu" style="display:none">
+    <button class="tab-ctx-item" onclick="tabCtxClose()">Close</button>
+    <button class="tab-ctx-item" onclick="tabCtxCloseOthers()">Close Others</button>
+    <button class="tab-ctx-item" onclick="tabCtxCloseToRight()">Close to the Right</button>
+    <button class="tab-ctx-item" onclick="tabCtxCloseToLeft()">Close to the Left</button>
+    <div class="tab-ctx-sep"></div>
+    <button class="tab-ctx-item" onclick="tabCtxCloseAll()">Close All</button>
+  </div>
+
   <div class="whats-new-overlay" id="whatsNewOverlay" style="display:none" onclick="if(event.target===this)closeWhatsNew()">
     <div class="whats-new-modal">
       <h2>What's New</h2>

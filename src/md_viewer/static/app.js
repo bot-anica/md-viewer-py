@@ -137,7 +137,7 @@ function renderTabBar() {
   bar.innerHTML = openTabs.map(tab => {
     const f = FILES[tab.idx];
     const isActive = tab.idx === activeFileIdx;
-    return `<div class="tab-item${isActive ? ' active' : ''}" id="tab-${tab.idx}" onclick="tabClick(event,${tab.idx})" onmousedown="tabMousedown(event,${tab.idx})" title="${f.title}"><span class="tab-title">${f.name}</span><span class="tab-close" onclick="closeTab(event,${tab.idx})">&#x2715;</span></div>`;
+    return `<div class="tab-item${isActive ? ' active' : ''}" id="tab-${tab.idx}" onclick="tabClick(event,${tab.idx})" onmousedown="tabMousedown(event,${tab.idx})" oncontextmenu="showTabContextMenu(event,${tab.idx})" title="${f.title}"><span class="tab-title">${f.name}</span><span class="tab-close" onclick="closeTab(event,${tab.idx})">&#x2715;</span></div>`;
   }).join('');
   const activeTabEl = document.getElementById('tab-' + activeFileIdx);
   if (activeTabEl) activeTabEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -169,6 +169,96 @@ function closeTab(e, idx) {
     renderTabBar();
   }
 }
+
+// ---- Tab context menu ----
+let _ctxTabIdx = null;
+
+function showTabContextMenu(e, idx) {
+  e.preventDefault();
+  e.stopPropagation();
+  _ctxTabIdx = idx;
+  const menu = document.getElementById('tabContextMenu');
+  if (!menu) return;
+  menu.style.display = 'block';
+  const x = Math.min(e.clientX, window.innerWidth - menu.offsetWidth - 4);
+  const y = Math.min(e.clientY, window.innerHeight - menu.offsetHeight - 4);
+  menu.style.left = x + 'px';
+  menu.style.top = y + 'px';
+}
+
+function hideTabContextMenu() {
+  const menu = document.getElementById('tabContextMenu');
+  if (menu) menu.style.display = 'none';
+  _ctxTabIdx = null;
+}
+
+function tabCtxClose() {
+  const idx = _ctxTabIdx;
+  hideTabContextMenu();
+  if (idx === null) return;
+  const fakeEvent = { stopPropagation: () => {} };
+  closeTab(fakeEvent, idx);
+}
+
+function tabCtxCloseOthers() {
+  const keepIdx = _ctxTabIdx;
+  hideTabContextMenu();
+  if (keepIdx === null) return;
+  openTabs = openTabs.filter(t => t.idx === keepIdx);
+  if (activeFileIdx !== keepIdx) {
+    showFile(keepIdx);
+  } else {
+    renderTabBar();
+  }
+}
+
+function tabCtxCloseToRight() {
+  const idx = _ctxTabIdx;
+  hideTabContextMenu();
+  if (idx === null) return;
+  const pos = openTabs.findIndex(t => t.idx === idx);
+  if (pos < 0) return;
+  const removed = openTabs.splice(pos + 1);
+  const removedIdxs = removed.map(t => t.idx);
+  if (removedIdxs.includes(activeFileIdx)) {
+    if (openTabs.length === 0) { showDashboard(); return; }
+    showFile(openTabs[openTabs.length - 1].idx);
+  } else {
+    renderTabBar();
+  }
+}
+
+function tabCtxCloseToLeft() {
+  const idx = _ctxTabIdx;
+  hideTabContextMenu();
+  if (idx === null) return;
+  const pos = openTabs.findIndex(t => t.idx === idx);
+  if (pos < 0) return;
+  const removed = openTabs.splice(0, pos);
+  const removedIdxs = removed.map(t => t.idx);
+  if (removedIdxs.includes(activeFileIdx)) {
+    showFile(idx);
+  } else {
+    renderTabBar();
+  }
+}
+
+function tabCtxCloseAll() {
+  hideTabContextMenu();
+  openTabs = [];
+  showDashboard();
+}
+
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('tabContextMenu');
+  if (menu && menu.style.display !== 'none' && !menu.contains(e.target)) {
+    hideTabContextMenu();
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') hideTabContextMenu();
+});
 
 let _dashboardFolder = null; // null = root, string = subfolder path
 

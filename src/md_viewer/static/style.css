@@ -773,6 +773,29 @@
       .tab-bar { left: 0; }
     }
 
+    /* ---- Tab context menu ---- */
+    .tab-context-menu {
+      position: fixed; z-index: 500;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 4px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      min-width: 180px;
+    }
+    .tab-ctx-item {
+      display: block; width: 100%;
+      background: none; border: none;
+      color: var(--text); font-size: 13px;
+      padding: 7px 12px; text-align: left;
+      border-radius: 5px; cursor: pointer;
+      transition: background 0.1s;
+    }
+    .tab-ctx-item:hover { background: var(--bg-hover); }
+    .tab-ctx-sep {
+      height: 1px; background: var(--border);
+      margin: 4px 0;
+    }
+    body.light .tab-context-menu { box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+
     /* ---- TOC right panel ---- */
     .toc-right-panel {
       display: none;
