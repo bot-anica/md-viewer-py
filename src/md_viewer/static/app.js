@@ -1142,7 +1142,7 @@ function enterEditMode() {
   content.style.display = 'none';
   editorWrapper.style.display = 'block';
   editBtn.classList.add('active');
-  editBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> View';
+  editBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg> View';
 
   // Initialize EasyMDE
   const textarea = document.getElementById('editor');
@@ -1212,7 +1212,7 @@ function exitEditMode() {
   editorWrapper.style.display = 'none';
   content.style.display = 'block';
   editBtn.classList.remove('active');
-  editBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit';
+  editBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Edit';
 
   isEditMode = false;
 
@@ -1327,7 +1327,7 @@ function closeWhatsNew() {
 }
 
 // ---- Sidebar collapse ----
-let _sidebarCollapsed = localStorage.getItem('mdviewer_sidebar_collapsed') === 'true';
+let _sidebarCollapsed = localStorage.getItem('mdviewer_sidebar_collapsed') !== 'false';
 function toggleSidebarCollapse() {
   _sidebarCollapsed = !_sidebarCollapsed;
   localStorage.setItem('mdviewer_sidebar_collapsed', _sidebarCollapsed);
@@ -1394,7 +1394,26 @@ function applyIconStyle(style) {
   _iconStyle = style;
   localStorage.setItem('mdviewer_icon_style', style);
   document.body.classList.toggle('monochrome-icons', style === 'monochrome');
+  const expandedFolders = new Set();
+  document.querySelectorAll('#navItems .tree-folder').forEach(h => {
+    if (!h.classList.contains('collapsed')) {
+      const name = h.querySelector('.folder-name')?.textContent;
+      if (name) expandedFolders.add(name);
+    }
+  });
   renderNav();
+  if (expandedFolders.size > 0) {
+    document.querySelectorAll('#navItems .tree-folder').forEach(h => {
+      const name = h.querySelector('.folder-name')?.textContent;
+      if (name && expandedFolders.has(name)) {
+        h.classList.remove('collapsed');
+        const children = h.nextElementSibling;
+        if (children && children.classList.contains('tree-children')) {
+          children.classList.remove('collapsed');
+        }
+      }
+    });
+  }
   if (activeFileIdx !== null) {
     document.getElementById('nav-' + activeFileIdx)?.classList.add('active');
   }
