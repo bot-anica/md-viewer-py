@@ -183,7 +183,16 @@ function showDashboard(folder) {
   document.getElementById('breadcrumbBar').style.display = 'none';
   document.getElementById('content').style.display = 'none';
   document.getElementById('editorWrapper').style.display = 'none';
-  document.getElementById('tocContainer').innerHTML = '';
+  const tocContainer = document.getElementById('tocContainer');
+  tocContainer.innerHTML = '';
+  const useRight = _tocPosition === 'right' && window.innerWidth > 900;
+  if (useRight) {
+    tocContainer.innerHTML = `
+      <div class="toc-toolbar">
+        <div class="sidebar-section-label toc-toggle">On this page</div>
+      </div>
+      <div class="toc-empty-msg">Open a file to see its table of contents</div>`;
+  }
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
   const loading = document.getElementById('loading');
@@ -565,6 +574,8 @@ function buildToc() {
   container.innerHTML = '';
   tocHeadings = [];
 
+  const inRightPanel = _tocPosition === 'right' && window.innerWidth > 900;
+
   // Toolbar with collapsible "On this page" header
   const toolbar = document.createElement('div');
   toolbar.className = 'toc-toolbar';
@@ -664,6 +675,14 @@ function buildToc() {
       }
     }
   });
+
+  // Empty state: no headings found in right panel mode
+  if (tocHeadings.length === 0 && inRightPanel) {
+    const emptyMsg = document.createElement('div');
+    emptyMsg.className = 'toc-empty-msg';
+    emptyMsg.textContent = 'No headings in this file';
+    container.appendChild(emptyMsg);
+  }
 
   tocAutoMode = true;
 }

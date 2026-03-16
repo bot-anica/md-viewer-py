@@ -142,6 +142,11 @@
     .toc-toolbar .sidebar-section-label { padding: 0; }
     .toc-toolbar .toc-btns { display: flex; gap: 4px; }
     .toc-toolbar .collapse-btn { padding: 4px 8px; font-size: 11px; }
+    body.toc-right .toc-right-panel .toc-toolbar { border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+    body.toc-right .toc-right-panel .toc-header-chevron { display: none; }
+    body.toc-right .toc-right-panel .toc-toggle { cursor: default; }
+    body.toc-right .toc-right-panel .toc-toggle:hover { color: inherit; }
+    .toc-empty-msg { padding: 12px 14px; font-size: 12px; color: var(--text-muted); text-align: center; }
 
     .toc-group { }
     .toc-h2 {
