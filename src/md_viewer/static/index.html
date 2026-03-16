@@ -30,6 +30,7 @@ __STYLE__
       <span class="header-badge badge-path" id="badgePath"></span>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg> Light</button>
       <button class="print-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4c0 1.1.9 2 2 2h2v2c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-2h2c1.1 0 2-.9 2-2v-4c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-8H7v4h10V4z"/></svg> Print</button>
+      <button class="settings-btn" onclick="openSettings()" title="Settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </div>
   </header>
 
@@ -78,6 +79,63 @@ __STYLE__
   </main>
 
   <button class="back-to-top" id="backToTop" onclick="document.body.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+
+  <div class="toc-right-panel" id="tocRightPanel"></div>
+
+  <div class="settings-overlay" id="settingsOverlay" style="display:none" onclick="if(event.target===this)closeSettings()">
+    <div class="settings-modal">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="settings-close" onclick="closeSettings()">&#x2715;</button>
+      </div>
+      <div class="settings-body">
+        <div class="settings-section">
+          <div class="settings-section-title">File Icon Style</div>
+          <div class="settings-options">
+            <label class="settings-option">
+              <input type="radio" name="iconStyle" value="colorful" onchange="applyIconStyle('colorful')">
+              <div class="settings-option-preview">
+                <svg width="24" height="28" viewBox="0 0 48 56" fill="none"><path d="M4 4a4 4 0 0 1 4-4h22l14 14v38a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4z" fill="url(#prev-grad)"/><path d="M26 0l14 14H30a4 4 0 0 1-4-4V0z" fill="rgba(255,255,255,0.25)"/><defs><linearGradient id="prev-grad" x1="0" y1="0" x2="48" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="#7c8aff"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs></svg>
+              </div>
+              <div class="settings-option-label">Colorful</div>
+              <div class="settings-option-desc">Gradient colors per file</div>
+            </label>
+            <label class="settings-option">
+              <input type="radio" name="iconStyle" value="monochrome" onchange="applyIconStyle('monochrome')">
+              <div class="settings-option-preview">
+                <svg width="24" height="28" viewBox="0 0 48 56" fill="none"><path d="M4 4a4 4 0 0 1 4-4h22l14 14v38a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4z" style="fill:var(--bg-hover);stroke:var(--border);stroke-width:2"/><path d="M26 0l14 14H30a4 4 0 0 1-4-4V0z" style="fill:var(--border)"/></svg>
+              </div>
+              <div class="settings-option-label">Monochrome</div>
+              <div class="settings-option-desc">Single muted color</div>
+            </label>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Table of Contents</div>
+          <div class="settings-options">
+            <label class="settings-option">
+              <input type="radio" name="tocPosition" value="sidebar" onchange="applyTocPosition('sidebar')">
+              <div class="settings-option-preview settings-option-preview-toc">
+                <div class="toc-preview-sidebar"></div>
+                <div class="toc-preview-content"></div>
+              </div>
+              <div class="settings-option-label">Sidebar</div>
+              <div class="settings-option-desc">TOC below file list</div>
+            </label>
+            <label class="settings-option">
+              <input type="radio" name="tocPosition" value="right" onchange="applyTocPosition('right')">
+              <div class="settings-option-preview settings-option-preview-toc">
+                <div class="toc-preview-content"></div>
+                <div class="toc-preview-right"></div>
+              </div>
+              <div class="settings-option-label">Right Panel</div>
+              <div class="settings-option-desc">Fixed panel on right</div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="whats-new-overlay" id="whatsNewOverlay" style="display:none" onclick="if(event.target===this)closeWhatsNew()">
     <div class="whats-new-modal">

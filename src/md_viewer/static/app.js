@@ -52,6 +52,27 @@ const FILE_COLORS = [
   'linear-gradient(135deg, #fb923c, #fbbf24)',
 ];
 
+// ---- Settings state ----
+let _iconStyle = localStorage.getItem('mdviewer_icon_style') || 'colorful';
+let _tocPosition = localStorage.getItem('mdviewer_toc_position') || 'sidebar';
+
+function buildNavIconHtml(idx) {
+  const colorIdx = idx % FILE_COLORS.length;
+  if (_iconStyle === 'monochrome') {
+    return `<div class="nav-icon-sm" style="background:var(--bg-card);width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex-shrink:0;border:1px solid var(--border);color:var(--text-muted);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></div>`;
+  }
+  return `<div class="nav-icon-sm" style="background:${FILE_COLORS[colorIdx]};width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></div>`;
+}
+
+function buildFileIconSvg(idx) {
+  if (_iconStyle === 'monochrome') {
+    return `<svg width="48" height="56" viewBox="0 0 48 56" fill="none"><path d="M4 4a4 4 0 0 1 4-4h22l14 14v38a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4z" style="fill:var(--bg-card);stroke:var(--border);stroke-width:1.5"/><path d="M26 0l14 14H30a4 4 0 0 1-4-4V0z" style="fill:var(--border)"/><line x1="14" y1="28" x2="34" y2="28" style="stroke:var(--text-muted)" stroke-width="2" stroke-linecap="round" opacity="0.5"/><line x1="14" y1="34" x2="34" y2="34" style="stroke:var(--text-muted)" stroke-width="2" stroke-linecap="round" opacity="0.5"/><line x1="14" y1="40" x2="28" y2="40" style="stroke:var(--text-muted)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></svg>`;
+  }
+  const colorIdx = idx % FILE_COLORS.length;
+  const colors = FILE_COLORS[colorIdx].match(/#[a-f0-9]+/gi);
+  return `<svg width="48" height="56" viewBox="0 0 48 56" fill="none"><path d="M4 4a4 4 0 0 1 4-4h22l14 14v38a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4z" fill="url(#fg${idx})"/><path d="M26 0l14 14H30a4 4 0 0 1-4-4V0z" fill="rgba(255,255,255,0.25)"/><line x1="14" y1="28" x2="34" y2="28" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="34" x2="34" y2="34" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="40" x2="28" y2="40" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="fg${idx}" x1="0" y1="0" x2="48" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="${colors[0]}"/><stop offset="1" stop-color="${colors[1]}"/></linearGradient></defs></svg>`;
+}
+
 async function init() {
   try {
     const resp = await fetch('/api/files');
@@ -180,20 +201,12 @@ function showDashboard(folder) {
   // Render file cards
   if (node._files) {
     node._files.forEach(f => {
-      const colorIdx = f._idx % FILE_COLORS.length;
       const card = document.createElement('div');
       card.className = 'dashboard-card dashboard-file';
       card.onclick = () => showFile(f._idx);
       card.innerHTML = `
         <div class="dashboard-card-icon">
-          <svg width="48" height="56" viewBox="0 0 48 56" fill="none">
-            <path d="M4 4a4 4 0 0 1 4-4h22l14 14v38a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4z" fill="url(#fg${f._idx})"/>
-            <path d="M26 0l14 14H30a4 4 0 0 1-4-4V0z" fill="rgba(255,255,255,0.25)"/>
-            <line x1="14" y1="28" x2="34" y2="28" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
-            <line x1="14" y1="34" x2="34" y2="34" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
-            <line x1="14" y1="40" x2="28" y2="40" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round"/>
-            <defs><linearGradient id="fg${f._idx}" x1="0" y1="0" x2="48" y2="56" gradientUnits="userSpaceOnUse"><stop stop-color="${FILE_COLORS[colorIdx].match(/#[a-f0-9]+/gi)[0]}"/><stop offset="1" stop-color="${FILE_COLORS[colorIdx].match(/#[a-f0-9]+/gi)[1]}"/></linearGradient></defs>
-          </svg>
+          ${buildFileIconSvg(f._idx)}
         </div>
         <div class="dashboard-card-name">${f.title}</div>
         <div class="dashboard-card-meta">${f.lines} lines</div>
@@ -330,9 +343,8 @@ function createNavItem(f, indent) {
   item.style.paddingLeft = (indent + 8) + 'px';
   item.onclick = (e) => { e.stopPropagation(); showFile(f._idx); };
 
-  const colorIdx = f._idx % FILE_COLORS.length;
   item.innerHTML = `
-    <div class="nav-icon-sm" style="background:${FILE_COLORS[colorIdx]};width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></div>
+    ${buildNavIconHtml(f._idx)}
     <div class="nav-details">
       <div class="nav-title">${f.title}</div>
       <div class="nav-meta">${f.name} &middot; ${f.lines} lines</div>
@@ -408,6 +420,7 @@ async function showFile(idx) {
   document.getElementById('breadcrumbBar').style.display = 'flex';
 
   buildToc();
+  moveTocToPosition();
   addHeadingAnchors();
   interceptMdLinks(content, f.path);
   runMermaid();
@@ -1133,5 +1146,71 @@ function closeWhatsNew() {
   overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
 }
 
+// ---- Settings ----
+function initSettings() {
+  if (_iconStyle === 'monochrome') document.body.classList.add('monochrome-icons');
+  const isMobile = window.innerWidth <= 900;
+  if (_tocPosition === 'right' && !isMobile) {
+    document.body.classList.add('toc-right');
+    moveTocToPosition();
+  }
+}
+
+function moveTocToPosition() {
+  const tocContainer = document.getElementById('tocContainer');
+  const rightPanel = document.getElementById('tocRightPanel');
+  const sidebar = document.getElementById('sidebar');
+  if (!tocContainer || !rightPanel || !sidebar) return;
+  const useRight = _tocPosition === 'right' && window.innerWidth > 900;
+  if (useRight && !rightPanel.contains(tocContainer)) {
+    rightPanel.appendChild(tocContainer);
+  } else if (!useRight && !sidebar.contains(tocContainer)) {
+    sidebar.appendChild(tocContainer);
+  }
+}
+
+function openSettings() {
+  const overlay = document.getElementById('settingsOverlay');
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => overlay.classList.add('show'));
+  document.querySelector(`input[name="iconStyle"][value="${_iconStyle}"]`).checked = true;
+  document.querySelector(`input[name="tocPosition"][value="${_tocPosition}"]`).checked = true;
+}
+
+function closeSettings() {
+  const overlay = document.getElementById('settingsOverlay');
+  overlay.classList.remove('show');
+  overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
+}
+
+function applyIconStyle(style) {
+  _iconStyle = style;
+  localStorage.setItem('mdviewer_icon_style', style);
+  document.body.classList.toggle('monochrome-icons', style === 'monochrome');
+  renderNav();
+  if (activeFileIdx !== null) {
+    document.getElementById('nav-' + activeFileIdx)?.classList.add('active');
+  }
+  const dashboard = document.getElementById('dashboard');
+  if (dashboard && dashboard.style.display !== 'none') {
+    showDashboard(_dashboardFolder);
+  }
+}
+
+function applyTocPosition(pos) {
+  _tocPosition = pos;
+  localStorage.setItem('mdviewer_toc_position', pos);
+  const isMobile = window.innerWidth <= 900;
+  document.body.classList.toggle('toc-right', pos === 'right' && !isMobile);
+  moveTocToPosition();
+}
+
+window.addEventListener('resize', () => {
+  const isMobile = window.innerWidth <= 900;
+  document.body.classList.toggle('toc-right', _tocPosition === 'right' && !isMobile);
+  moveTocToPosition();
+});
+
+initSettings();
 init();
 checkWhatsNew();

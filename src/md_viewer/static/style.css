@@ -652,3 +652,96 @@
       background: rgba(255,255,255,0.2); padding: 2px 7px; border-radius: 4px;
       font-size: 13px;
     }
+
+    /* ---- Settings button ---- */
+    .settings-btn {
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-muted); padding: 5px 8px; cursor: pointer;
+      display: flex; align-items: center; transition: all 0.15s;
+    }
+    .settings-btn:hover { color: var(--text); border-color: var(--text-muted); }
+
+    /* ---- Settings modal ---- */
+    .settings-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s ease;
+    }
+    .settings-overlay.show { opacity: 1; }
+    .settings-modal {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      width: 420px; max-width: 90%;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+      transform: scale(0.95); transition: transform 0.2s ease;
+    }
+    .settings-overlay.show .settings-modal { transform: scale(1); }
+    .settings-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    }
+    .settings-header h2 { font-size: 16px; font-weight: 700; color: var(--text-heading); margin: 0; }
+    .settings-close {
+      background: none; border: none; color: var(--text-muted); cursor: pointer;
+      font-size: 18px; padding: 2px 6px; border-radius: 4px; line-height: 1;
+      transition: color 0.15s;
+    }
+    .settings-close:hover { color: var(--text); }
+    .settings-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 22px; }
+    .settings-section-title {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+    }
+    .settings-options { display: flex; gap: 10px; }
+    .settings-option {
+      flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+      padding: 12px 14px; border-radius: 8px; border: 2px solid var(--border);
+      cursor: pointer; transition: all 0.15s; position: relative;
+    }
+    .settings-option:hover { border-color: var(--text-muted); }
+    .settings-option input[type="radio"] {
+      position: absolute; top: 10px; right: 10px;
+      accent-color: var(--accent); width: 14px; height: 14px;
+    }
+    .settings-option-preview {
+      margin-bottom: 4px; display: flex; align-items: center; gap: 3px;
+    }
+    .settings-option-preview-toc {
+      width: 48px; height: 28px; border: 1px solid var(--border); border-radius: 4px;
+      overflow: hidden; display: flex; gap: 2px; padding: 3px;
+      background: var(--bg-surface);
+    }
+    .toc-preview-sidebar {
+      width: 14px; background: var(--border); border-radius: 2px; flex-shrink: 0;
+    }
+    .toc-preview-right {
+      width: 14px; background: var(--border); border-radius: 2px; flex-shrink: 0;
+    }
+    .toc-preview-content {
+      flex: 1; background: var(--bg-hover); border-radius: 2px;
+    }
+    .settings-option-label { font-size: 13px; font-weight: 600; color: var(--text-heading); }
+    .settings-option-desc { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
+    .settings-option:has(input:checked) { border-color: var(--accent); background: var(--accent-dim); }
+    body.light .settings-overlay { background: rgba(0,0,0,0.3); }
+    body.light .settings-modal { box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+
+    /* ---- TOC right panel ---- */
+    .toc-right-panel {
+      display: none;
+      position: fixed; top: var(--header-h); right: 0;
+      width: 240px; height: calc(100vh - var(--header-h));
+      background: var(--bg-surface); border-left: 1px solid var(--border);
+      z-index: 80; overflow-y: auto;
+      flex-direction: column;
+    }
+    body.toc-right .toc-right-panel { display: flex; }
+    body.toc-right .main { margin-right: 240px; }
+    body.toc-right .reading-progress { right: 240px; }
+    body.toc-right .back-to-top { right: 260px; }
+
+    @media (max-width: 900px) {
+      body.toc-right .toc-right-panel { display: none !important; }
+      body.toc-right .main { margin-right: 0 !important; }
+      body.toc-right .reading-progress { right: 0 !important; }
+      body.toc-right .back-to-top { right: 28px !important; }
+    }
