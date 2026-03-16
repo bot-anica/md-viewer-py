@@ -2,6 +2,9 @@ let FILES = [];
 let fileContents = {};
 let activeFileIdx = null;
 
+// ---- Tab state ----
+let openTabs = []; // [{idx, scrollPos}]
+
 // ---- Editor state ----
 let isEditMode = false;
 let easyMDE = null;
@@ -116,12 +119,65 @@ async function init() {
 
 function slugify(s) { return s.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase(); }
 
+// ---- Tab functions ----
+function saveCurrentTabScroll() {
+  if (activeFileIdx === null) return;
+  const tab = openTabs.find(t => t.idx === activeFileIdx);
+  if (tab) tab.scrollPos = document.body.scrollTop;
+}
+
+function renderTabBar() {
+  const bar = document.getElementById('tabBar');
+  if (!bar) return;
+  if (openTabs.length === 0) {
+    document.body.classList.remove('has-tabs');
+    return;
+  }
+  document.body.classList.add('has-tabs');
+  bar.innerHTML = openTabs.map(tab => {
+    const f = FILES[tab.idx];
+    const isActive = tab.idx === activeFileIdx;
+    return `<div class="tab-item${isActive ? ' active' : ''}" id="tab-${tab.idx}" onclick="tabClick(event,${tab.idx})" onmousedown="tabMousedown(event,${tab.idx})" title="${f.title}"><span class="tab-title">${f.name}</span><span class="tab-close" onclick="closeTab(event,${tab.idx})">&#x2715;</span></div>`;
+  }).join('');
+  const activeTabEl = document.getElementById('tab-' + activeFileIdx);
+  if (activeTabEl) activeTabEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+
+function tabClick(e, idx) {
+  if (idx === activeFileIdx) return;
+  saveCurrentTabScroll();
+  showFile(idx);
+}
+
+function tabMousedown(e, idx) {
+  if (e.button === 1) { e.preventDefault(); closeTab(e, idx); }
+}
+
+function closeTab(e, idx) {
+  e.stopPropagation();
+  const tabIdx = openTabs.findIndex(t => t.idx === idx);
+  if (tabIdx < 0) return;
+  openTabs.splice(tabIdx, 1);
+  if (idx === activeFileIdx) {
+    if (openTabs.length === 0) {
+      showDashboard();
+    } else {
+      const nextTab = openTabs[Math.min(tabIdx, openTabs.length - 1)];
+      showFile(nextTab.idx);
+    }
+  } else {
+    renderTabBar();
+  }
+}
+
 let _dashboardFolder = null; // null = root, string = subfolder path
 
 function showDashboard(folder) {
+  saveCurrentTabScroll();
   _dashboardFolder = folder || null;
   activeFileIdx = null;
   window.location.hash = '';
+  renderTabBar();
 
   // Hide file view elements
   document.getElementById('breadcrumbBar').style.display = 'none';
@@ -354,6 +410,9 @@ function createNavItem(f, indent) {
 }
 
 async function showFile(idx) {
+  saveCurrentTabScroll();
+  const existingTab = openTabs.find(t => t.idx === idx);
+
   // Hide dashboard
   const dashboard = document.getElementById('dashboard');
   if (dashboard) dashboard.style.display = 'none';
@@ -424,7 +483,11 @@ async function showFile(idx) {
   addHeadingAnchors();
   interceptMdLinks(content, f.path);
   runMermaid();
-  document.body.scrollTo({ top: 0 });
+
+  // Tab management
+  if (!openTabs.find(t => t.idx === idx)) openTabs.push({ idx, scrollPos: 0 });
+  renderTabBar();
+  document.body.scrollTo({ top: existingTab ? existingTab.scrollPos : 0 });
 
   if (window.innerWidth <= 900) {
     document.getElementById('sidebar').classList.remove('open');
