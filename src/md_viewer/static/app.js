@@ -659,7 +659,7 @@ function collapseSections(collapse) {
 let tocAutoMode = true; // auto-open/close TOC groups on scroll
 let tocHeadings = [];   // [{el, slug, level, tocEl, groupEl, childrenEl}]
 
-let _tocExpanded = false;
+let _sidebarTocExpanded = false;
 
 function buildToc() {
   const container = document.getElementById('tocContainer');
@@ -674,9 +674,10 @@ function buildToc() {
   const tocCollapserBtn = inRightPanel
     ? `<button class="toc-panel-collapser" onclick="toggleTocCollapse()" title="Collapse TOC panel"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,18 15,12 9,6"/></svg></button>`
     : '';
+  const tocIsExpanded = inRightPanel ? true : _sidebarTocExpanded;
   toolbar.innerHTML = `
     <div class="sidebar-section-label toc-toggle">
-      <span class="toc-header-chevron${_tocExpanded ? '' : ' collapsed'}">&#9660;</span>On this page
+      <span class="toc-header-chevron${tocIsExpanded ? '' : ' collapsed'}">&#9660;</span>On this page
     </div>
     <div class="toc-btns">
       <button class="collapse-btn" onclick="tocCollapseAll()" title="Collapse TOC"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 8,5 2,10" fill="currentColor"/></svg></button>
@@ -688,9 +689,9 @@ function buildToc() {
 
   // Content wrapper — preserve expanded state across file switches
   const tocContent = document.createElement('div');
-  tocContent.className = 'toc-content' + (_tocExpanded ? '' : ' collapsed');
+  tocContent.className = 'toc-content' + (tocIsExpanded ? '' : ' collapsed');
   container.appendChild(tocContent);
-  if (_tocExpanded) container.classList.add('toc-expanded');
+  if (tocIsExpanded) container.classList.add('toc-expanded');
 
   // Toggle toc-content on "On this page" label click (disabled in right panel)
   const toggleLabel = toolbar.querySelector('.toc-toggle');
@@ -701,7 +702,7 @@ function buildToc() {
     tocContent.classList.toggle('collapsed');
     headerChevron.classList.toggle('collapsed');
     container.classList.toggle('toc-expanded');
-    _tocExpanded = !_tocExpanded;
+    _sidebarTocExpanded = !_sidebarTocExpanded;
   };
 
   const headings = document.querySelectorAll('.md h2, .md h3');
@@ -1327,7 +1328,7 @@ function closeWhatsNew() {
 }
 
 // ---- Sidebar collapse ----
-let _sidebarCollapsed = localStorage.getItem('mdviewer_sidebar_collapsed') !== 'false';
+let _sidebarCollapsed = localStorage.getItem('mdviewer_sidebar_collapsed') === 'true';
 function toggleSidebarCollapse() {
   _sidebarCollapsed = !_sidebarCollapsed;
   localStorage.setItem('mdviewer_sidebar_collapsed', _sidebarCollapsed);
