@@ -286,11 +286,11 @@
       .md thead th, .md tbody td { padding: 7px 8px; }
     }
 
-    @page { margin: 15mm; }
+    @page { margin: 0; }
 
     @media print {
       html { overflow: visible !important; height: auto !important; }
-      body { overflow: visible !important; height: auto !important; }
+      body { overflow: visible !important; height: auto !important; padding: 15mm !important; }
       .header, .sidebar, .reading-progress, .back-to-top,
       .tab-bar, .content-toolbar, .toc-right-panel { display: none !important; }
       .main { margin-left: 0; }
