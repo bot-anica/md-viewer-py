@@ -298,6 +298,8 @@
       .md thead th { background: #f0f0f0; color: #333; }
       .md code { background: #f5f5f5; color: #333; border-color: #ddd; }
       .md pre { background: #f5f5f5; border-color: #ddd; }
+      .md .section-body.collapsed { display: block !important; }
+      .md h2::before, .md h3::before, .md h4::before { display: none !important; }
     }
 
     /* ---- Light theme ---- */
