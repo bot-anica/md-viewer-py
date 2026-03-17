@@ -1474,19 +1474,16 @@ window.addEventListener('resize', () => {
   moveTocToPosition();
 });
 
-// ---- Print: set document title and populate header/footer ----
+// ---- Print: set document title to active filename ----
 let _savedTitle = '';
 window.addEventListener('beforeprint', () => {
   _savedTitle = document.title;
   if (activeFileIdx !== null && FILES[activeFileIdx]) {
-    const label = FILES[activeFileIdx].title || FILES[activeFileIdx].name;
-    document.title = label;
-    document.getElementById('printHeader').textContent = label;
+    document.title = FILES[activeFileIdx].title || FILES[activeFileIdx].name;
   }
 });
 window.addEventListener('afterprint', () => {
   document.title = _savedTitle;
-  document.getElementById('printHeader').textContent = '';
 });
 
 initSettings();
