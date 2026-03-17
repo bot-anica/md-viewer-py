@@ -286,6 +286,8 @@
       .md thead th, .md tbody td { padding: 7px 8px; }
     }
 
+    @page { margin: 15mm; }
+
     @media print {
       html { overflow: visible !important; height: auto !important; }
       body { overflow: visible !important; height: auto !important; }
