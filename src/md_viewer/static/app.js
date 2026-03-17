@@ -1327,6 +1327,42 @@ function closeWhatsNew() {
   overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
 }
 
+// ---- Update notification modal ----
+async function checkUpdateNotif() {
+  try {
+    const resp = await fetch('/api/version');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    if (!data.latest_version || !data.version) return;
+    if (data.latest_version === data.version) return;
+    // Simple version comparison: show if latest_version > version
+    const parse = v => v.split('.').map(Number);
+    const cur = parse(data.version);
+    const lat = parse(data.latest_version);
+    for (let i = 0; i < Math.max(cur.length, lat.length); i++) {
+      const a = cur[i] || 0, b = lat[i] || 0;
+      if (b > a) break;
+      if (b < a) return; // current is somehow newer, skip
+    }
+    const dismissed = localStorage.getItem('mdviewer_update_dismissed');
+    if (dismissed === data.latest_version) return;
+    document.getElementById('updateNotifLatestVersion').textContent = 'v' + data.latest_version;
+    document.getElementById('updateNotifCurrentVersion').textContent = 'v' + data.version;
+    const overlay = document.getElementById('updateNotifOverlay');
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => overlay.classList.add('show'));
+  } catch {}
+}
+
+function closeUpdateNotif() {
+  const overlay = document.getElementById('updateNotifOverlay');
+  const latestEl = document.getElementById('updateNotifLatestVersion');
+  const latest = latestEl ? latestEl.textContent.replace(/^v/, '') : '';
+  if (latest) localStorage.setItem('mdviewer_update_dismissed', latest);
+  overlay.classList.remove('show');
+  overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
+}
+
 // ---- Sidebar collapse ----
 let _sidebarCollapsed = localStorage.getItem('mdviewer_sidebar_collapsed') === 'true';
 function toggleSidebarCollapse() {
@@ -1441,3 +1477,4 @@ window.addEventListener('resize', () => {
 initSettings();
 init();
 checkWhatsNew();
+checkUpdateNotif();

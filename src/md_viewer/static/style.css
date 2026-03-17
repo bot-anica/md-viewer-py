@@ -650,6 +650,36 @@
     body.light .whats-new-overlay { background: rgba(0,0,0,0.3); }
     body.light .whats-new-modal { box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
 
+    /* ---- Update notification modal ---- */
+    .update-notif-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s ease;
+    }
+    .update-notif-overlay.show { opacity: 1; }
+    .update-notif-modal {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 28px 32px; max-width: 420px; width: 90%;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+      transform: scale(0.95); transition: transform 0.2s ease;
+    }
+    .update-notif-overlay.show .update-notif-modal { transform: scale(1); }
+    .update-notif-modal h2 { font-size: 20px; font-weight: 700; color: var(--text-heading); margin: 0 0 16px; }
+    .update-notif-modal p { font-size: 13.5px; color: var(--text); margin: 0 0 10px; line-height: 1.6; }
+    .update-notif-modal pre {
+      background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 6px;
+      padding: 10px 14px; font-size: 13px; font-family: monospace; color: var(--accent);
+      margin: 0 0 20px; overflow-x: auto; user-select: all;
+    }
+    .update-notif-modal button {
+      background: var(--accent); color: #fff; border: none; border-radius: 8px;
+      padding: 8px 24px; font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .update-notif-modal button:hover { opacity: 0.85; }
+    body.light .update-notif-overlay { background: rgba(0,0,0,0.3); }
+    body.light .update-notif-modal { box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+
     /* ---- Server stopped banner ---- */
     .server-stopped {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;

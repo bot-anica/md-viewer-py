@@ -118,7 +118,7 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         if path == "/api/version":
-            payload = {"version": __version__, "release_notes": _release_notes or ""}
+            payload = {"version": __version__, "release_notes": _release_notes or "", "latest_version": _latest_version or ""}
             data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             self._send_gzip(data, "application/json")
             return
@@ -210,15 +210,18 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
 
 
 _release_notes = None
+_latest_version = None
 
 
 def _check_for_update():
-    global _release_notes
+    global _release_notes, _latest_version
     try:
         with urlopen("https://api.github.com/repos/bot-anica/md-viewer-py/releases/latest", timeout=3) as resp:
             data = json.loads(resp.read())
         latest = data.get("tag_name", "").lstrip("v")
         _release_notes = data.get("body", "")
+        if latest:
+            _latest_version = latest
         if latest and latest != __version__:
             return f"v{latest} available (pip install -U md-viewer-py)"
     except Exception:

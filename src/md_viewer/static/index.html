@@ -169,6 +169,17 @@ __STYLE__
     </div>
   </div>
 
+  <div class="update-notif-overlay" id="updateNotifOverlay" style="display:none" onclick="if(event.target===this)closeUpdateNotif()">
+    <div class="update-notif-modal">
+      <h2>Update Available</h2>
+      <p>A newer version of md-viewer-py is available: <span class="version-badge" id="updateNotifLatestVersion"></span></p>
+      <p>You are running <span class="version-badge" id="updateNotifCurrentVersion"></span></p>
+      <p>Run the following command to update:</p>
+      <pre id="updateNotifCmd">pip install -U md-viewer-py</pre>
+      <button onclick="closeUpdateNotif()">Dismiss</button>
+    </div>
+  </div>
+
 <script>
 __SCRIPT__
 </script>
