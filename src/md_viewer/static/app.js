@@ -1479,7 +1479,7 @@ let _savedTitle = '';
 window.addEventListener('beforeprint', () => {
   _savedTitle = document.title;
   if (activeFileIdx !== null && FILES[activeFileIdx]) {
-    document.title = FILES[activeFileIdx].title || FILES[activeFileIdx].name;
+    document.title = FILES[activeFileIdx].name;
   }
 });
 window.addEventListener('afterprint', () => {
