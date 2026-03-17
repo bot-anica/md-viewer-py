@@ -288,9 +288,11 @@
 
     @page { margin: 0; }
 
+    .print-header, .print-footer { display: none; }
+
     @media print {
       html { overflow: visible !important; height: auto !important; }
-      body { overflow: visible !important; height: auto !important; padding: 15mm !important; }
+      body { overflow: visible !important; height: auto !important; padding-top: 20mm !important; padding-bottom: 20mm !important; padding-left: 15mm !important; padding-right: 15mm !important; }
       .header, .sidebar, .reading-progress, .back-to-top,
       .tab-bar, .content-toolbar, .toc-right-panel { display: none !important; }
       .main { margin-left: 0; }
@@ -302,6 +304,26 @@
       .md pre { background: #f5f5f5; border-color: #ddd; }
       .md .section-body.collapsed { display: block !important; }
       .md h2::before, .md h3::before, .md h4::before { display: none !important; }
+
+      .print-header {
+        display: flex !important;
+        position: fixed; top: 0; left: 0; right: 0;
+        height: 20mm; padding: 5mm 15mm;
+        font-size: 12px; font-weight: 600; color: #333;
+        border-bottom: 0.5px solid #ccc;
+        align-items: flex-end;
+        background: #fff;
+      }
+      .print-footer {
+        display: flex !important;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        height: 20mm; padding: 5mm 15mm;
+        font-size: 10px; color: #666;
+        border-top: 0.5px solid #ccc;
+        align-items: flex-start; justify-content: flex-end;
+        background: #fff;
+      }
+      .print-page-num::before { content: counter(page); }
     }
 
     /* ---- Light theme ---- */
