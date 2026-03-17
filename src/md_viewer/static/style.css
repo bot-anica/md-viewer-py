@@ -290,10 +290,10 @@
 
     @media print {
       html { overflow: visible !important; height: auto !important; }
-      body { overflow: visible !important; height: auto !important; }
+      body { overflow: visible !important; height: auto !important; min-height: 0 !important; }
       .header, .sidebar, .reading-progress, .back-to-top,
       .tab-bar, .content-toolbar, .toc-right-panel { display: none !important; }
-      .main { margin-left: 0; }
+      .main { margin-left: 0; min-height: 0 !important; padding-top: 0 !important; }
       .content-wrapper { max-width: 100%; padding: 20px; }
       .md, .md h1, .md h2, .md h3, .md strong { color: #000; }
       .md table { border-color: #ccc; }
