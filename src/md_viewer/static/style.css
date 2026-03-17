@@ -287,7 +287,10 @@
     }
 
     @media print {
-      .header, .sidebar, .reading-progress, .back-to-top { display: none !important; }
+      html { overflow: visible !important; height: auto !important; }
+      body { overflow: visible !important; height: auto !important; }
+      .header, .sidebar, .reading-progress, .back-to-top,
+      .tab-bar, .content-toolbar, .toc-right-panel { display: none !important; }
       .main { margin-left: 0; }
       .content-wrapper { max-width: 100%; padding: 20px; }
       .md, .md h1, .md h2, .md h3, .md strong { color: #000; }
