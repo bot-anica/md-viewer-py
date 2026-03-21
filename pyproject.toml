@@ -31,4 +31,4 @@ version = {attr = "md_viewer.__version__"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-md_viewer = ["static/*"]
+md_viewer = ["static/*", "static/js/*", "static/css/*"]
