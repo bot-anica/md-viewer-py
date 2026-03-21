@@ -1,0 +1,73 @@
+    @media print {
+      html {
+        overflow: visible !important;
+        height: auto !important;
+      }
+
+      body {
+        overflow: visible !important;
+        height: auto !important;
+        min-height: 0 !important;
+      }
+
+      .header,
+      .sidebar,
+      .reading-progress,
+      .back-to-top,
+      .tab-bar,
+      .content-toolbar,
+      .toc-right-panel,
+      .infile-search-bar {
+        display: none !important;
+      }
+
+      .main {
+        margin-left: 0;
+        min-height: 0 !important;
+        padding-top: 0 !important;
+      }
+
+      .content-wrapper {
+        max-width: 100%;
+        padding: 20px;
+      }
+
+      .md,
+      .md h1,
+      .md h2,
+      .md h3,
+      .md strong {
+        color: #000;
+      }
+
+      .md table {
+        border-color: #ccc;
+      }
+
+      .md thead th {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      .md code {
+        background: #f5f5f5;
+        color: #333;
+        border-color: #ddd;
+      }
+
+      .md pre {
+        background: #f5f5f5;
+        border-color: #ddd;
+      }
+
+      .md .section-body.collapsed {
+        display: block !important;
+      }
+
+      .md h2::before,
+      .md h3::before,
+      .md h4::before {
+        display: none !important;
+      }
+    }
+

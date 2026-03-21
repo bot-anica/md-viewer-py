@@ -1,0 +1,129 @@
+    /* ---- Light theme ---- */
+    body.light {
+      color-scheme: light;
+      --bg: #ffffff;
+      --bg-surface: #f6f8fa;
+      --bg-card: #f0f2f5;
+      --bg-hover: #e8eaed;
+      --border: #d0d7de;
+      --text: #24292f;
+      --text-muted: #57606a;
+      --text-heading: #1c2128;
+      --accent: #0969da;
+      --accent-dim: rgba(9, 105, 218, 0.1);
+      --green: #1a7f37;
+      --green-dim: rgba(26, 127, 55, 0.1);
+      --amber: #9a6700;
+      --amber-dim: rgba(154, 103, 0, 0.1);
+      --red: #cf222e;
+      --cyan: #0550ae;
+    }
+
+    /* ---- Heading anchor links ---- */
+    .heading-anchor {
+      opacity: 0;
+      margin-left: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 0.8em;
+      transition: opacity 0.15s;
+      vertical-align: middle;
+    }
+
+    .md h1:hover .heading-anchor,
+    .md h2:hover .heading-anchor,
+    .md h3:hover .heading-anchor,
+    .md h4:hover .heading-anchor {
+      opacity: 1;
+    }
+
+    /* ---- Theme toggle button ---- */
+    .theme-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      padding: 5px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+
+    .theme-toggle:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    /* ---- Mermaid diagrams ---- */
+    .mermaid {
+      text-align: center;
+      margin: 14px 0;
+      overflow-x: auto;
+    }
+
+    .mermaid svg {
+      max-width: 100%;
+    }
+
+    /* ---- Syntax highlight override (ensure pre padding not doubled) ---- */
+    .md pre:has(.hljs) {
+      padding: 0;
+    }
+
+    .md pre .hljs {
+      padding: 18px;
+      display: block;
+      border-radius: 10px;
+      font-size: 12.5px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    /* ---- Copy button ---- */
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 4px 7px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.15s, background 0.15s, color 0.15s;
+      z-index: 10;
+      line-height: 1;
+    }
+
+    .md pre:hover .copy-btn {
+      opacity: 1;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    .copy-btn.copied {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    body.light .copy-btn {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    body.light .copy-btn:hover {
+      background: rgba(0, 0, 0, 0.08);
+    }
+

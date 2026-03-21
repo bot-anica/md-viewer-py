@@ -25,8 +25,18 @@ _STATIC_DIR = Path(__file__).parent / "static"
 
 def _build_html():
     html = (_STATIC_DIR / "index.html").read_text(encoding="utf-8")
-    css = (_STATIC_DIR / "style.css").read_text(encoding="utf-8")
-    js = (_STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    css_dir = _STATIC_DIR / "css"
+    js_dir = _STATIC_DIR / "js"
+    css = "".join(
+        p.read_text(encoding="utf-8")
+        for p in sorted(css_dir.iterdir())
+        if p.suffix == ".css"
+    )
+    js = "".join(
+        p.read_text(encoding="utf-8")
+        for p in sorted(js_dir.iterdir())
+        if p.suffix == ".js"
+    )
     logo = base64.b64encode((_STATIC_DIR / "logo.png").read_bytes()).decode("ascii")
     return (
         html.replace("__STYLE__", css)

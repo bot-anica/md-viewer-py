@@ -1,0 +1,431 @@
+    /* ---- What's New modal ---- */
+    .whats-new-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .whats-new-overlay.show {
+      opacity: 1;
+    }
+
+    .whats-new-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      max-width: 480px;
+      width: 90%;
+      max-height: 70vh;
+      overflow-y: auto;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
+    }
+
+    .whats-new-overlay.show .whats-new-modal {
+      transform: scale(1);
+    }
+
+    .whats-new-modal h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin: 0 0 4px;
+    }
+
+    .whats-new-modal .version-badge {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: block;
+    }
+
+    .whats-new-body {
+      font-size: 13.5px;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .whats-new-body h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-heading);
+      margin: 12px 0 6px;
+    }
+
+    .whats-new-body ul {
+      padding-left: 20px;
+      margin: 6px 0;
+    }
+
+    .whats-new-body li {
+      padding: 3px 0;
+    }
+
+    .whats-new-body strong {
+      color: var(--text-heading);
+    }
+
+    .whats-new-modal button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .whats-new-modal button:hover {
+      opacity: 0.85;
+    }
+
+    body.light .whats-new-overlay {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    body.light .whats-new-modal {
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+    }
+
+    /* ---- Update notification modal ---- */
+    .update-notif-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .update-notif-overlay.show {
+      opacity: 1;
+    }
+
+    .update-notif-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
+    }
+
+    .update-notif-overlay.show .update-notif-modal {
+      transform: scale(1);
+    }
+
+    .update-notif-modal h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin: 0 0 16px;
+    }
+
+    .update-notif-modal p {
+      font-size: 13.5px;
+      color: var(--text);
+      margin: 0 0 10px;
+      line-height: 1.6;
+    }
+
+    .update-notif-modal pre {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-family: monospace;
+      color: var(--accent);
+      margin: 0 0 20px;
+      overflow-x: auto;
+      user-select: all;
+    }
+
+    .update-notif-modal button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .update-notif-modal button:hover {
+      opacity: 0.85;
+    }
+
+    body.light .update-notif-overlay {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    body.light .update-notif-modal {
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+    }
+
+    /* ---- Server stopped banner ---- */
+    .server-stopped {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 400;
+      padding: 14px 24px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      background: var(--red, #e05252);
+      color: #fff;
+    }
+
+    .server-stopped code {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    /* ---- Shortcuts button ---- */
+    .shortcuts-btn {
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-muted); padding: 5px 8px; cursor: pointer;
+      display: flex; align-items: center; transition: all 0.15s;
+    }
+    .shortcuts-btn:hover { color: var(--text); border-color: var(--text-muted); }
+
+    /* ---- Shortcuts modal ---- */
+    .shortcuts-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s ease;
+    }
+    .shortcuts-overlay.show { opacity: 1; }
+    .shortcuts-modal {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      width: 460px; max-width: 90%;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+      transform: scale(0.95); transition: transform 0.2s ease;
+    }
+    .shortcuts-overlay.show .shortcuts-modal { transform: scale(1); }
+    .shortcuts-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 18px; }
+    .shortcuts-section { display: flex; flex-direction: column; gap: 8px; }
+    .shortcuts-table { width: 100%; border-collapse: collapse; }
+    .shortcuts-table tr td { padding: 5px 0; font-size: 13px; color: var(--text); vertical-align: middle; }
+    .shortcuts-table tr td:first-child { white-space: nowrap; padding-right: 16px; width: 1%; }
+    .shortcuts-table tr td:last-child { color: var(--text-muted); }
+    body.light .shortcuts-overlay { background: rgba(0,0,0,0.3); }
+    body.light .shortcuts-modal { box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+
+    /* ---- Settings button ---- */
+    .settings-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      padding: 5px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s;
+    }
+
+    .settings-btn:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    /* ---- Settings modal ---- */
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .settings-overlay.show {
+      opacity: 1;
+    }
+
+    .settings-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 420px;
+      max-width: 90%;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
+    }
+
+    .settings-overlay.show .settings-modal {
+      transform: scale(1);
+    }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin: 0;
+    }
+
+    .settings-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+
+    .settings-close:hover {
+      color: var(--text);
+    }
+
+    .settings-body {
+      padding: 20px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .settings-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .settings-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .settings-option {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .settings-option:hover {
+      border-color: var(--text-muted);
+    }
+
+    .settings-option input[type="radio"] {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      accent-color: var(--accent);
+      width: 14px;
+      height: 14px;
+    }
+
+    .settings-option-preview {
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .settings-option-preview-toc {
+      width: 48px;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      gap: 2px;
+      padding: 3px;
+      background: var(--bg-surface);
+    }
+
+    .toc-preview-sidebar {
+      width: 14px;
+      background: var(--border);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .toc-preview-right {
+      width: 14px;
+      background: var(--border);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .toc-preview-content {
+      flex: 1;
+      background: var(--bg-hover);
+      border-radius: 2px;
+    }
+
+    .settings-option-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-heading);
+    }
+
+    .settings-option-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .settings-option:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    body.light .settings-overlay {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    body.light .settings-modal {
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+    }
+

@@ -1,0 +1,229 @@
+    /* ---- TOC right panel ---- */
+    .toc-right-panel {
+      display: none;
+      position: fixed;
+      top: var(--header-h);
+      right: 6px;
+      width: 240px;
+      height: calc(100vh - var(--header-h));
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border);
+      z-index: 80;
+      overflow-y: auto;
+      flex-direction: column;
+    }
+
+    body.toc-right .toc-right-panel {
+      display: flex;
+    }
+
+    body.toc-right .main {
+      margin-right: 246px;
+    }
+
+    body.toc-right .reading-progress {
+      right: 246px;
+    }
+
+    body.toc-right .back-to-top {
+      right: 266px;
+    }
+
+    @media (max-width: 900px) {
+      body.toc-right .toc-right-panel {
+        display: none !important;
+      }
+
+      body.toc-right .main {
+        margin-right: 0 !important;
+      }
+
+      body.toc-right .reading-progress {
+        right: 0 !important;
+      }
+
+      body.toc-right .back-to-top {
+        right: 28px !important;
+      }
+    }
+
+    /* ---- Hide right TOC panel when no file active ---- */
+    body.toc-right.no-active-file .toc-right-panel {
+      display: none;
+    }
+
+    body.toc-right.no-active-file .main {
+      margin-right: 0;
+    }
+
+    body.toc-right.no-active-file .tab-bar {
+      right: 0;
+    }
+
+    body.toc-right.no-active-file .reading-progress {
+      right: 0;
+    }
+
+    body.toc-right.no-active-file .back-to-top {
+      right: 28px;
+    }
+
+    body.toc-right.no-active-file .infile-search-bar {
+      right: 0;
+    }
+
+    /* ---- Sidebar mini (collapsed) view ---- */
+    .sidebar-mini {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0 0;
+      gap: 8px;
+      flex: 1;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    body.sidebar-collapsed .sidebar-mini {
+      display: flex;
+    }
+
+    body.sidebar-collapsed .sidebar-toolbar,
+    body.sidebar-collapsed .file-filter,
+    body.sidebar-collapsed #navItems,
+    body.sidebar-collapsed .toc-container {
+      display: none !important;
+    }
+
+    .sidebar-mini-search {
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .sidebar-mini-label {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    body.sidebar-collapsed .sidebar {
+      width: 44px;
+    }
+
+    body.sidebar-collapsed .main {
+      margin-left: 44px;
+    }
+
+    body.sidebar-collapsed .tab-bar {
+      left: 44px;
+    }
+
+    body.sidebar-collapsed .reading-progress {
+      left: 44px;
+    }
+
+    body.sidebar-collapsed .infile-search-bar {
+      left: 44px;
+    }
+
+    @media (max-width: 900px) {
+      body.sidebar-collapsed .sidebar {
+        width: var(--sidebar-w);
+      }
+
+      body.sidebar-collapsed .main {
+        margin-left: 0;
+      }
+
+      body.sidebar-collapsed .tab-bar {
+        left: 0;
+      }
+
+      body.sidebar-collapsed .reading-progress {
+        left: 0;
+      }
+
+      body.sidebar-collapsed .infile-search-bar {
+        left: 0;
+      }
+    }
+
+    /* ---- TOC right panel collapse button ---- */
+    .toc-panel-collapser {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s;
+    }
+
+    .toc-panel-collapser:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    /* ---- TOC right mini (collapsed) view ---- */
+    .toc-right-mini {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      flex: 1;
+      cursor: pointer;
+      overflow: hidden;
+      width: 44px;
+    }
+
+    body.toc-right.toc-collapsed .toc-right-mini {
+      display: flex;
+    }
+
+    body.toc-right.toc-collapsed #tocContainer {
+      display: none !important;
+    }
+
+    .toc-right-mini-label {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    body.toc-right.toc-collapsed .toc-right-panel {
+      width: 44px;
+      overflow: hidden;
+    }
+
+    body.toc-right.toc-collapsed .main {
+      margin-right: 50px;
+    }
+
+    body.toc-right.toc-collapsed .tab-bar {
+      right: 50px;
+    }
+
+    body.toc-right.toc-collapsed .reading-progress {
+      right: 50px;
+    }
+
+    body.toc-right.toc-collapsed .back-to-top {
+      right: 70px;
+    }
+
+    body.toc-right.toc-collapsed .infile-search-bar {
+      right: 50px;
+    }
