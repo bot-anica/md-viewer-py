@@ -1,3 +1,4 @@
+import argparse
 import base64
 import gzip
 import hashlib
@@ -229,19 +230,77 @@ def _check_for_update():
     return None
 
 
+def _build_arg_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="md-viewer",
+        description="Serve a directory of Markdown files in your browser.",
+    )
+    parser.add_argument(
+        "directory",
+        nargs="?",
+        default=None,
+        help="Directory to serve (default: current directory)",
+    )
+    # Hidden legacy positional: md-viewer <dir> <port>
+    parser.add_argument(
+        "_legacy_port",
+        nargs="?",
+        default=None,
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "-p", "--port",
+        type=int,
+        default=8080,
+        metavar="PORT",
+        help="Port to listen on, 1-65535 (default: 8080)",
+    )
+    parser.add_argument(
+        "--host",
+        default="",
+        metavar="HOST",
+        help="Host/address to bind (default: all interfaces)",
+    )
+    parser.add_argument(
+        "--no-browser",
+        action="store_true",
+        help="Don't open browser automatically",
+    )
+    parser.add_argument(
+        "--version", "-V",
+        action="version",
+        version=f"%(prog)s {__version__}",
+    )
+    return parser
+
+
 def main():
-    root_dir = Path.cwd()
-    port = 8080
+    parser = _build_arg_parser()
+    args = parser.parse_args()
 
-    if len(sys.argv) >= 2:
-        arg1 = sys.argv[1]
-        if arg1.isdigit():
-            port = int(arg1)
-        else:
-            root_dir = Path(arg1).resolve()
+    # Validate port range
+    if not (1 <= args.port <= 65535):
+        parser.error(f"--port must be between 1 and 65535, got {args.port}")
 
-    if len(sys.argv) >= 3:
-        port = int(sys.argv[2])
+    # Resolve directory and port from positional args (legacy two-arg form)
+    root_dir = Path(args.directory).resolve() if args.directory else Path.cwd()
+    port = args.port
+
+    # Legacy: md-viewer <dir> <port>  — second positional overrides --port
+    if args._legacy_port is not None:
+        try:
+            port = int(args._legacy_port)
+            if not (1 <= port <= 65535):
+                parser.error(f"port must be between 1 and 65535, got {port}")
+        except ValueError:
+            parser.error(f"port must be an integer, got {args._legacy_port!r}")
+
+    # Legacy: md-viewer <port>  — single digit-only positional means port
+    if args.directory is not None and args._legacy_port is None and args.directory.isdigit():
+        port = int(args.directory)
+        root_dir = Path.cwd()
+
+    host = args.host
 
     os.chdir(root_dir)
     ViewerHandler.root_dir = root_dir
@@ -255,7 +314,7 @@ def main():
     max_attempts = 10
     for attempt in range(max_attempts):
         try:
-            server = http.server.ThreadingHTTPServer(("", port), ViewerHandler)
+            server = http.server.ThreadingHTTPServer((host, port), ViewerHandler)
             break
         except OSError:
             port += 1
@@ -274,15 +333,16 @@ def main():
     print(f"  {'─' * 40}")
     print(f"  Press Ctrl+C to stop\n")
 
-    def _open_browser():
-        import time
-        time.sleep(0.5)
-        try:
-            webbrowser.open(url)
-        except Exception:
-            pass
+    if not args.no_browser:
+        def _open_browser():
+            import time
+            time.sleep(0.5)
+            try:
+                webbrowser.open(url)
+            except Exception:
+                pass
 
-    threading.Thread(target=_open_browser, daemon=True).start()
+        threading.Thread(target=_open_browser, daemon=True).start()
 
     try:
         server.serve_forever()
