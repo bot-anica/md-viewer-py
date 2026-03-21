@@ -70,10 +70,9 @@
 
     /* ---- Header search (inline in header) ---- */
     .header-search {
-      display: none; flex: 1; position: relative;
-      max-width: 480px; align-items: center;
+      display: flex; flex: 1; position: relative;
+      align-items: center;
     }
-    body.has-tabs .header-search { display: flex; }
     .header-search-icon {
       position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
       pointer-events: none; color: var(--text-muted); z-index: 1;
