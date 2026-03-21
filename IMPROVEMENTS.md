@@ -11,22 +11,22 @@
 
 ## Medium: UX/UI
 
-7. [ ] **No OS dark mode detection** — doesn't check `prefers-color-scheme`, always defaults to dark
+7. [x] **No OS dark mode detection** — doesn't check `prefers-color-scheme`, always defaults to dark
 8. ~~**TOC collapsed by default** — users must click to expand Table of Contents~~
 9. [x] **No scroll position memory** — navigating back loses your place
 10. [ ] **Search limited to 15 results** (`app.js:549`) — hard-coded, no "show more"
-11. [ ] **Non-deterministic heading IDs** (`app.js:631`) — uses `Math.random()`, breaks anchor links on refresh. Should slugify heading text
-12. [ ] **Breadcrumb spans not clickable** — breadcrumb is decorative only, should navigate
+11. [x] **Non-deterministic heading IDs** (`app.js:631`) — uses `Math.random()`, breaks anchor links on refresh. Should slugify heading text
+12. [x] **Breadcrumb spans not clickable** — breadcrumb is decorative only, should navigate
 13. [ ] **No keyboard shortcut help** — no `?` modal showing available shortcuts
-14. [ ] **No file name filter** — can only search content, not filter the file tree by name
+14. [x] **No file name filter** — can only search content, not filter the file tree by name
 
 ## Low: Code Quality & Tech Debt
 
-15. [ ] **Naive argument parsing** (`server.py:80-88`) — no `--help`, no port range validation, order-dependent args. Consider `argparse`
+15. [x] **Naive argument parsing** (`server.py:80-88`) — no `--help`, no port range validation, order-dependent args. Consider `argparse`
 16. [x] **Incomplete .gitignore parsing** (`scanner.py:33`) — negation patterns (`!pattern`) skipped. Subdirectory .gitignore files now supported
 17. [ ] **No max file size limit** (`server.py:63`) — `read_bytes()` loads entire file into memory, large files could OOM
 18. [ ] **Global JS state** (`app.js:1-4`) — `FILES`, `fileContents`, `activeFileIdx` as globals with no encapsulation
-19. [ ] **Mermaid errors silently swallowed** (`app.js:29`) — empty `catch` block, user gets no feedback on diagram syntax errors
+19. [x] **Mermaid errors silently swallowed** (`app.js:29`) — empty `catch` block, user gets no feedback on diagram syntax errors
 20. ~~**Python 3.8 minimum** (`pyproject.toml:11`) — 3.8 is EOL since Nov 2024, bump to 3.10+~~
 21. [x] **No symlink protection** (`scanner.py:57`) — `rglob` follows symlinks, could loop or escape root directory
 

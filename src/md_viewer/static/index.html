@@ -26,11 +26,13 @@ __STYLE__
       <img class="icon" src="data:image/png;base64,__LOGO__" alt="MD">
       <span>Markdown Viewer</span>
     </div>
-    <div class="header-search" id="headerSearch">
-      <svg class="header-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
-      <input type="text" id="search" placeholder="Search across all files..." oninput="handleSearch(this.value)" autocomplete="off" onkeydown="handleSearchKeydown(event)">
-      <span class="kbd-hints" id="searchKbdHint"></span>
-      <div class="header-search-dropdown" id="searchResults"></div>
+    <div class="header-search-wrapper">
+      <div class="header-search" id="headerSearch">
+        <svg class="header-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+        <input type="text" id="search" placeholder="Search across all files..." oninput="handleSearch(this.value)" autocomplete="off" onkeydown="handleSearchKeydown(event)">
+        <span class="kbd-hints" id="searchKbdHint"></span>
+        <div class="header-search-dropdown" id="searchResults"></div>
+      </div>  
     </div>
     <div class="header-meta">
       <span class="header-badge badge-path" id="badgePath"></span>
@@ -57,7 +59,6 @@ __STYLE__
       <svg class="sidebar-mini-search" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
       <span class="sidebar-mini-label">Explorer</span>
     </div>
-
   </nav>
 
   <div class="reading-progress"><div class="reading-progress-bar" id="progressBar"></div></div>
