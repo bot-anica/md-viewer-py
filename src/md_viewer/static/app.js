@@ -10,6 +10,11 @@ let isEditMode = false;
 let easyMDE = null;
 let originalContent = '';
 
+// ---- In-file search state ----
+let _infileMatches = [];
+let _infileActiveIdx = -1;
+let _infileSearchOpen = false;
+
 // ---- Configure marked with mermaid renderer ----
 marked.use({
   renderer: {
@@ -582,6 +587,7 @@ function createNavItem(f, indent) {
 
 async function showFile(idx) {
   saveCurrentTabScroll();
+  closeInfileSearch();
   const existingTab = openTabs.find(t => t.idx === idx);
 
   // Hide dashboard and search view
@@ -934,6 +940,114 @@ function updateScrollSpy() {
   active.tocEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
+// ---- In-file search functions ----
+function openInfileSearch() {
+  if (activeFileIdx === null) return;
+  _infileSearchOpen = true;
+  const bar = document.getElementById('infileSearchBar');
+  bar.style.display = 'flex';
+  const input = document.getElementById('infileSearchInput');
+  input.focus();
+  input.select();
+}
+
+function closeInfileSearch() {
+  _infileSearchOpen = false;
+  document.getElementById('infileSearchBar').style.display = 'none';
+  document.getElementById('infileSearchInput').value = '';
+  document.getElementById('infileSearchCount').textContent = '';
+  clearInfileHighlights();
+}
+
+function clearInfileHighlights() {
+  _infileMatches = [];
+  _infileActiveIdx = -1;
+  const content = document.getElementById('content');
+  content.querySelectorAll('mark.infile-match, mark.infile-match-active').forEach(mark => {
+    const parent = mark.parentNode;
+    parent.replaceChild(document.createTextNode(mark.textContent), mark);
+    parent.normalize();
+  });
+}
+
+function handleInfileSearch(query) {
+  clearInfileHighlights();
+  const countEl = document.getElementById('infileSearchCount');
+  if (!query || query.length < 1) { countEl.textContent = ''; return; }
+
+  const content = document.getElementById('content');
+  const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null);
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+  const lowerQuery = query.toLowerCase();
+  textNodes.forEach(node => {
+    const text = node.textContent;
+    const lowerText = text.toLowerCase();
+    if (!lowerText.includes(lowerQuery)) return;
+
+    const frag = document.createDocumentFragment();
+    let lastIdx = 0;
+    let idx = lowerText.indexOf(lowerQuery, lastIdx);
+    while (idx !== -1) {
+      if (idx > lastIdx) frag.appendChild(document.createTextNode(text.slice(lastIdx, idx)));
+      const mark = document.createElement('mark');
+      mark.className = 'infile-match';
+      mark.textContent = text.slice(idx, idx + query.length);
+      frag.appendChild(mark);
+      lastIdx = idx + query.length;
+      idx = lowerText.indexOf(lowerQuery, lastIdx);
+    }
+    if (lastIdx < text.length) frag.appendChild(document.createTextNode(text.slice(lastIdx)));
+    node.parentNode.replaceChild(frag, node);
+  });
+
+  _infileMatches = Array.from(content.querySelectorAll('mark.infile-match'));
+  if (_infileMatches.length > 0) {
+    _infileActiveIdx = 0;
+    _infileMatches[0].classList.remove('infile-match');
+    _infileMatches[0].classList.add('infile-match-active');
+    _infileMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    countEl.textContent = '1 of ' + _infileMatches.length;
+  } else {
+    countEl.textContent = query.length > 0 ? 'No results' : '';
+  }
+}
+
+function navigateInfileMatch(direction) {
+  if (_infileMatches.length === 0) return;
+
+  if (_infileActiveIdx >= 0 && _infileActiveIdx < _infileMatches.length) {
+    _infileMatches[_infileActiveIdx].classList.remove('infile-match-active');
+    _infileMatches[_infileActiveIdx].classList.add('infile-match');
+  }
+
+  _infileActiveIdx += direction;
+  if (_infileActiveIdx >= _infileMatches.length) _infileActiveIdx = 0;
+  if (_infileActiveIdx < 0) _infileActiveIdx = _infileMatches.length - 1;
+
+  _infileMatches[_infileActiveIdx].classList.remove('infile-match');
+  _infileMatches[_infileActiveIdx].classList.add('infile-match-active');
+  _infileMatches[_infileActiveIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  document.getElementById('infileSearchCount').textContent =
+    (_infileActiveIdx + 1) + ' of ' + _infileMatches.length;
+}
+
+function handleInfileSearchKeydown(e) {
+  if (e.key === 'Escape') {
+    closeInfileSearch();
+    return;
+  }
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    navigateInfileMatch(e.shiftKey ? -1 : 1);
+    return;
+  }
+  if (e.key === 'ArrowDown') { e.preventDefault(); navigateInfileMatch(1); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); navigateInfileMatch(-1); }
+}
+
 let _searchDebounce = null;
 let _lastSearchQuery = '';
 
@@ -1206,18 +1320,71 @@ document.addEventListener('click', (e) => {
 
 // Keyboard nav
 document.addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'INPUT') return;
+  // In-file search input handles its own keys
+  if (e.target.id === 'infileSearchInput') return;
+
+  // Don't intercept when typing in other inputs/textareas
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
   // Disable file navigation keys when in edit mode
   if (isEditMode) return;
-  if (e.key === '/' || e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+
+  // Cmd+F / Ctrl+F → in-file search
+  if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === 'f') {
+    e.preventDefault();
+    openInfileSearch();
+    return;
+  }
+
+  // Cmd+Shift+F / Ctrl+Shift+F → global header search
+  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'f') {
     e.preventDefault();
     document.getElementById('search').focus();
+    return;
   }
+
+  // / or Cmd+K → focus header search
+  if (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
+    e.preventDefault();
+    document.getElementById('search').focus();
+    return;
+  }
+
+  // Arrow keys for file navigation
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
     if (activeFileIdx > 0) { e.preventDefault(); showFile(activeFileIdx - 1); }
   }
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
     if (activeFileIdx < FILES.length - 1) { e.preventDefault(); showFile(activeFileIdx + 1); }
+  }
+
+  // Escape to close in-file search
+  if (e.key === 'Escape' && _infileSearchOpen) {
+    closeInfileSearch();
+  }
+});
+
+// Shift+Shift (double-tap within 300ms) → focus sidebar file filter
+let _lastShiftTime = 0;
+document.addEventListener('keyup', function(e) {
+  if (e.key === 'Shift' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    const now = Date.now();
+    if (now - _lastShiftTime < 300) {
+      _lastShiftTime = 0;
+      // Expand sidebar if collapsed
+      if (_sidebarCollapsed) {
+        _sidebarCollapsed = false;
+        localStorage.setItem('mdviewer_sidebar_collapsed', 'false');
+        document.body.classList.remove('sidebar-collapsed');
+      }
+      // On mobile, open sidebar
+      if (window.innerWidth <= 900) {
+        document.getElementById('sidebar').classList.add('open');
+      }
+      document.getElementById('fileFilterInput').focus();
+    } else {
+      _lastShiftTime = now;
+    }
   }
 });
 
