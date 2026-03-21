@@ -277,10 +277,17 @@ document.addEventListener('click', function(e) {
   if (menu && menu.style.display !== 'none' && !menu.contains(e.target)) {
     hideTabContextMenu();
   }
+  const headerSearch = document.getElementById('headerSearch');
+  if (headerSearch && !headerSearch.contains(e.target)) {
+    closeSearchDropdown();
+  }
 });
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') hideTabContextMenu();
+  if (e.key === 'Escape') {
+    hideTabContextMenu();
+    closeSearchDropdown();
+  }
 });
 
 let _dashboardFolder = null; // null = root, string = subfolder path
@@ -292,6 +299,10 @@ function showDashboard(folder) {
   window.location.hash = '';
   document.body.classList.add('no-active-file');
   renderTabBar();
+
+  // Hide search view
+  const svp = document.getElementById('searchViewPanel');
+  if (svp) svp.style.display = 'none';
 
   // Hide file view elements
   document.getElementById('breadcrumbBar').style.display = 'none';
@@ -573,9 +584,11 @@ async function showFile(idx) {
   saveCurrentTabScroll();
   const existingTab = openTabs.find(t => t.idx === idx);
 
-  // Hide dashboard
+  // Hide dashboard and search view
   const dashboard = document.getElementById('dashboard');
   if (dashboard) dashboard.style.display = 'none';
+  const svp = document.getElementById('searchViewPanel');
+  if (svp) svp.style.display = 'none';
 
   // Skip re-render if clicking the same file while in edit mode
   if (isEditMode && idx === activeFileIdx) return;
@@ -922,12 +935,27 @@ function updateScrollSpy() {
 }
 
 let _searchDebounce = null;
+let _lastSearchQuery = '';
+
 function handleSearch(query) {
+  _lastSearchQuery = query;
   const results = document.getElementById('searchResults');
   if (query.length < 2) { results.classList.remove('active'); results.innerHTML = ''; return; }
 
   clearTimeout(_searchDebounce);
   _searchDebounce = setTimeout(() => _doSearch(query), 200);
+}
+
+function handleSearchKeydown(e) {
+  if (e.key === 'Escape') {
+    closeSearchDropdown();
+    e.target.blur();
+  }
+}
+
+function closeSearchDropdown() {
+  const results = document.getElementById('searchResults');
+  results.classList.remove('active');
 }
 
 async function _doSearch(query) {
@@ -937,49 +965,127 @@ async function _doSearch(query) {
   // Load all files that haven't been fetched yet
   const unloaded = FILES.map((f, i) => fileContents[i] === undefined ? i : null).filter(i => i !== null);
   if (unloaded.length > 0) {
-    results.innerHTML = '<div style="padding:6px 10px;font-size:12px;color:var(--text-muted)">Loading files...</div>';
+    results.innerHTML = '<div style="padding:7px 14px;font-size:12px;color:var(--text-muted)">Loading files...</div>';
     results.classList.add('active');
     await Promise.all(unloaded.map(i => loadFile(i)));
   }
 
   const q = query.toLowerCase();
-  let items = [];
+  let allItems = [];
   FILES.forEach((f, idx) => {
     const text = stripFrontmatter(fileContents[idx] || '');
     text.split('\n').forEach((line, lineNum) => {
       if (line.toLowerCase().includes(q)) {
         const clean = line.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim();
         if (!clean) return;
-        items.push({ idx, file: f, line: clean, lineNum });
+        allItems.push({ idx, file: f, line: clean, lineNum });
       }
     });
   });
-  items = items.slice(0, 15);
 
-  if (items.length === 0) {
-    results.innerHTML = '<div style="padding:6px 10px;font-size:12px;color:var(--text-muted)">No results</div>';
+  if (allItems.length === 0) {
+    results.innerHTML = '<div style="padding:7px 14px;font-size:12px;color:var(--text-muted)">No results</div>';
+    _positionSearchDropdown();
     results.classList.add('active');
     return;
   }
 
+  const items = allItems.slice(0, 15);
   const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-  results.innerHTML = items.map(it => {
+  const itemsHtml = items.map(it => {
     const h = it.line.substring(0, 100).replace(re, '<mark>$1</mark>');
     return `<div class="search-result-item" onclick="showFile(${it.idx});searchScroll(${it.lineNum})">
       <div class="file-label">${it.file.title}</div>
       <div class="match-text">${h}${it.line.length > 100 ? '...' : ''}</div>
     </div>`;
   }).join('');
+
+  const footerHtml = `<div class="search-dropdown-footer">
+    <button class="search-show-all-btn" onclick="showSearchView('${query.replace(/'/g, "\\'")}')">Show all ${allItems.length} result${allItems.length !== 1 ? 's' : ''}</button>
+  </div>`;
+
+  results.innerHTML = itemsHtml + footerHtml;
+  _positionSearchDropdown();
   results.classList.add('active');
 }
 
 function searchScroll(lineNum) {
+  closeSearchDropdown();
   document.getElementById('search').value = '';
-  document.getElementById('searchResults').classList.remove('active');
   const content = document.getElementById('content');
   const total = (fileContents[activeFileIdx] || '').split('\n').length;
   const pct = lineNum / total;
   document.body.scrollTo({ top: content.offsetTop + content.scrollHeight * pct - 100, behavior: 'smooth' });
+}
+
+function showSearchView(query) {
+  closeSearchDropdown();
+  document.getElementById('search').value = query;
+  saveCurrentTabScroll();
+  activeFileIdx = null;
+  window.location.hash = '';
+  document.body.classList.add('no-active-file');
+  renderTabBar();
+
+  document.getElementById('breadcrumbBar').style.display = 'none';
+  document.getElementById('content').style.display = 'none';
+  document.getElementById('editorWrapper').style.display = 'none';
+  document.getElementById('loading').style.display = 'none';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  // Remove existing dashboard
+  const existingDash = document.getElementById('dashboard');
+  if (existingDash) existingDash.style.display = 'none';
+
+  // Build search results view
+  let view = document.getElementById('searchViewPanel');
+  if (!view) {
+    view = document.createElement('div');
+    view.id = 'searchViewPanel';
+    view.className = 'search-view';
+    document.querySelector('.content-wrapper').appendChild(view);
+  }
+  view.style.display = 'block';
+
+  const q = query.toLowerCase();
+  let allItems = [];
+  FILES.forEach((f, idx) => {
+    const text = stripFrontmatter(fileContents[idx] || '');
+    text.split('\n').forEach((line, lineNum) => {
+      if (line.toLowerCase().includes(q)) {
+        const clean = line.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim();
+        if (!clean) return;
+        allItems.push({ idx, file: f, line: clean, lineNum });
+      }
+    });
+  });
+
+  const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  const itemsHtml = allItems.length === 0
+    ? '<div style="padding:20px 0;color:var(--text-muted);font-size:13px">No results found.</div>'
+    : allItems.map(it => {
+        const h = it.line.substring(0, 120).replace(re, '<mark>$1</mark>');
+        return `<div class="search-view-item" onclick="showFile(${it.idx});searchScroll(${it.lineNum})">
+          <div class="file-label">${it.file.title}</div>
+          <div class="match-text">${h}${it.line.length > 120 ? '...' : ''}</div>
+        </div>`;
+      }).join('');
+
+  view.innerHTML = `
+    <div class="search-view-header">
+      <div class="search-view-title">Search results for <em style="color:var(--accent)">${query.replace(/</g,'&lt;')}</em></div>
+      <span class="search-view-count">${allItems.length} match${allItems.length !== 1 ? 'es' : ''}</span>
+      <button class="search-view-close" onclick="closeSearchView()">&#x2715; Close</button>
+    </div>
+    <div class="search-view-list">${itemsHtml}</div>
+  `;
+}
+
+function closeSearchView() {
+  const view = document.getElementById('searchViewPanel');
+  if (view) view.style.display = 'none';
+  document.getElementById('search').value = '';
+  showDashboard();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
