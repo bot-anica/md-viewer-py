@@ -437,6 +437,41 @@ function countFiles(node) {
 }
 
 let hasFolders = false;
+let activeFileFilter = '';
+
+function handleFileFilter(value) {
+  activeFileFilter = value.trim().toLowerCase();
+  document.getElementById('filterClear').style.display = activeFileFilter ? 'inline-block' : 'none';
+  applyFileFilter();
+}
+
+function clearFileFilter() {
+  activeFileFilter = '';
+  document.getElementById('fileFilterInput').value = '';
+  document.getElementById('filterClear').style.display = 'none';
+  applyFileFilter();
+}
+
+function applyFileFilter() {
+  const query = activeFileFilter;
+  // Show/hide nav items based on filename match
+  document.querySelectorAll('#navItems .nav-item').forEach(el => {
+    const title = (el.querySelector('.nav-title')?.textContent || '').toLowerCase();
+    const meta = (el.querySelector('.nav-meta')?.textContent || '').toLowerCase();
+    el.style.display = (!query || title.includes(query) || meta.includes(query)) ? '' : 'none';
+  });
+  // Show/hide folders based on whether they have visible items; expand matching ones
+  Array.from(document.querySelectorAll('#navItems .tree-node')).reverse().forEach(node => {
+    const hasVisible = Array.from(node.querySelectorAll('.nav-item')).some(el => el.style.display !== 'none');
+    node.style.display = hasVisible ? '' : 'none';
+    if (query && hasVisible) {
+      const header = node.querySelector(':scope > .tree-folder');
+      const children = node.querySelector(':scope > .tree-children');
+      if (header) header.classList.remove('collapsed');
+      if (children) children.classList.remove('collapsed');
+    }
+  });
+}
 
 function renderNav() {
   const container = document.getElementById('navItems');
@@ -446,6 +481,7 @@ function renderNav() {
   // Check if there are any folders
   hasFolders = Object.keys(tree).filter(k => k !== '_files').length > 0;
   document.getElementById('sidebarToolbar').style.display = hasFolders ? 'flex' : 'none';
+  document.getElementById('fileFilter').style.display = FILES.length > 0 ? 'flex' : 'none';
 
   if (!hasFolders) {
     const label = document.createElement('div');
@@ -455,6 +491,7 @@ function renderNav() {
   }
 
   renderTreeNode(container, tree, 0, true);
+  applyFileFilter();
 }
 
 function collapseAll() {
