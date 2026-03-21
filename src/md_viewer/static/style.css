@@ -2695,7 +2695,7 @@
     }
 
     body.toc-right .infile-search-bar {
-      right: 240px;
+      left: calc(var(--sidebar-w) / 2 + 50% - 120px);
     }
 
     .tab-item {
