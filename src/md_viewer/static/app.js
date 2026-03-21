@@ -573,7 +573,10 @@ async function showFile(idx) {
   const bc = document.getElementById('breadcrumb');
   if (f.folder) {
     const parts = f.folder.split('/');
-    bc.innerHTML = parts.map(p => `<span>${p}</span>`).join('<span class="sep">/</span>') + `<span class="sep">/</span><span>${f.name}</span>`;
+    bc.innerHTML = parts.map((p, i) => {
+      const path = parts.slice(0, i + 1).join('/');
+      return `<a class="bc-folder-link" onclick="showDashboard('${path}')">${p}</a>`;
+    }).join('<span class="sep">/</span>') + `<span class="sep">/</span><span>${f.name}</span>`;
   } else {
     bc.innerHTML = `<span>${f.name}</span>`;
   }
@@ -988,7 +991,12 @@ function addHeadingAnchors() {
   });
 }
 
-let _currentTheme = localStorage.getItem('md-viewer-theme') || 'dark';
+function _getDefaultTheme() {
+  const saved = localStorage.getItem('md-viewer-theme');
+  if (saved) return saved;
+  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+}
+let _currentTheme = _getDefaultTheme();
 function applyTheme(theme) {
   _currentTheme = theme;
   document.body.classList.toggle('light', theme === 'light');
@@ -1011,8 +1019,8 @@ function applyTheme(theme) {
   localStorage.setItem('md-viewer-theme', theme);
 }
 function toggleTheme() { applyTheme(_currentTheme === 'dark' ? 'light' : 'dark'); }
-// Apply saved theme on load
-if (_currentTheme === 'light') applyTheme('light');
+// Apply theme on load (uses OS preference if no saved preference)
+applyTheme(_currentTheme);
 
 document.body.addEventListener('scroll', () => {
   const winH = document.body.scrollHeight - document.body.clientHeight;

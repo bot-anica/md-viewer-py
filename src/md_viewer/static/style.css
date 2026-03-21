@@ -270,6 +270,8 @@
     .breadcrumb { font-size: 14px; font-weight: 500; color: var(--text-muted); flex: 1; min-width: 0; }
     .breadcrumb span { cursor: default; }
     .breadcrumb .sep { margin: 0 6px; opacity: 0.4; }
+    .bc-folder-link { color: var(--accent); cursor: pointer; text-decoration: none; }
+    .bc-folder-link:hover { text-decoration: underline; }
     .content-toolbar { display: flex; gap: 6px; flex-shrink: 0; }
 
     @media (max-width: 900px) {
