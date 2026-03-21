@@ -74,6 +74,14 @@
     .search-box input::placeholder { color: var(--text-muted); }
     .search-box .search-icon { position: absolute; left: 26px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); }
 
+    .file-filter { position: relative; display: flex; align-items: center; padding: 0 14px 10px; flex-shrink: 0; gap: 0; }
+    .file-filter .filter-icon { position: absolute; left: 26px; pointer-events: none; color: var(--text-muted); }
+    .file-filter input { flex: 1; padding: 6px 28px 6px 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 12px; outline: none; transition: border-color 0.15s; }
+    .file-filter input:focus { border-color: var(--accent); }
+    .file-filter input::placeholder { color: var(--text-muted); }
+    .filter-clear { position: absolute; right: 22px; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 13px; padding: 2px 4px; line-height: 1; }
+    .filter-clear:hover { color: var(--text); }
+
     .search-results { display: none; padding: 0 14px 12px; max-height: 320px; overflow-y: auto; }
     .search-results.active { display: block; }
     .search-result-item { padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-bottom: 2px; transition: background 0.15s; }
@@ -872,6 +880,7 @@
     body.sidebar-collapsed .search-box,
     body.sidebar-collapsed .search-results,
     body.sidebar-collapsed .sidebar-toolbar,
+    body.sidebar-collapsed .file-filter,
     body.sidebar-collapsed #navItems,
     body.sidebar-collapsed .toc-container { display: none !important; }
     .sidebar-mini-search { color: var(--text-muted); flex-shrink: 0; }
