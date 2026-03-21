@@ -817,6 +817,37 @@
       font-size: 13px;
     }
 
+    /* ---- Shortcuts button ---- */
+    .shortcuts-btn {
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-muted); padding: 5px 8px; cursor: pointer;
+      display: flex; align-items: center; transition: all 0.15s;
+    }
+    .shortcuts-btn:hover { color: var(--text); border-color: var(--text-muted); }
+
+    /* ---- Shortcuts modal ---- */
+    .shortcuts-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s ease;
+    }
+    .shortcuts-overlay.show { opacity: 1; }
+    .shortcuts-modal {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      width: 460px; max-width: 90%;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+      transform: scale(0.95); transition: transform 0.2s ease;
+    }
+    .shortcuts-overlay.show .shortcuts-modal { transform: scale(1); }
+    .shortcuts-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 18px; }
+    .shortcuts-section { display: flex; flex-direction: column; gap: 8px; }
+    .shortcuts-table { width: 100%; border-collapse: collapse; }
+    .shortcuts-table tr td { padding: 5px 0; font-size: 13px; color: var(--text); vertical-align: middle; }
+    .shortcuts-table tr td:first-child { white-space: nowrap; padding-right: 16px; width: 1%; }
+    .shortcuts-table tr td:last-child { color: var(--text-muted); }
+    body.light .shortcuts-overlay { background: rgba(0,0,0,0.3); }
+    body.light .shortcuts-modal { box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+
     /* ---- Settings button ---- */
     .settings-btn {
       background: none; border: 1px solid var(--border); border-radius: 8px;

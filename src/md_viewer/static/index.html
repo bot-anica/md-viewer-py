@@ -36,6 +36,7 @@ __STYLE__
       <span class="header-badge badge-path" id="badgePath"></span>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg> Light</button>
       <button class="print-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4c0 1.1.9 2 2 2h2v2c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-2h2c1.1 0 2-.9 2-2v-4c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-8H7v4h10V4z"/></svg> Print</button>
+      <button class="shortcuts-btn" onclick="openShortcutsModal()" title="Keyboard shortcuts (?)"><svg width='15' height='15' viewBox='0 0 24 24' fill='currentColor'><rect x='2' y='4' width='20' height='16' rx='3' ry='3' fill='none' stroke='currentColor' stroke-width='2'/><rect x='5' y='8' width='3' height='3' rx='1' fill='currentColor'/><rect x='10.5' y='8' width='3' height='3' rx='1' fill='currentColor'/><rect x='16' y='8' width='3' height='3' rx='1' fill='currentColor'/><rect x='5' y='13' width='14' height='3' rx='1' fill='currentColor'/></svg></button>
       <button class="settings-btn" onclick="openSettings()" title="Settings"><svg width='15' height='15' viewBox='0 0 24 24' fill='currentColor'><path d='M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.48.48 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z'/></svg></button>
     </div>
   </header>
@@ -181,6 +182,40 @@ __STYLE__
       <span class="version-badge" id="whatsNewVersion"></span>
       <div class="whats-new-body" id="whatsNewBody"></div>
       <button onclick="closeWhatsNew()">Got it</button>
+    </div>
+  </div>
+
+  <div class="shortcuts-overlay" id="shortcutsOverlay" style="display:none" onclick="if(event.target===this)closeShortcutsModal()">
+    <div class="shortcuts-modal">
+      <div class="settings-header">
+        <h2>Keyboard Shortcuts</h2>
+        <button class="settings-close" onclick="closeShortcutsModal()">&#x2715;</button>
+      </div>
+      <div class="shortcuts-body">
+        <div class="shortcuts-section">
+          <div class="settings-section-title">Search</div>
+          <table class="shortcuts-table">
+            <tr><td><kbd class="kbd-badge kbd-mod"></kbd><kbd class="kbd-badge">F</kbd></td><td>Find in file</td></tr>
+            <tr><td><kbd class="kbd-badge kbd-mod"></kbd><kbd class="kbd-badge">⇧</kbd><kbd class="kbd-badge">F</kbd></td><td>Search across all files</td></tr>
+            <tr><td><kbd class="kbd-badge">⇧</kbd><kbd class="kbd-badge">⇧</kbd></td><td>Filter files by name</td></tr>
+            <tr><td><kbd class="kbd-badge">/</kbd></td><td>Focus search (legacy)</td></tr>
+          </table>
+        </div>
+        <div class="shortcuts-section">
+          <div class="settings-section-title">Navigation</div>
+          <table class="shortcuts-table">
+            <tr><td><kbd class="kbd-badge">←</kbd> <kbd class="kbd-badge">↑</kbd></td><td>Previous file</td></tr>
+            <tr><td><kbd class="kbd-badge">→</kbd> <kbd class="kbd-badge">↓</kbd></td><td>Next file</td></tr>
+          </table>
+        </div>
+        <div class="shortcuts-section">
+          <div class="settings-section-title">General</div>
+          <table class="shortcuts-table">
+            <tr><td><kbd class="kbd-badge">Esc</kbd></td><td>Close search / modal</td></tr>
+            <tr><td><kbd class="kbd-badge">?</kbd></td><td>Toggle this shortcuts modal</td></tr>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 

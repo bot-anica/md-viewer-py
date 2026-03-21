@@ -1360,9 +1360,25 @@ document.addEventListener('keydown', (e) => {
     if (activeFileIdx < FILES.length - 1) { e.preventDefault(); showFile(activeFileIdx + 1); }
   }
 
-  // Escape to close in-file search
-  if (e.key === 'Escape' && _infileSearchOpen) {
-    closeInfileSearch();
+  // Escape to close in-file search or shortcuts modal
+  if (e.key === 'Escape') {
+    const shortcutsOverlay = document.getElementById('shortcutsOverlay');
+    if (shortcutsOverlay && shortcutsOverlay.classList.contains('show')) {
+      closeShortcutsModal();
+      return;
+    }
+    if (_infileSearchOpen) closeInfileSearch();
+  }
+
+  // ? → toggle shortcuts modal
+  if (e.key === '?') {
+    e.preventDefault();
+    const shortcutsOverlay = document.getElementById('shortcutsOverlay');
+    if (shortcutsOverlay && shortcutsOverlay.classList.contains('show')) {
+      closeShortcutsModal();
+    } else {
+      openShortcutsModal();
+    }
   }
 });
 
@@ -1757,6 +1773,18 @@ function moveTocToPosition() {
   }
 }
 
+function openShortcutsModal() {
+  const overlay = document.getElementById('shortcutsOverlay');
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => overlay.classList.add('show'));
+}
+
+function closeShortcutsModal() {
+  const overlay = document.getElementById('shortcutsOverlay');
+  overlay.classList.remove('show');
+  overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
+}
+
 function openSettings() {
   const overlay = document.getElementById('settingsOverlay');
   overlay.style.display = 'flex';
@@ -1864,3 +1892,5 @@ init();
 checkWhatsNew();
 initKbdHints();
 checkUpdateNotif();
+// Set platform-specific modifier key in shortcuts modal
+document.querySelectorAll('.kbd-mod').forEach(el => { el.textContent = isMac ? '⌘' : 'Ctrl'; });
