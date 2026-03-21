@@ -32,12 +32,12 @@
 
 ## Ideas: New Features
 
-22. [ ] **Right-side TOC panel** — move Table of Contents to a dedicated right sidebar. Collapsible to the right edge with the section name displayed vertically (rotated 90°) in collapsed state, so the user always sees which section they're in. Click the vertical label or a toggle to expand back to full TOC
+22. [x] **Right-side TOC panel** — move Table of Contents to a dedicated right sidebar. Collapsible to the right edge with the section name displayed vertically (rotated 90°) in collapsed state, so the user always sees which section they're in. Click the vertical label or a toggle to expand back to full TOC
 23. [ ] **Static HTML export** — `mdview --export ./output` to generate a static site
 24. [x] **In-browser markdown editing** — toggle between view and edit mode with a split-pane or full-screen editor. Save changes back to disk. Live preview as user type.
 25. [ ] **File metadata from frontmatter** — parse YAML frontmatter for title, author, date instead of stripping it
 26. [ ] **Custom sidebar ordering** — config file (`.mdview.yml`) for sidebar structure
-27. [ ] **PDF export** — print-to-PDF with proper page breaks
+27. [x] **PDF export** — print-to-PDF with proper page breaks
 28. [x] **WebSocket live reload** — replace polling with instant file change notifications
 29. [x] **Dashboard page** — grid view of folders and files on startup instead of auto-opening first file
 30. [x] **Styled scrollbars** — thin themed scrollbars for code blocks and page, replacing system defaults

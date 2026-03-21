@@ -74,7 +74,7 @@
     .search-box input::placeholder { color: var(--text-muted); }
     .search-box .search-icon { position: absolute; left: 26px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); }
 
-    .file-filter { position: relative; display: flex; align-items: center; padding: 0 14px 10px; flex-shrink: 0; gap: 0; }
+    .file-filter { position: relative; display: flex; align-items: center; padding: 12px 14px 10px; flex-shrink: 0; gap: 0; }
     .file-filter .filter-icon { position: absolute; left: 26px; pointer-events: none; color: var(--text-muted); }
     .file-filter input { flex: 1; padding: 6px 28px 6px 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 12px; outline: none; transition: border-color 0.15s; }
     .file-filter input:focus { border-color: var(--accent); }
