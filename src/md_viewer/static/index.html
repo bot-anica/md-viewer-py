@@ -47,6 +47,7 @@ __STYLE__
     <div class="file-filter" id="fileFilter" style="display:none">
       <svg class="filter-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
       <input type="text" id="fileFilterInput" placeholder="Filter files..." oninput="handleFileFilter(this.value)" onkeydown="if(event.key==='Escape')clearFileFilter()">
+      <span class="kbd-hints" id="filterKbdHint"><kbd class="kbd-badge">⇧</kbd><kbd class="kbd-badge">⇧</kbd></span>
       <button class="filter-clear" id="filterClear" onclick="clearFileFilter()" style="display:none" title="Clear filter">&#x2715;</button>
     </div>
     <div id="navItems"></div>
@@ -60,13 +61,11 @@ __STYLE__
 
   <div class="reading-progress"><div class="reading-progress-bar" id="progressBar"></div></div>
   <div class="tab-bar" id="tabBar"></div>
-  <div class="infile-search-bar" id="infileSearchBar" style="display:none">
-    <svg class="infile-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
-    <input type="text" id="infileSearchInput" placeholder="Find in file..." oninput="handleInfileSearch(this.value)" onkeydown="handleInfileSearchKeydown(event)" autocomplete="off">
-    <span class="infile-search-count" id="infileSearchCount"></span>
-    <button class="infile-search-nav" onclick="navigateInfileMatch(-1)" title="Previous match (Shift+Enter)">&#9650;</button>
-    <button class="infile-search-nav" onclick="navigateInfileMatch(1)" title="Next match (Enter)">&#9660;</button>
-    <button class="infile-search-close" onclick="closeInfileSearch()" title="Close (Escape)">&#x2715;</button>
+  <div class="header-search" id="headerSearch">
+    <svg class="header-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+    <input type="text" id="search" placeholder="Search across all files..." oninput="handleSearch(this.value)" autocomplete="off" onkeydown="handleSearchKeydown(event)">
+    <span class="kbd-hints" id="searchKbdHint"></span>
+    <div class="header-search-dropdown" id="searchResults"></div>
   </div>
 
   <main class="main" id="main">

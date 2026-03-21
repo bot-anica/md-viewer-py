@@ -79,7 +79,7 @@
       pointer-events: none; color: var(--text-muted); z-index: 1;
     }
     .header-search input {
-      width: 100%; padding: 7px 12px 7px 32px;
+      width: 100%; padding: 7px 100px 7px 32px;
       background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 8px; color: var(--text); font-size: 12.5px;
       outline: none; transition: border-color 0.15s;
@@ -112,7 +112,22 @@
     }
     .search-show-all-btn:hover { background: var(--accent); color: #fff; }
 
-    /* ---- In-file search bar (fixed below tab bar) ---- */
+    /* ---- Keyboard shortcut hint badges ---- */
+    .kbd-hints {
+      position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+      display: flex; align-items: center; gap: 3px;
+      pointer-events: none; transition: opacity 0.15s;
+    }
+    .kbd-hints.hidden { opacity: 0; }
+    .kbd-badge {
+      font-family: inherit; font-size: 10px; font-weight: 500;
+      padding: 2px 5px; border-radius: 4px;
+      border: 1px solid var(--border); background: var(--bg-card);
+      color: var(--text-muted); line-height: 1.4; display: inline-block;
+    }
+    .file-filter .kbd-hints { right: 22px; }
+
+    /* ---- In-file search bar ---- */
     .infile-search-bar {
       position: fixed;
       top: calc(var(--header-h) + 38px);
@@ -171,7 +186,7 @@
 
     .file-filter { position: relative; display: flex; align-items: center; padding: 12px 14px 10px; flex-shrink: 0; gap: 0; }
     .file-filter .filter-icon { position: absolute; left: 26px; pointer-events: none; color: var(--text-muted); }
-    .file-filter input { flex: 1; padding: 6px 28px 6px 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 12px; outline: none; transition: border-color 0.15s; }
+    .file-filter input { flex: 1; padding: 6px 60px 6px 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 12px; outline: none; transition: border-color 0.15s; }
     .file-filter input:focus { border-color: var(--accent); }
     .file-filter input::placeholder { color: var(--text-muted); }
     .filter-clear { position: absolute; right: 22px; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 13px; padding: 2px 4px; line-height: 1; }
