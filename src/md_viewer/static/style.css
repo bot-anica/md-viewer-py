@@ -196,10 +196,10 @@
     .content-wrapper { max-width: 860px; margin: 0 auto; padding: 36px 44px 80px; }
 
     /* ---- Markdown ---- */
-    .md h1 { font-size: 30px; font-weight: 800; color: var(--text-heading); margin: 0 0 8px; padding-bottom: 14px; border-bottom: 2px dashed var(--border); line-height: 1.2; }
+    .md h1 { font-size: 30px; font-weight: 800; color: var(--text-heading); margin: 0 0 8px; padding-bottom: 14px; border-bottom: 2px dashed var(--border); line-height: 1.2; scroll-margin-top: calc(var(--header-h) + 20px); }
     .md h2 { font-size: 21px; font-weight: 700; color: var(--text-heading); margin: 44px 0 14px; padding-bottom: 7px; border-bottom: 1px dashed var(--border); scroll-margin-top: calc(var(--header-h) + 20px); }
     .md h3 { font-size: 16px; font-weight: 600; color: var(--text-heading); margin: 28px 0 10px; scroll-margin-top: calc(var(--header-h) + 20px); }
-    .md h4 { font-size: 13.5px; font-weight: 600; color: var(--accent); margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .md h4 { font-size: 13.5px; font-weight: 600; color: var(--accent); margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; scroll-margin-top: calc(var(--header-h) + 20px); }
 
     /* ---- Collapsible sections ---- */
     .md h2, .md h3, .md h4 { cursor: pointer; position: relative; }
@@ -791,6 +791,7 @@
     .tab-bar::-webkit-scrollbar { display: none; }
     body.has-tabs .tab-bar { display: flex; }
     body.has-tabs .main { padding-top: calc(var(--header-h) + 38px); }
+    body.has-tabs .md h1, body.has-tabs .md h2, body.has-tabs .md h3, body.has-tabs .md h4 { scroll-margin-top: calc(var(--header-h) + 58px); }
     body.toc-right .tab-bar { right: 240px; }
 
     .tab-item {
