@@ -34,7 +34,18 @@ async function runMermaid() {
   const nodes = document.querySelectorAll('.mermaid:not([data-processed])');
   if (nodes.length === 0) return;
   nodes.forEach(el => { if (!el.hasAttribute('data-mermaid-src')) el.setAttribute('data-mermaid-src', el.textContent); });
-  try { await mermaid.run({ nodes }); } catch (e) {}
+  try {
+    await mermaid.run({ nodes });
+  } catch (e) {
+    nodes.forEach(el => {
+      if (!el.hasAttribute('data-processed')) {
+        el.innerHTML = '<div style="border:1px solid #e74c3c;border-radius:6px;padding:12px;background:rgba(231,76,60,0.08);color:#e74c3c;font-size:13px;">'
+          + '<strong>⚠ Diagram Error</strong><br>'
+          + '<pre style="margin:8px 0 0;white-space:pre-wrap;color:inherit;font-size:12px;">' + (e.message || String(e)).replace(/</g, '&lt;') + '</pre>'
+          + '</div>';
+      }
+    });
+  }
 }
 
 function stripFrontmatter(text) {
@@ -118,6 +129,18 @@ async function init() {
 }
 
 function slugify(s) { return s.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase(); }
+
+function slugifyHeading(text, usedSlugs) {
+  let base = text.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'heading';
+  let slug = base;
+  let counter = 1;
+  while (usedSlugs.has(slug)) {
+    slug = base + '-' + counter;
+    counter++;
+  }
+  usedSlugs.add(slug);
+  return slug;
+}
 
 // ---- Tab functions ----
 function saveCurrentTabScroll() {
@@ -713,8 +736,9 @@ function buildToc() {
   let currentChildren = null;
   let currentH2Entry = null;
 
-  headings.forEach((h, i) => {
-    const slug = 'heading-' + i;
+  const usedSlugs = new Set();
+  headings.forEach((h) => {
+    const slug = slugifyHeading(h.textContent, usedSlugs);
     h.id = slug;
 
     if (h.tagName === 'H2') {
@@ -973,9 +997,11 @@ function addCopyButtons(container) {
 }
 
 function addHeadingAnchors() {
+  const usedSlugs = new Set();
   document.querySelectorAll('.md h1, .md h2, .md h3, .md h4').forEach(h => {
     if (h.querySelector('.heading-anchor')) return;
-    const id = h.id || ('ha-' + Math.random().toString(36).slice(2));
+    if (h.id) { usedSlugs.add(h.id); }
+    const id = h.id || slugifyHeading(h.textContent, usedSlugs);
     if (!h.id) h.id = id;
     const a = document.createElement('a');
     a.className = 'heading-anchor';
