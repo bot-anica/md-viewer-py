@@ -68,14 +68,10 @@
       transition: transform 0.3s ease;
     }
 
-    /* ---- Header search ---- */
+    /* ---- Header search (inline in header) ---- */
     .header-search {
-      display: none; position: fixed;
-      top: calc(var(--header-h) + 40px);
-      left: var(--sidebar-w); right: 0;
-      height: 40px; padding: 4px 16px;
-      background: var(--bg-surface); border-bottom: 1px solid var(--border);
-      z-index: 79; align-items: center;
+      display: none; flex: 1; position: relative;
+      max-width: 480px; align-items: center;
     }
     body.has-tabs .header-search { display: flex; }
     .header-search-icon {
@@ -116,15 +112,14 @@
     }
     .search-show-all-btn:hover { background: var(--accent); color: #fff; }
 
-    /* ---- In-file search bar ---- */
+    /* ---- In-file search bar (fixed below tab bar) ---- */
     .infile-search-bar {
-      position: sticky; top: 0; z-index: 50;
+      position: fixed;
+      top: calc(var(--header-h) + 38px);
+      left: var(--sidebar-w); right: 0; z-index: 79;
       display: flex; align-items: center; gap: 6px;
-      padding: 6px 12px;
-      background: var(--bg-surface); border: 1px solid var(--border);
-      border-radius: 0 0 8px 8px; border-top: none;
-      margin: 0 auto 8px; max-width: 420px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      padding: 4px 16px; height: 36px;
+      background: var(--bg-surface); border-bottom: 1px solid var(--border);
     }
     .infile-search-icon { flex-shrink: 0; color: var(--text-muted); }
     .infile-search-bar input {
@@ -390,7 +385,7 @@
       .menu-toggle { display: block; }
       .reading-progress { left: 0; }
       .header-badge { display: none; }
-      .header-search { left: 0 !important; right: 0 !important; }
+      .infile-search-bar { left: 0 !important; right: 0 !important; }
       .header-search-dropdown { left: 0; right: 0; min-width: 0; }
       .md h1 { font-size: 22px; }
       .md h2 { font-size: 18px; }
@@ -404,7 +399,7 @@
       html { overflow: visible !important; height: auto !important; }
       body { overflow: visible !important; height: auto !important; min-height: 0 !important; }
       .header, .sidebar, .reading-progress, .back-to-top,
-      .tab-bar, .content-toolbar, .toc-right-panel, .header-search { display: none !important; }
+      .tab-bar, .content-toolbar, .toc-right-panel, .infile-search-bar { display: none !important; }
       .main { margin-left: 0; min-height: 0 !important; padding-top: 0 !important; }
       .content-wrapper { max-width: 100%; padding: 20px; }
       .md, .md h1, .md h2, .md h3, .md strong { color: #000; }
@@ -892,10 +887,11 @@
     }
     .tab-bar::-webkit-scrollbar { display: none; }
     body.has-tabs .tab-bar { display: flex; }
-    body.has-tabs .main { padding-top: calc(var(--header-h) + 38px + 48px); }
-    body.has-tabs .md h1, body.has-tabs .md h2, body.has-tabs .md h3, body.has-tabs .md h4 { scroll-margin-top: calc(var(--header-h) + 58px + 48px); }
+    body.has-tabs .main { padding-top: calc(var(--header-h) + 38px); }
+    body.has-tabs .md h1, body.has-tabs .md h2, body.has-tabs .md h3, body.has-tabs .md h4 { scroll-margin-top: calc(var(--header-h) + 58px); }
+    body.has-tabs.infile-search-open .main { padding-top: calc(var(--header-h) + 38px + 36px); }
     body.toc-right .tab-bar { right: 240px; }
-    body.toc-right .header-search { right: 240px; }
+    body.toc-right .infile-search-bar { right: 240px; }
 
     .tab-item {
       display: flex; align-items: center; gap: 5px;
@@ -974,7 +970,7 @@
     body.toc-right.no-active-file .tab-bar { right: 0; }
     body.toc-right.no-active-file .reading-progress { right: 0; }
     body.toc-right.no-active-file .back-to-top { right: 28px; }
-    body.toc-right.no-active-file .header-search { right: 0; }
+    body.toc-right.no-active-file .infile-search-bar { right: 0; }
 
     /* ---- Sidebar mini (collapsed) view ---- */
     .sidebar-mini {
@@ -996,14 +992,14 @@
     body.sidebar-collapsed .main { margin-left: 44px; }
     body.sidebar-collapsed .tab-bar { left: 44px; }
     body.sidebar-collapsed .reading-progress { left: 44px; }
-    body.sidebar-collapsed .header-search { left: 44px; }
+    body.sidebar-collapsed .infile-search-bar { left: 44px; }
 
     @media (max-width: 900px) {
       body.sidebar-collapsed .sidebar { width: var(--sidebar-w); }
       body.sidebar-collapsed .main { margin-left: 0; }
       body.sidebar-collapsed .tab-bar { left: 0; }
       body.sidebar-collapsed .reading-progress { left: 0; }
-      body.sidebar-collapsed .header-search { left: 0; }
+      body.sidebar-collapsed .infile-search-bar { left: 0; }
     }
 
     /* ---- TOC right panel collapse button ---- */
@@ -1031,4 +1027,4 @@
     body.toc-right.toc-collapsed .tab-bar { right: 50px; }
     body.toc-right.toc-collapsed .reading-progress { right: 50px; }
     body.toc-right.toc-collapsed .back-to-top { right: 70px; }
-    body.toc-right.toc-collapsed .header-search { right: 50px; }
+    body.toc-right.toc-collapsed .infile-search-bar { right: 50px; }

@@ -946,6 +946,7 @@ function openInfileSearch() {
   _infileSearchOpen = true;
   const bar = document.getElementById('infileSearchBar');
   bar.style.display = 'flex';
+  document.body.classList.add('infile-search-open');
   const input = document.getElementById('infileSearchInput');
   input.focus();
   input.select();
@@ -954,6 +955,7 @@ function openInfileSearch() {
 function closeInfileSearch() {
   _infileSearchOpen = false;
   document.getElementById('infileSearchBar').style.display = 'none';
+  document.body.classList.remove('infile-search-open');
   document.getElementById('infileSearchInput').value = '';
   document.getElementById('infileSearchCount').textContent = '';
   clearInfileHighlights();
