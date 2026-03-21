@@ -985,7 +985,6 @@ async function _doSearch(query) {
 
   if (allItems.length === 0) {
     results.innerHTML = '<div style="padding:7px 14px;font-size:12px;color:var(--text-muted)">No results</div>';
-    _positionSearchDropdown();
     results.classList.add('active');
     return;
   }
@@ -1005,7 +1004,6 @@ async function _doSearch(query) {
   </div>`;
 
   results.innerHTML = itemsHtml + footerHtml;
-  _positionSearchDropdown();
   results.classList.add('active');
 }
 
