@@ -25,6 +25,24 @@ function interceptMdLinks(container, currentFilePath) {
   });
 }
 
+function resolveImagePaths(container, currentFilePath) {
+  const dir = currentFilePath && currentFilePath.includes('/')
+    ? currentFilePath.substring(0, currentFilePath.lastIndexOf('/'))
+    : '';
+  container.querySelectorAll('img[src]').forEach(img => {
+    const src = img.getAttribute('src');
+    if (!src || /^https?:\/\//.test(src) || src.startsWith('data:') || src.startsWith('/')) return;
+    const raw = dir ? dir + '/' + src : src;
+    const parts = raw.split('/');
+    const norm = [];
+    for (const p of parts) {
+      if (p === '..') norm.pop();
+      else if (p !== '.') norm.push(p);
+    }
+    img.src = '/files-raw/' + norm.join('/');
+  });
+}
+
 function addCopyButtons(container) {
   container.querySelectorAll('pre').forEach(pre => {
     if (pre.querySelector('.copy-btn')) return;

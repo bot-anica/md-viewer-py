@@ -78,6 +78,7 @@ async function showFile(idx) {
   moveTocToPosition();
   addHeadingAnchors();
   interceptMdLinks(content, f.path);
+  resolveImagePaths(content, f.path);
   runMermaid();
 
   // Tab management

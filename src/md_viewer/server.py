@@ -159,6 +159,33 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
                 pass
             return
 
+        if path.startswith("/files-raw/"):
+            rel_path = path[11:]
+            file_path = self.root_dir / rel_path
+            try:
+                file_path.resolve().relative_to(self.root_dir.resolve())
+            except ValueError:
+                self.send_error(403, "Access denied")
+                return
+            if file_path.is_file():
+                ext = file_path.suffix.lower()
+                ct = {
+                    ".png": "image/png", ".jpg": "image/jpeg",
+                    ".jpeg": "image/jpeg", ".gif": "image/gif",
+                    ".svg": "image/svg+xml", ".webp": "image/webp",
+                    ".ico": "image/x-icon", ".bmp": "image/bmp",
+                }.get(ext, "application/octet-stream")
+                data = file_path.read_bytes()
+                self.send_response(200)
+                self.send_header("Content-Type", ct)
+                self.send_header("Content-Length", str(len(data)))
+                self.send_header("Cache-Control", "no-cache")
+                self.end_headers()
+                self.wfile.write(data)
+                return
+            self.send_error(404, f"File not found: {rel_path}")
+            return
+
         if path.startswith("/files/"):
             rel_path = path[7:]
             file_path = self.root_dir / rel_path

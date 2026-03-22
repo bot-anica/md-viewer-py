@@ -52,6 +52,7 @@ function connectSSE() {
       addHeadingAnchors();
       const f = FILES[activeFileIdx];
       if (f) interceptMdLinks(content, f.path);
+      if (f) resolveImagePaths(content, f.path);
       buildToc();
       runMermaid();
     }
