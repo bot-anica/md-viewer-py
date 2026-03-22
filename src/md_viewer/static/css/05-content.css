@@ -261,6 +261,33 @@
       margin: 12px 0;
     }
 
+    .md-img-wrap {
+      aspect-ratio: 16 / 9;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg-surface);
+      margin: 12px 0;
+    }
+
+    .md-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      margin: 0;
+      border-radius: 0;
+    }
+
+    .md-img-wrap.md-img-natural {
+      aspect-ratio: auto;
+    }
+
+    .md-img-wrap.md-img-natural img {
+      width: 100%;
+      height: auto;
+      object-fit: initial;
+    }
+
     /* ---- Progress ---- */
     .reading-progress {
       position: fixed;

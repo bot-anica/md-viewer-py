@@ -79,6 +79,8 @@ async function showFile(idx) {
   addHeadingAnchors();
   interceptMdLinks(content, f.path);
   resolveImagePaths(content, f.path);
+  convertImageTablesToSliders(content);
+  wrapStandaloneImages(content);
   runMermaid();
 
   // Tab management

@@ -3,7 +3,12 @@ function toggleSidebar() { document.getElementById('sidebar').classList.toggle('
 function interceptMdLinks(container, currentFilePath) {
   container.querySelectorAll('a[href]').forEach(a => {
     const href = a.getAttribute('href');
-    if (!href || href.startsWith('#') || /^https?:\/\//.test(href) || href.startsWith('mailto:')) return;
+    if (!href || href.startsWith('#')) return;
+    if (/^https?:\/\//.test(href) || href.startsWith('mailto:')) {
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener noreferrer');
+      return;
+    }
     const [filePart] = href.split('#');
     if (!filePart.endsWith('.md')) return;
     // Resolve relative path against current file's directory
@@ -40,6 +45,32 @@ function resolveImagePaths(container, currentFilePath) {
       else if (p !== '.') norm.push(p);
     }
     img.src = '/files-raw/' + norm.join('/');
+  });
+}
+
+function wrapStandaloneImages(container) {
+  container.querySelectorAll('img').forEach(img => {
+    if (img.closest('.md-slider')) return;
+    if (img.parentNode.classList.contains('md-img-wrap')) return;
+
+    const doWrap = () => {
+      const ratio = img.naturalWidth / img.naturalHeight;
+      const wrap = document.createElement('div');
+      // Wide images (wider than 16:9 ≈ 1.78) keep natural size
+      if (ratio > 1.78) {
+        wrap.className = 'md-img-wrap md-img-natural';
+      } else {
+        wrap.className = 'md-img-wrap';
+      }
+      img.parentNode.insertBefore(wrap, img);
+      wrap.appendChild(img);
+    };
+
+    if (img.naturalWidth) {
+      doWrap();
+    } else {
+      img.addEventListener('load', doWrap, { once: true });
+    }
   });
 }
 
