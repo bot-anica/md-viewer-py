@@ -55,24 +55,20 @@ python -m md_viewer
 
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| **Dashboard** | Grid view of folders and files, macOS Finder-style |
-| **Dark & light themes** | Auto-detects OS preference, manual toggle |
-| **File tree sidebar** | Collapsible directories with file name filter |
-| **Global search** | Search across all files from header with dropdown
-results |
-| **In-file search** | Cmd/Ctrl+F to find and highlight matches |
-| **Table of contents** | Right panel with scroll spy and collapsible groups
-|
-| **In-browser editing** | Edit mode with live preview, save to disk |
-| **Live reload** | Instant updates via SSE + watchdog |
-| **Syntax highlighting** | highlight.js for code blocks |
-| **Mermaid diagrams** | Rendered inline with error feedback |
-| **Keyboard shortcuts** | Full shortcut set with `?` modal |
-| **Print-friendly** | Clean stylesheet with proper page breaks |
-| **Proper CLI** | `--help`, `--port`, `--host`, `--no-browser` |
-| **Minimal dependencies** | Only `watchdog`, pip-installable |
+- **Dashboard**: grid view of folders and files, macOS Finder-style
+- **Dark & light themes**: auto-detects OS preference, manual toggle
+- **File tree sidebar**: collapsible directories with file name filter
+- **Global search**: search across all files from header with dropdown results
+- **In-file search**: Cmd/Ctrl+F to find and highlight matches
+- **Table of contents**: right panel with scroll spy and collapsible groups
+- **In-browser editing**: edit mode with live preview, save to disk
+- **Live reload**: instant updates via SSE + watchdog
+- **Syntax highlighting**: highlight.js for code blocks
+- **Mermaid diagrams**: rendered inline with error feedback
+- **Keyboard shortcuts**: full shortcut set with `?` modal
+- **Print-friendly**: clean stylesheet with proper page breaks
+- **Proper CLI**: `--help`, `--port`, `--host`, `--no-browser`
+- **Minimal dependencies**: only `watchdog`, pip-installable
 
 ## Quick Start
 
