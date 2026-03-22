@@ -10,15 +10,17 @@
   <img src="https://img.shields.io/pypi/l/md-viewer-py" alt="License">
 </p>
 
-<p align="center"><strong>Drop-in Markdown viewer for any folder — installable via pip.</strong></p>
+<p align="center"><strong>Drop-in Markdown viewer for any folder</strong></p>
 
 <p align="center">Install once, use everywhere as <code>mdview</code>.</p>
 
+A lightweight, pip-installable Markdown viewer that turns any folder into a browsable documentation site. Point it at a directory — it finds all `.md` files, renders them in a clean UI with syntax highlighting, diagrams, and live reload. No config, no build step, no Node.js. Just `pip install md-viewer-py` and `mdview`.
+
 <p align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-light.jpg" alt="File view — Light theme" width="100%">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-light.jpg" alt="File view — Light theme" width="100%">
 </p>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/file-dark.jpg" alt="File view — Dark theme" width="100%">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-dark.jpg" alt="File view — Dark theme" width="100%">
 </p>
 
 ---
@@ -35,25 +37,14 @@ Or with [uv](https://docs.astral.sh/uv/):
 uv tool install md-viewer-py
 ```
 
-Or run without installing:
-
-```bash
-uvx --from md-viewer-py mdview
-```
-
-Or with pipx:
-
-```bash
-pipx install md-viewer-py
-```
-
 Then run from any directory:
 
 ```bash
 mdview                        # serve current directory on port 8080
-mdview 3000                   # custom port
+mdview --port 3000            # custom port
 mdview /path/to/docs          # custom directory
-mdview /path/to/docs 3000     # both
+mdview /path/to/docs -p 3000  # both
+mdview --help                 # show all options
 ```
 
 Or run as a Python module without installing:
@@ -64,32 +55,24 @@ python -m md_viewer
 
 ## Features
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-light.jpg" alt="Dashboard — Light theme" width="100%">
-</p>
-<p align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/dashboard-dark.jpg" alt="Dashboard — Dark theme" width="100%">
-</p>
-
-- **Minimal dependencies** — only `watchdog` for live reload, auto-installed with pip
-- **pip/pipx installable** — install once, use anywhere as `mdview`
-- **Dashboard page** — grid view of folders and files, macOS Finder-style
-- **Dark & light themes** — polished UI with OS-aware theme toggle
-- **File tree sidebar** — folder navigation with collapsible directories
-- **Full-text search** — debounced search across all Markdown files with lazy loading
-- **Table of contents** — auto-generated with scroll spy and collapsible groups
-- **Collapsible sections** — click any heading to collapse/expand its content
-- **In-browser editing** — toggle edit mode with toolbar, live preview, and save to disk
-- **Live reload** — instant updates via SSE and native file system watching (watchdog)
-- **Syntax highlighting** — code blocks highlighted with highlight.js
-- **Mermaid diagrams** — flowcharts, sequence diagrams, and more rendered inline
-- **`.gitignore` support** — respects ignore patterns from root and subdirectories
-- **Gzip compression** — all responses compressed, ETag caching for the HTML page
-- **Keyboard shortcuts** — arrow keys to navigate, `/` to search
-- **Reading progress bar** — visual indicator of scroll position
-- **Mobile responsive** — works on small screens with hamburger menu
-- **Print-friendly** — clean print stylesheet for hard copies
-- **Custom port and directory** — point it at any folder, pick any port
+| Feature | Description |
+|---------|-------------|
+| **Dashboard** | Grid view of folders and files, macOS Finder-style |
+| **Dark & light themes** | Auto-detects OS preference, manual toggle |
+| **File tree sidebar** | Collapsible directories with file name filter |
+| **Global search** | Search across all files from header with dropdown
+results |
+| **In-file search** | Cmd/Ctrl+F to find and highlight matches |
+| **Table of contents** | Right panel with scroll spy and collapsible groups
+|
+| **In-browser editing** | Edit mode with live preview, save to disk |
+| **Live reload** | Instant updates via SSE + watchdog |
+| **Syntax highlighting** | highlight.js for code blocks |
+| **Mermaid diagrams** | Rendered inline with error feedback |
+| **Keyboard shortcuts** | Full shortcut set with `?` modal |
+| **Print-friendly** | Clean stylesheet with proper page breaks |
+| **Proper CLI** | `--help`, `--port`, `--host`, `--no-browser` |
+| **Minimal dependencies** | Only `watchdog`, pip-installable |
 
 ## Quick Start
 
@@ -108,9 +91,14 @@ A browser tab opens automatically at `http://localhost:8080`.
 
 | Key | Action |
 |-----|--------|
-| `/` or `Ctrl+K` | Focus search |
-| `←` `↑` | Previous file |
-| `→` `↓` | Next file |
+| `⌘/Ctrl+F` | Find in current file |
+| `⌘/Ctrl+Shift+F` | Search across all files |
+| `Shift Shift` | Filter files by name |
+| `/` | Focus search (legacy) |
+| `?` | Show keyboard shortcuts |
+| `← ↑` | Previous file |
+| `→ ↓` | Next file |
+| `Escape` | Close search / modal |
 
 ## How It Works
 
