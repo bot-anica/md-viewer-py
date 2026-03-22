@@ -54,6 +54,8 @@ function wrapStandaloneImages(container) {
     if (img.parentNode.classList.contains('md-img-wrap')) return;
 
     const doWrap = () => {
+      // Skip small images (badges, icons, logos)
+      if (img.naturalWidth < 200 || img.naturalHeight < 100) return;
       const ratio = img.naturalWidth / img.naturalHeight;
       const wrap = document.createElement('div');
       // Wide images (wider than 16:9 ≈ 1.78) keep natural size

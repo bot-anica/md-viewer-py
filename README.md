@@ -108,6 +108,13 @@ No install needed — just drop the wrapper into any folder:
 python3 md-viewer.py
 ```
 
+## Blog
+
+- [How I Split 2,800 Lines Into 29 Files With Zero Regressions](https://blog.anica.space/posts/md-viewer-refactoring-monolith-to-modules)
+- [From Viewer to Workspace: Rebuilding md-viewer-py in 9 Days](https://blog.anica.space/posts/md-viewer-from-viewer-to-workspace)
+- [My Side Project Got Its First Security Vulnerability](https://blog.anica.space/posts/md-viewer-first-security-vulnerability)
+- [I Built a Zero-Dependency Markdown Viewer in Python](https://blog.anica.space/posts/md-viewer-zero-dependency-markdown-viewer)
+
 ## Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](https://github.com/bot-anica/md-viewer-py/blob/main/CONTRIBUTING.md) for guidelines and the [improvements & ideas list](https://github.com/bot-anica/md-viewer-py/blob/main/IMPROVEMENTS.md) for open tasks.
