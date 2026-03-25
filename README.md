@@ -8,22 +8,47 @@
   <a href="https://pypi.org/project/md-viewer-py/"><img src="https://img.shields.io/pypi/v/md-viewer-py?label=version" alt="PyPI version"></a>
   <img src="https://img.shields.io/pypi/pyversions/md-viewer-py" alt="Python versions">
   <img src="https://img.shields.io/pypi/l/md-viewer-py" alt="License">
+  <a href="https://github.com/bot-anica/md-viewer-py/stargazers"><img src="https://img.shields.io/github/stars/bot-anica/md-viewer-py" alt="GitHub stars"></a>
+  <a href="https://pypi.org/project/md-viewer-py/"><img src="https://img.shields.io/pypi/dm/md-viewer-py" alt="PyPI downloads"></a>
 </p>
 
 <p align="center"><strong>Drop-in Markdown viewer for any folder</strong></p>
 
-<p align="center">Install once, use everywhere as <code>mdview</code>.</p>
+<p align="center">Tired of reading raw Markdown in your editor or setting up MkDocs just to browse local docs?</p>
 
-A lightweight, pip-installable Markdown viewer that turns any folder into a browsable documentation site. Point it at a directory — it finds all `.md` files, renders them in a clean UI with syntax highlighting, diagrams, and live reload. No config, no build step, no Node.js. Just `pip install md-viewer-py` and `mdview`.
+```bash
+pip install md-viewer-py
+mdview
+```
+
+That's it. Your browser opens, your docs are there.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-light.jpg" alt="File view — Light theme" width="100%">
 </p>
-<p align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-dark.jpg" alt="File view — Dark theme" width="100%">
-</p>
-
 ---
+
+## Why mdview?
+
+**Instant.** Point it at any folder. No config files, no build step, no Node.js.
+
+**Full-featured.** Sidebar navigation, global search, table of contents, dark mode, Mermaid diagrams, syntax highlighting — all built in.
+
+**Editable.** Switch to edit mode, make changes, save to disk. Live preview included.
+
+**Lightweight.** One dependency (`watchdog`). Built on Python's stdlib HTTP server.
+
+## mdview vs. the alternatives
+
+| | mdview | MkDocs / Docusaurus | VS Code Preview | grip |
+|---|---|---|---|---|
+| Setup | `pip install` | Config + build + Node.js | Already installed | `pip install` |
+| Multi-file navigation | Yes | Yes | No | No |
+| Cross-file search | Yes | Yes | No | No |
+| Live reload | Yes | Yes (with plugin) | Yes | No |
+| In-browser editing | Yes | No | Yes | No |
+| Config required | None | Yes | No | API token |
+| Works offline | Yes | Yes | Yes | No |
 
 ## Install
 
@@ -31,10 +56,11 @@ A lightweight, pip-installable Markdown viewer that turns any folder into a brow
 pip install md-viewer-py
 ```
 
-Or with [uv](https://docs.astral.sh/uv/):
+Or with [uv](https://docs.astral.sh/uv/) / [pipx](https://pipx.pypa.io/):
 
 ```bash
 uv tool install md-viewer-py
+pipx install md-viewer-py
 ```
 
 Then run from any directory:
@@ -47,13 +73,7 @@ mdview /path/to/docs -p 3000  # both
 mdview --help                 # show all options
 ```
 
-Or run as a Python module without installing:
-
-```bash
-python -m md_viewer
-```
-
-## Features
+## All Features
 
 - **Dashboard**: grid view of folders and files, macOS Finder-style
 - **Dark & light themes**: auto-detects OS preference, manual toggle
@@ -62,26 +82,13 @@ python -m md_viewer
 - **In-file search**: Cmd/Ctrl+F to find and highlight matches
 - **Table of contents**: right panel with scroll spy and collapsible groups
 - **In-browser editing**: edit mode with live preview, save to disk
-- **Live reload**: instant updates via SSE + watchdog
-- **Syntax highlighting**: highlight.js for code blocks
+- **Live reload**: instant updates when files change on disk
+- **Syntax highlighting**: for code blocks in all major languages
 - **Mermaid diagrams**: rendered inline with error feedback
 - **Keyboard shortcuts**: full shortcut set with `?` modal
 - **Print-friendly**: clean stylesheet with proper page breaks
 - **Proper CLI**: `--help`, `--port`, `--host`, `--no-browser`
 - **Minimal dependencies**: only `watchdog`, pip-installable
-
-## Quick Start
-
-```bash
-pip install md-viewer-py
-mdview
-```
-
-A browser tab opens automatically at `http://localhost:8080`.
-
-## Examples
-
-- [Mermaid Diagrams](https://github.com/bot-anica/md-viewer-py/blob/main/examples/mermaid-examples.md) — flowcharts, sequence diagrams, gantt charts, and more
 
 ## Keyboard Shortcuts
 
@@ -96,19 +103,17 @@ A browser tab opens automatically at `http://localhost:8080`.
 | `→ ↓` | Next file |
 | `Escape` | Close search / modal |
 
+## Examples
+
+- [Mermaid Diagrams](https://github.com/bot-anica/md-viewer-py/blob/main/examples/mermaid-examples.md) — flowcharts, sequence diagrams, gantt charts, and more
+
 ## How It Works
 
-`md-viewer-py` is a pip-installable HTTP server built on Python's `http.server`. It scans the directory for `.md` files, serves a single-page dark-themed UI, and renders Markdown client-side using [marked.js](https://github.com/markedjs/marked) from a CDN. No build step, no config files, no virtual environments beyond the install itself.
+`md-viewer-py` is a pip-installable HTTP server built on Python's `http.server`. It scans the directory for `.md` files, serves a single-page UI with dark and light themes, and renders Markdown client-side using [marked.js](https://github.com/markedjs/marked) from a CDN. No build step, no config files — just install and run.
 
-## Alternative: Copy and Run
+## Built in public
 
-No install needed — just drop the wrapper into any folder:
-
-```bash
-python3 md-viewer.py
-```
-
-## Blog
+Follow the development journey:
 
 - [How I Split 2,800 Lines Into 29 Files With Zero Regressions](https://blog.anica.space/posts/md-viewer-refactoring-monolith-to-modules)
 - [From Viewer to Workspace: Rebuilding md-viewer-py in 9 Days](https://blog.anica.space/posts/md-viewer-from-viewer-to-workspace)
@@ -123,4 +128,4 @@ Feel free to [open an issue](https://github.com/bot-anica/md-viewer-py/issues) t
 
 ## License
 
-[MIT](https://github.com/bot-anica/md-viewer-py/blob/main/LICENSE)
+[MIT](https://github.com/bot-anica/md-viewer-py/blob/main/LICENSE) — Install it, use it, uninstall anytime with `pip uninstall md-viewer-py`.
