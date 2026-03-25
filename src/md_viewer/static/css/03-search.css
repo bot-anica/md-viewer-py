@@ -22,7 +22,7 @@
       padding: 2px 5px;
       border-radius: 4px;
       border: 1px solid var(--border);
-      background: var(--bg-card);
+      background: #fff;
       color: var(--text-muted);
       line-height: 1.4;
       display: inline-block;

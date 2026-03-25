@@ -229,10 +229,9 @@
     .shortcuts-overlay.show .shortcuts-modal { transform: scale(1); }
     .shortcuts-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 18px; }
     .shortcuts-section { display: flex; flex-direction: column; gap: 8px; }
-    .shortcuts-table { width: 100%; border-collapse: collapse; }
-    .shortcuts-table tr td { padding: 5px 0; font-size: 13px; color: var(--text); vertical-align: middle; }
-    .shortcuts-table tr td:first-child { white-space: nowrap; padding-right: 16px; width: 1%; }
-    .shortcuts-table tr td:last-child { color: var(--text-muted); }
+    .shortcuts-grid { display: grid; grid-template-columns: 100px 1fr; gap: 5px 16px; align-items: center; font-size: 13px; color: var(--text); }
+    .shortcut-keys { display: flex; align-items: center; gap: 3px; }
+    .shortcuts-grid > div:nth-child(even) { color: var(--text-muted); }
     body.light .shortcuts-overlay { background: rgba(0,0,0,0.3); }
     body.light .shortcuts-modal { box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
 
