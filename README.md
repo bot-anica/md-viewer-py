@@ -14,29 +14,20 @@
 
 <p align="center"><strong>Drop-in Markdown viewer for any folder</strong></p>
 
-<p align="center">Tired of reading raw Markdown in your editor or setting up MkDocs just to browse local docs?</p>
+A local HTTP server that renders Markdown files in the browser with navigation, search, and editing. Install and run:
 
 ```bash
 pip install md-viewer-py
 mdview
 ```
 
-That's it. Your browser opens, your docs are there.
-
 <p align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-light.jpg" alt="File view — Light theme" width="100%">
+  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-light.jpg" alt="File view - Light theme" width="100%">
 </p>
----
 
 ## Why mdview?
 
-**Instant.** Point it at any folder. No config files, no build step, no Node.js.
-
-**Full-featured.** Sidebar navigation, global search, table of contents, dark mode, Mermaid diagrams, syntax highlighting — all built in.
-
-**Editable.** Switch to edit mode, make changes, save to disk. Live preview included.
-
-**Lightweight.** One dependency (`watchdog`). Built on Python's stdlib HTTP server.
+Point it at any folder and instantly browse your docs - no config files, no build step, no Node.js. It comes with sidebar navigation, global search, table of contents, dark mode, Mermaid diagrams, syntax highlighting, and an in-browser editor with live preview, all powered by Python's stdlib HTTP server and a single dependency (`watchdog`).
 
 ## mdview vs. the alternatives
 
@@ -105,11 +96,11 @@ mdview --help                 # show all options
 
 ## Examples
 
-- [Mermaid Diagrams](https://github.com/bot-anica/md-viewer-py/blob/main/examples/mermaid-examples.md) — flowcharts, sequence diagrams, gantt charts, and more
+- [Mermaid Diagrams](https://github.com/bot-anica/md-viewer-py/blob/main/examples/mermaid-examples.md): flowcharts, sequence diagrams, gantt charts, and more
 
 ## How It Works
 
-`md-viewer-py` is a pip-installable HTTP server built on Python's `http.server`. It scans the directory for `.md` files, serves a single-page UI with dark and light themes, and renders Markdown client-side using [marked.js](https://github.com/markedjs/marked) from a CDN. No build step, no config files — just install and run.
+`md-viewer-py` is a pip-installable HTTP server built on Python's `http.server`. It scans the directory for `.md` files, serves a single-page UI with dark and light themes, and renders Markdown client-side using [marked.js](https://github.com/markedjs/marked) from a CDN. No build step, no config files. Just install and run.
 
 ## Built in public
 
@@ -128,4 +119,6 @@ Feel free to [open an issue](https://github.com/bot-anica/md-viewer-py/issues) t
 
 ## License
 
-[MIT](https://github.com/bot-anica/md-viewer-py/blob/main/LICENSE) — Install it, use it, uninstall anytime with `pip uninstall md-viewer-py`.
+[MIT](https://github.com/bot-anica/md-viewer-py/blob/main/LICENSE)
+
+Install it, use it, uninstall anytime with `pip uninstall md-viewer-py`.
