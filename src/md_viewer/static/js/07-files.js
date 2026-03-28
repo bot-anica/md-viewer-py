@@ -1,3 +1,44 @@
+let _navSkipHistory = false;
+
+function _pushNavHistory(idx) {
+  if (_navSkipHistory) return;
+  // If we're not at the end of history, truncate forward entries
+  if (_navHistoryPos < _navHistory.length - 1) {
+    _navHistory = _navHistory.slice(0, _navHistoryPos + 1);
+  }
+  // Don't push duplicate consecutive entries
+  if (_navHistory.length === 0 || _navHistory[_navHistory.length - 1] !== idx) {
+    _navHistory.push(idx);
+  }
+  _navHistoryPos = _navHistory.length - 1;
+  _updateNavButtons();
+}
+
+function _updateNavButtons() {
+  const back = document.getElementById('navBackBtn');
+  const fwd = document.getElementById('navForwardBtn');
+  if (back) back.disabled = _navHistoryPos <= 0;
+  if (fwd) fwd.disabled = _navHistoryPos >= _navHistory.length - 1;
+}
+
+function navBack() {
+  if (_navHistoryPos <= 0) return;
+  _navHistoryPos--;
+  _navSkipHistory = true;
+  showFile(_navHistory[_navHistoryPos]);
+  _navSkipHistory = false;
+  _updateNavButtons();
+}
+
+function navForward() {
+  if (_navHistoryPos >= _navHistory.length - 1) return;
+  _navHistoryPos++;
+  _navSkipHistory = true;
+  showFile(_navHistory[_navHistoryPos]);
+  _navSkipHistory = false;
+  _updateNavButtons();
+}
+
 async function showFile(idx) {
   saveCurrentTabScroll();
   closeInfileSearch();
@@ -24,6 +65,7 @@ async function showFile(idx) {
   }
 
   activeFileIdx = idx;
+  _pushNavHistory(idx);
   document.body.classList.remove('no-active-file');
   const f = FILES[idx];
   window.location.hash = slugify(f.path);
@@ -78,6 +120,7 @@ async function showFile(idx) {
   moveTocToPosition();
   addHeadingAnchors();
   interceptMdLinks(content, f.path);
+  resolveWikiLinks(content, f.path);
   resolveImagePaths(content, f.path);
   convertImageTablesToSliders(content);
   wrapStandaloneImages(content);

@@ -100,6 +100,63 @@ function addCopyButtons(container) {
   });
 }
 
+function resolveWikiLinks(container, currentFilePath) {
+  const links = container.querySelectorAll('a.wiki-link');
+  if (links.length === 0) return;
+
+  // Build lookup maps once
+  const byPath = new Map();
+  const byName = new Map();
+  FILES.forEach((f, i) => {
+    byPath.set(f.path, i);
+    byPath.set(f.path.replace(/\.md$/i, ''), i);
+    const name = f.name.toLowerCase().replace(/\.md$/i, '');
+    if (!byName.has(name)) byName.set(name, i);
+  });
+
+  const dir = currentFilePath && currentFilePath.includes('/')
+    ? currentFilePath.substring(0, currentFilePath.lastIndexOf('/'))
+    : '';
+
+  links.forEach(a => {
+    const raw = a.getAttribute('data-wiki-target');
+    if (!raw) return;
+    const [filePart, heading] = raw.split('#', 2);
+    const target = filePart || '';
+
+    // Resolution order: exact path, relative path, filename match
+    let idx = byPath.get(target);
+    if (idx === undefined) idx = byPath.get(target + '.md');
+    if (idx === undefined && dir) {
+      const rel = dir + '/' + target;
+      idx = byPath.get(rel);
+      if (idx === undefined) idx = byPath.get(rel + '.md');
+    }
+    if (idx === undefined) idx = byName.get(target.toLowerCase().replace(/\.md$/i, ''));
+
+    if (idx !== undefined) {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        if (idx === activeFileIdx && !heading) {
+          // Self-link without heading — scroll to top
+          document.body.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+        showFile(idx);
+        if (heading) {
+          setTimeout(() => {
+            const el = document.getElementById(heading) || document.getElementById(slugifyHeading(heading, new Set()));
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
+      });
+    } else {
+      a.classList.add('wiki-link-broken');
+      a.title = 'Page not found: ' + raw;
+    }
+  });
+}
+
 function addHeadingAnchors() {
   const usedSlugs = new Set();
   document.querySelectorAll('.md h1, .md h2, .md h3, .md h4').forEach(h => {
