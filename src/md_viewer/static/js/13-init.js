@@ -45,6 +45,18 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
+  // Alt+Left / Alt+Right → navigation history back/forward
+  if (e.altKey && e.key === 'ArrowLeft') {
+    e.preventDefault();
+    navBack();
+    return;
+  }
+  if (e.altKey && e.key === 'ArrowRight') {
+    e.preventDefault();
+    navForward();
+    return;
+  }
+
   // Arrow keys for file navigation
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
     if (activeFileIdx > 0) { e.preventDefault(); showFile(activeFileIdx - 1); }

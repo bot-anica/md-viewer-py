@@ -413,6 +413,36 @@
       border-bottom: 1px solid var(--border);
     }
 
+    .nav-history-btns {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .nav-history-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 3px 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+
+    .nav-history-btn:hover:not(:disabled) {
+      color: var(--text);
+      border-color: var(--text-muted);
+      background: var(--bg-hover);
+    }
+
+    .nav-history-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
     .breadcrumb {
       font-size: 14px;
       font-weight: 500;
