@@ -14,10 +14,10 @@
 7. [x] **No OS dark mode detection** — doesn't check `prefers-color-scheme`, always defaults to dark
 8. ~~**TOC collapsed by default** — users must click to expand Table of Contents~~
 9. [x] **No scroll position memory** — navigating back loses your place
-10. [ ] **Search limited to 15 results** (`app.js:549`) — hard-coded, no "show more"
+10. [x] **Search limited to 15 results** (`app.js:549`) — "Show all" button added to search dropdown
 11. [x] **Non-deterministic heading IDs** (`app.js:631`) — uses `Math.random()`, breaks anchor links on refresh. Should slugify heading text
 12. [x] **Breadcrumb spans not clickable** — breadcrumb is decorative only, should navigate
-13. [ ] **No keyboard shortcut help** — no `?` modal showing available shortcuts
+13. [x] **No keyboard shortcut help** — `?` modal with all shortcuts added
 14. [x] **No file name filter** — can only search content, not filter the file tree by name
 
 ## Low: Code Quality & Tech Debt
