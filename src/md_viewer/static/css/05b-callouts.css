@@ -1,0 +1,135 @@
+    /* ---- Obsidian-style callouts ---- */
+
+    .md .callout {
+      border-left: 3px solid var(--callout-color, var(--accent));
+      border-radius: 0 8px 8px 0;
+      background: color-mix(in srgb, var(--callout-color, var(--accent)) 8%, var(--bg));
+      margin: 14px 0;
+      padding: 0;
+      font-style: normal;
+      color: var(--text);
+    }
+
+    .callout-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--callout-color, var(--accent));
+      user-select: none;
+    }
+
+    .callout-icon {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .callout-icon svg {
+      stroke: var(--callout-color, var(--accent));
+    }
+
+    .callout-title-text {
+      flex: 1;
+    }
+
+    .callout-content {
+      padding: 2px 14px 12px;
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
+    .callout-content:empty {
+      display: none;
+    }
+
+    .callout-content > *:first-child {
+      margin-top: 0;
+    }
+
+    .callout-content > *:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ---- Foldable callouts ---- */
+
+    .callout details {
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .callout details > summary {
+      list-style: none;
+      cursor: pointer;
+    }
+
+    .callout details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .callout details > summary::marker {
+      display: none;
+      content: '';
+    }
+
+    .callout-fold-icon {
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+      stroke: var(--callout-color, var(--accent));
+    }
+
+    .callout details[open] .callout-fold-icon {
+      transform: rotate(0deg);
+    }
+
+    .callout details:not([open]) .callout-fold-icon {
+      transform: rotate(-90deg);
+    }
+
+    /* ---- Tables inside callouts ---- */
+
+    .callout-content tbody td {
+      background: var(--bg);
+    }
+
+    /* ---- Nested callouts ---- */
+
+    .callout .callout {
+      margin: 10px 0;
+    }
+
+    /* ---- Wiki-link styles ---- */
+
+    .md a.wiki-link {
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-style: dashed;
+      text-underline-offset: 3px;
+    }
+
+    .md a.wiki-link-broken {
+      color: var(--text-muted);
+      text-decoration: line-through;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* ---- Print: always expand callouts ---- */
+
+    @media print {
+      .callout details {
+        open: true;
+      }
+
+      .callout details > summary .callout-fold-icon {
+        display: none;
+      }
+
+      .callout details .callout-content {
+        display: block !important;
+      }
+    }
+
