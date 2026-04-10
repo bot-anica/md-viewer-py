@@ -29,9 +29,6 @@ mdview
   <em>▶ Click to watch the demo</em>
 </p>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-light.jpg" alt="File view - Light theme" width="100%">
-</p>
 
 ## Why mdview?
 
