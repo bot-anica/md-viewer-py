@@ -22,6 +22,14 @@ mdview
 ```
 
 <p align="center">
+  <a href="https://youtu.be/uZRkSmzfyzY">
+    <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/video-thumbnail.png" alt="Watch the demo" width="100%">
+  </a>
+  <br>
+  <em>▶ Click to watch the demo</em>
+</p>
+
+<p align="center">
   <img src="https://raw.githubusercontent.com/bot-anica/md-viewer-py/main/assets/preview-light.jpg" alt="File view - Light theme" width="100%">
 </p>
 
