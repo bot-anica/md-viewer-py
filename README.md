@@ -8,7 +8,6 @@
   <a href="https://pypi.org/project/md-viewer-py/"><img src="https://img.shields.io/pypi/v/md-viewer-py?label=version" alt="PyPI version"></a>
   <img src="https://img.shields.io/pypi/pyversions/md-viewer-py" alt="Python versions">
   <img src="https://img.shields.io/pypi/l/md-viewer-py" alt="License">
-  <a href="https://github.com/bot-anica/md-viewer-py/stargazers"><img src="https://img.shields.io/github/stars/bot-anica/md-viewer-py" alt="GitHub stars"></a>
 </p>
 
 <p align="center"><strong>Drop-in Markdown viewer for any folder</strong></p>
