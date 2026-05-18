@@ -37,12 +37,12 @@ Point it at any folder and instantly browse your docs - no config files, no buil
 | | mdview | MkDocs / Docusaurus | VS Code Preview | grip |
 |---|---|---|---|---|
 | Setup | `pip install` | Config + build + Node.js | Already installed | `pip install` |
-| Multi-file navigation | Yes | Yes | No | No |
-| Cross-file search | Yes | Yes | No | No |
-| Live reload | Yes | Yes (with plugin) | Yes | No |
-| In-browser editing | Yes | No | Yes | No |
-| Config required | None | Yes | No | API token |
-| Works offline | Yes | Yes | Yes | No |
+| Multi-file navigation | ✅ | ✅ | ❌ | ❌ |
+| Cross-file search | ✅ | ✅ | ❌ | ❌ |
+| Live reload | ✅ | ✅ (with plugin) | ✅ | ❌ |
+| In-browser editing | ✅ | ❌ | ✅ | ❌ |
+| Config required | None | ✅ | ❌ | API token |
+| Works offline | ✅ | ✅ | ✅ | ❌ |
 
 ## Install
 
