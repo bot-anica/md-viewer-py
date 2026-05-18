@@ -79,6 +79,7 @@ mdview --help                 # show all options
 - **Live reload**: instant updates when files change on disk
 - **Syntax highlighting**: for code blocks in all major languages
 - **Mermaid diagrams**: rendered inline with error feedback
+- **LaTeX math**: inline `$...$` and block `$$...$$` rendered with KaTeX
 - **Keyboard shortcuts**: full shortcut set with `?` modal
 - **Print-friendly**: clean stylesheet with proper page breaks
 - **Proper CLI**: `--help`, `--port`, `--host`, `--no-browser`
@@ -100,6 +101,7 @@ mdview --help                 # show all options
 ## Examples
 
 - [Mermaid Diagrams](https://github.com/bot-anica/md-viewer-py/blob/main/examples/mermaid-examples.md): flowcharts, sequence diagrams, gantt charts, and more
+- [LaTeX Math](https://github.com/bot-anica/md-viewer-py/blob/main/examples/math-examples.md): inline and block equations via KaTeX
 
 ## How It Works
 

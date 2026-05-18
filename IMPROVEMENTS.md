@@ -42,3 +42,4 @@
 29. [x] **Dashboard page** — grid view of folders and files on startup instead of auto-opening first file
 30. [x] **Styled scrollbars** — thin themed scrollbars for code blocks and page, replacing system defaults
 31. [x] **Favicon** — browser tab icon using existing logo
+32. [x] **LaTeX math rendering** — KaTeX support for inline `$...$` and block `$$...$$` math expressions

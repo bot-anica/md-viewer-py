@@ -543,3 +543,28 @@
       margin: 20mm;
     }
 
+    /* ---- LaTeX math (KaTeX) ---- */
+    .md .math-block {
+      margin: 16px 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .md .math-block .katex-display {
+      margin: 0;
+    }
+
+    .md .math-inline .katex {
+      font-size: 1em;
+    }
+
+    .md .math-error {
+      color: var(--red, #e74c3c);
+      background: rgba(231, 76, 60, 0.08);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.9em;
+    }
+
