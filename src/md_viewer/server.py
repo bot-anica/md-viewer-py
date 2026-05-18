@@ -50,6 +50,26 @@ _HTML_BYTES = _build_html()
 _HTML_GZIP = gzip.compress(_HTML_BYTES)
 _HTML_ETAG = '"' + hashlib.md5(_HTML_BYTES).hexdigest() + '"'
 
+_STATE_DIR = Path.home() / ".config" / "md-viewer-py"
+_STATE_FILE = _STATE_DIR / "state.json"
+
+
+def _load_state():
+    try:
+        return json.loads(_STATE_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _save_state(state):
+    try:
+        _STATE_DIR.mkdir(parents=True, exist_ok=True)
+        tmp = _STATE_FILE.with_suffix(".tmp")
+        tmp.write_text(json.dumps(state, indent=2), encoding="utf-8")
+        tmp.replace(_STATE_FILE)
+    except Exception:
+        pass
+
 
 class _ChangeTracker(FileSystemEventHandler):
     """Tracks .md file changes and notifies SSE clients."""
@@ -129,7 +149,13 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         if path == "/api/version":
-            payload = {"version": __version__, "release_notes": _release_notes or "", "latest_version": _latest_version or ""}
+            state = _load_state()
+            already_seen = state.get("last_seen_version") == __version__
+            payload = {
+                "version": __version__,
+                "release_notes": "" if already_seen else (_release_notes or ""),
+                "latest_version": _latest_version or "",
+            }
             data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             self._send_gzip(data, "application/json")
             return
@@ -202,6 +228,19 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         super().do_GET()
+
+    def do_POST(self):
+        path = unquote(self.path)
+
+        if path == "/api/ack-version":
+            state = _load_state()
+            state["last_seen_version"] = __version__
+            _save_state(state)
+            self.send_response(204)
+            self.end_headers()
+            return
+
+        self.send_error(404, "Not found")
 
     def do_PUT(self):
         """Handle file save requests."""

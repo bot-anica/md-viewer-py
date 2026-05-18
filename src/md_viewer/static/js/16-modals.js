@@ -1,22 +1,20 @@
 // ---- What's New modal ----
+// "Seen" state lives server-side (~/.config/md-viewer-py/state.json) because
+// localStorage is scoped per origin (host:port), so port hopping between runs
+// would re-show the modal forever.
 async function checkWhatsNew() {
   try {
     const resp = await fetch('/api/version');
     if (!resp.ok) return;
     const data = await resp.json();
-    const lastSeen = localStorage.getItem('mdviewer_last_version');
-    if (lastSeen === data.version) return;
-    if (!data.release_notes) {
-      localStorage.setItem('mdviewer_last_version', data.version);
-      return;
-    }
+    if (!data.release_notes) return;
     const notes = data.release_notes.replace(/^##?\s+What'?s\s+New\s*/im, '');
     document.getElementById('whatsNewBody').innerHTML = marked.parse(notes, { gfm: true, breaks: false });
     document.getElementById('whatsNewVersion').textContent = 'v' + data.version;
     const overlay = document.getElementById('whatsNewOverlay');
     overlay.style.display = 'flex';
     requestAnimationFrame(() => overlay.classList.add('show'));
-    localStorage.setItem('mdviewer_last_version', data.version);
+    fetch('/api/ack-version', { method: 'POST' }).catch(() => {});
   } catch {}
 }
 
