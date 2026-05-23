@@ -106,6 +106,12 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(self.root_dir), **kwargs)
 
+    def handle_one_request(self):
+        try:
+            super().handle_one_request()
+        except (ConnectionResetError, BrokenPipeError, ConnectionAbortedError):
+            self.close_connection = True
+
     def _accepts_gzip(self):
         ae = self.headers.get("Accept-Encoding", "")
         return "gzip" in ae
