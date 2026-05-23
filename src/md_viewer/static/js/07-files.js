@@ -122,6 +122,7 @@ async function showFile(idx) {
   interceptMdLinks(content, f.path);
   resolveWikiLinks(content, f.path);
   resolveImagePaths(content, f.path);
+  convertAudioImages(content);
   convertImageTablesToSliders(content);
   wrapStandaloneImages(content);
   runMermaid();

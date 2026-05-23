@@ -288,6 +288,28 @@
       object-fit: initial;
     }
 
+    .md-audio {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+      margin: 12px 0;
+      max-width: 100%;
+    }
+
+    .md-audio-label {
+      font-size: 12px;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.2;
+    }
+
+    .md-audio audio {
+      display: block;
+      height: 36px;
+      width: 320px;
+      max-width: 100%;
+    }
+
     /* ---- Progress ---- */
     .reading-progress {
       position: fixed;

@@ -54,6 +54,7 @@ function connectSSE() {
       if (f) interceptMdLinks(content, f.path);
       if (f) resolveWikiLinks(content, f.path);
       if (f) resolveImagePaths(content, f.path);
+      convertAudioImages(content);
       convertImageTablesToSliders(content);
       wrapStandaloneImages(content);
       buildToc();

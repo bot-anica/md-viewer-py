@@ -48,6 +48,41 @@ function resolveImagePaths(container, currentFilePath) {
   });
 }
 
+const AUDIO_EXT_RE = /\.(mp3|wav|ogg|oga|m4a|aac|flac|opus)(\?.*)?$/i;
+
+const _audioMetadataObserver = ('IntersectionObserver' in window) ? new IntersectionObserver((entries, obs) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const a = e.target;
+    a.preload = 'metadata';
+    a.load();
+    obs.unobserve(a);
+  });
+}, { rootMargin: '200px 0px' }) : null;
+
+function convertAudioImages(container) {
+  container.querySelectorAll('img[src]').forEach(img => {
+    const src = img.getAttribute('src');
+    if (!src || !AUDIO_EXT_RE.test(src)) return;
+    const label = img.getAttribute('alt') || '';
+    const wrap = document.createElement('div');
+    wrap.className = 'md-audio';
+    if (label) {
+      const lbl = document.createElement('div');
+      lbl.className = 'md-audio-label';
+      lbl.textContent = label;
+      wrap.appendChild(lbl);
+    }
+    const audio = document.createElement('audio');
+    audio.controls = true;
+    audio.preload = 'none';
+    audio.src = src;
+    wrap.appendChild(audio);
+    img.replaceWith(wrap);
+    if (_audioMetadataObserver) _audioMetadataObserver.observe(audio);
+  });
+}
+
 function wrapStandaloneImages(container) {
   container.querySelectorAll('img').forEach(img => {
     if (img.closest('.md-slider')) return;

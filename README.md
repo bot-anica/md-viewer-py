@@ -80,6 +80,7 @@ mdview --help                 # show all options
 - **Syntax highlighting**: for code blocks in all major languages
 - **Mermaid diagrams**: rendered inline with error feedback
 - **LaTeX math**: inline `$...$` and block `$$...$$` rendered with KaTeX
+- **Audio playback**: inline `<audio>` player for mp3, wav, ogg, m4a, aac, flac, opus
 - **Keyboard shortcuts**: full shortcut set with `?` modal
 - **Print-friendly**: clean stylesheet with proper page breaks
 - **Proper CLI**: `--help`, `--port`, `--host`, `--no-browser`
@@ -102,6 +103,7 @@ mdview --help                 # show all options
 
 - [Mermaid Diagrams](https://github.com/bot-anica/md-viewer-py/blob/main/examples/mermaid-examples.md): flowcharts, sequence diagrams, gantt charts, and more
 - [LaTeX Math](https://github.com/bot-anica/md-viewer-py/blob/main/examples/math-examples.md): inline and block equations via KaTeX
+- [Audio Playback](https://github.com/bot-anica/md-viewer-py/blob/main/examples/audio-examples.md): inline audio player for common formats
 
 ## How It Works
 

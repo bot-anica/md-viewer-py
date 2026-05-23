@@ -200,6 +200,10 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
                     ".jpeg": "image/jpeg", ".gif": "image/gif",
                     ".svg": "image/svg+xml", ".webp": "image/webp",
                     ".ico": "image/x-icon", ".bmp": "image/bmp",
+                    ".mp3": "audio/mpeg", ".wav": "audio/wav",
+                    ".ogg": "audio/ogg", ".oga": "audio/ogg",
+                    ".m4a": "audio/mp4", ".aac": "audio/aac",
+                    ".flac": "audio/flac", ".opus": "audio/opus",
                 }.get(ext, "application/octet-stream")
                 data = file_path.read_bytes()
                 self.send_response(200)
