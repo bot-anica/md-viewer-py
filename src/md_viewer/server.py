@@ -330,15 +330,33 @@ _release_notes = None
 _latest_version = None
 
 
+_GH_RELEASES = "https://api.github.com/repos/bot-anica/md-viewer-py/releases"
+
+
+def _fetch_release(url):
+    with urlopen(url, timeout=3) as resp:
+        return json.loads(resp.read())
+
+
 def _check_for_update():
     global _release_notes, _latest_version
     try:
-        with urlopen("https://api.github.com/repos/bot-anica/md-viewer-py/releases/latest", timeout=3) as resp:
-            data = json.loads(resp.read())
-        latest = data.get("tag_name", "").lstrip("v")
-        _release_notes = data.get("body", "")
+        latest_data = _fetch_release(f"{_GH_RELEASES}/latest")
+        latest = latest_data.get("tag_name", "").lstrip("v")
         if latest:
             _latest_version = latest
+        # What's New describes the version actually running, so its notes must
+        # come from that version's own release — not whatever is latest. They
+        # coincide once you upgrade; until then the heading and body would
+        # otherwise disagree (running version label, newer version's notes).
+        if latest == __version__:
+            _release_notes = latest_data.get("body", "")
+        else:
+            try:
+                own = _fetch_release(f"{_GH_RELEASES}/tags/v{__version__}")
+                _release_notes = own.get("body", "")
+            except Exception:
+                _release_notes = ""
         if latest and latest != __version__:
             return f"v{latest} available (pip install -U md-viewer-py)"
     except Exception:
