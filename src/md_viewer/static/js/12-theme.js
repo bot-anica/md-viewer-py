@@ -1,4 +1,6 @@
 function _getDefaultTheme() {
+  const fromServer = window.__MD_VIEWER_THEME__;
+  if (fromServer === 'dark' || fromServer === 'light') return fromServer;
   const saved = localStorage.getItem('md-viewer-theme');
   if (saved) return saved;
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
@@ -24,6 +26,14 @@ function applyTheme(theme) {
   });
   runMermaid();
   localStorage.setItem('md-viewer-theme', theme);
+  if (window.__MD_VIEWER_THEME__ !== theme) {
+    window.__MD_VIEWER_THEME__ = theme;
+    fetch('/api/theme', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ theme }),
+    }).catch(() => {});
+  }
 }
 function toggleTheme() { applyTheme(_currentTheme === 'dark' ? 'light' : 'dark'); }
 // Apply theme on load (uses OS preference if no saved preference)

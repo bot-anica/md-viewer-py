@@ -23,7 +23,7 @@ from .scanner import scan_md_files
 _STATIC_DIR = Path(__file__).parent / "static"
 
 
-def _build_html():
+def _build_html_template():
     html = (_STATIC_DIR / "index.html").read_text(encoding="utf-8")
     css_dir = _STATIC_DIR / "css"
     js_dir = _STATIC_DIR / "js"
@@ -42,13 +42,23 @@ def _build_html():
         html.replace("__STYLE__", css)
         .replace("__SCRIPT__", js)
         .replace("__LOGO__", logo)
-        .encode("utf-8")
     )
 
 
-_HTML_BYTES = _build_html()
-_HTML_GZIP = gzip.compress(_HTML_BYTES)
-_HTML_ETAG = '"' + hashlib.md5(_HTML_BYTES).hexdigest() + '"'
+_HTML_TEMPLATE = _build_html_template()
+_html_cache: dict[str, tuple[bytes, bytes, str]] = {}
+
+
+def _html_for_theme(theme: str):
+    cached = _html_cache.get(theme)
+    if cached is not None:
+        return cached
+    body = _HTML_TEMPLATE.replace("__INITIAL_THEME__", theme).encode("utf-8")
+    gz = gzip.compress(body)
+    etag = '"' + hashlib.md5(body).hexdigest() + '"'
+    _html_cache[theme] = (body, gz, etag)
+    return body, gz, etag
+
 
 _STATE_DIR = Path.home() / ".config" / "md-viewer-py"
 _STATE_FILE = _STATE_DIR / "state.json"
@@ -137,17 +147,19 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == "/" or path == "/index.html":
             # Check If-None-Match for 304
-            if self.headers.get("If-None-Match") == _HTML_ETAG:
+            theme = _load_state().get("theme", "")
+            html_bytes, html_gzip, html_etag = _html_for_theme(theme if theme in ("dark", "light") else "")
+            if self.headers.get("If-None-Match") == html_etag:
                 self.send_response(304)
                 self.end_headers()
                 return
             use_gzip = self._accepts_gzip()
-            body = _HTML_GZIP if use_gzip else _HTML_BYTES
+            body = html_gzip if use_gzip else html_bytes
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-cache")
-            self.send_header("ETag", _HTML_ETAG)
+            self.send_header("ETag", html_etag)
             if use_gzip:
                 self.send_header("Content-Encoding", "gzip")
             self.end_headers()
@@ -245,6 +257,24 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
         if path == "/api/ack-version":
             state = _load_state()
             state["last_seen_version"] = __version__
+            _save_state(state)
+            self.send_response(204)
+            self.end_headers()
+            return
+
+        if path == "/api/theme":
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                self.send_error(400, "Invalid JSON")
+                return
+            theme = body.get("theme")
+            if theme not in ("dark", "light"):
+                self.send_error(400, "theme must be 'dark' or 'light'")
+                return
+            state = _load_state()
+            state["theme"] = theme
             _save_state(state)
             self.send_response(204)
             self.end_headers()
