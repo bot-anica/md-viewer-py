@@ -64,6 +64,7 @@ mdview                        # serve current directory on port 8080
 mdview --port 3000            # custom port
 mdview /path/to/docs          # custom directory
 mdview /path/to/docs -p 3000  # both
+mdview /path/to/docs --readonly     # disable editing (safe for public hosting)
 mdview --help                 # show all options
 ```
 
@@ -83,7 +84,7 @@ mdview --help                 # show all options
 - **Audio playback**: inline `<audio>` player for mp3, wav, ogg, m4a, aac, flac, opus
 - **Keyboard shortcuts**: full shortcut set with `?` modal
 - **Print-friendly**: clean stylesheet with proper page breaks
-- **Proper CLI**: `--help`, `--port`, `--host`, `--no-browser`
+- **Proper CLI**: `--help`, `--port`, `--host`, `--no-browser`, `--readonly`
 - **Minimal dependencies**: only `watchdog`, pip-installable
 
 ## Keyboard Shortcuts

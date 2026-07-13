@@ -112,6 +112,7 @@ _change_tracker = _ChangeTracker()
 
 class ViewerHandler(http.server.SimpleHTTPRequestHandler):
     root_dir = Path.cwd()
+    readonly = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(self.root_dir), **kwargs)
@@ -180,7 +181,7 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == "/api/files":
             files = scan_md_files(self.root_dir)
-            payload = {"root": str(self.root_dir), "files": files}
+            payload = {"root": str(self.root_dir), "files": files, "readonly": self.readonly}
             data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             self._send_gzip(data, "application/json")
             return
@@ -284,6 +285,10 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_PUT(self):
         """Handle file save requests."""
+        if self.readonly:
+            self.send_error(403, "Server is in read-only mode")
+            return
+
         path = unquote(self.path)
 
         if path.startswith("/files/"):
@@ -401,6 +406,11 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Don't open browser automatically",
     )
     parser.add_argument(
+        "--readonly",
+        action="store_true",
+        help="Disable editing (hides the Edit button and rejects file writes)",
+    )
+    parser.add_argument(
         "--version", "-V",
         action="version",
         version=f"%(prog)s {__version__}",
@@ -438,6 +448,7 @@ def main():
 
     os.chdir(root_dir)
     ViewerHandler.root_dir = root_dir
+    ViewerHandler.readonly = args.readonly
 
     # Start file watcher
     observer = Observer()
