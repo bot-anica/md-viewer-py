@@ -9,7 +9,7 @@ async function checkWhatsNew() {
     const data = await resp.json();
     if (!data.release_notes) return;
     const notes = data.release_notes.replace(/^##?\s+What'?s\s+New\s*/im, '');
-    document.getElementById('whatsNewBody').innerHTML = marked.parse(notes, { gfm: true, breaks: false });
+    document.getElementById('whatsNewBody').innerHTML = safeMarked(notes);
     document.getElementById('whatsNewVersion').textContent = 'v' + data.version;
     const overlay = document.getElementById('whatsNewOverlay');
     overlay.style.display = 'flex';

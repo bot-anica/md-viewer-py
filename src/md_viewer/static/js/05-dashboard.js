@@ -66,9 +66,9 @@ function showDashboard(folder) {
       const path = breadcrumbParts.slice(0, i + 1).join('/');
       html += '<span class="sep">/</span>';
       if (i < breadcrumbParts.length - 1) {
-        html += `<a class="dashboard-bc-link" onclick="showDashboard('${path}')">${breadcrumbParts[i]}</a>`;
+        html += `<a class="dashboard-bc-link" onclick="showDashboard('${escapeJsString(path)}')">${escapeHtml(breadcrumbParts[i])}</a>`;
       } else {
-        html += `<span>${breadcrumbParts[i]}</span>`;
+        html += `<span>${escapeHtml(breadcrumbParts[i])}</span>`;
       }
     }
     bc.innerHTML = html;
@@ -90,7 +90,7 @@ function showDashboard(folder) {
       <div class="dashboard-card-icon folder-icon-large">
         <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
       </div>
-      <div class="dashboard-card-name">${name}</div>
+      <div class="dashboard-card-name">${escapeHtml(name)}</div>
       <div class="dashboard-card-meta">${count} file${count !== 1 ? 's' : ''}</div>
     `;
     grid.appendChild(card);
@@ -106,7 +106,7 @@ function showDashboard(folder) {
         <div class="dashboard-card-icon">
           ${buildFileIconSvg(f._idx)}
         </div>
-        <div class="dashboard-card-name">${f.title}</div>
+        <div class="dashboard-card-name">${escapeHtml(f.title)}</div>
         <div class="dashboard-card-meta">${f.lines} lines</div>
       `;
       grid.appendChild(card);

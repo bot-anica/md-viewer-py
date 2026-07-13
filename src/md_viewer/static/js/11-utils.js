@@ -1,3 +1,13 @@
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function escapeJsString(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[\\'\n\r<]/g, c => ({ '\\': '\\\\', "'": "\\'", '\n': '\\n', '\r': '\\r', '<': '\\x3C' }[c]));
+}
+
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
 function interceptMdLinks(container, currentFilePath) {

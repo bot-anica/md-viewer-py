@@ -43,7 +43,7 @@ function connectSSE() {
       delete fileContents[activeFileIdx];
       await loadFile(activeFileIdx);
       const md = stripFrontmatter(fileContents[activeFileIdx] || '');
-      const html = marked.parse(md, { gfm: true, breaks: false });
+      const html = safeMarked(md);
       const content = document.getElementById('content');
       content.innerHTML = html;
       makeSectionsCollapsible(content);

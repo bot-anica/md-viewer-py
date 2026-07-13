@@ -166,15 +166,15 @@ async function _doSearch(query) {
   const items = allItems.slice(0, 15);
   const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
   const itemsHtml = items.map(it => {
-    const h = it.line.substring(0, 100).replace(re, '<mark>$1</mark>');
+    const h = escapeHtml(it.line.substring(0, 100)).replace(re, '<mark>$1</mark>');
     return `<div class="search-result-item" onclick="showFile(${it.idx});searchScroll(${it.lineNum})">
-      <div class="file-label">${it.file.title}</div>
+      <div class="file-label">${escapeHtml(it.file.title)}</div>
       <div class="match-text">${h}${it.line.length > 100 ? '...' : ''}</div>
     </div>`;
   }).join('');
 
   const footerHtml = `<div class="search-dropdown-footer">
-    <button class="search-show-all-btn" onclick="showSearchView('${query.replace(/'/g, "\\'")}')">Show all ${allItems.length} result${allItems.length !== 1 ? 's' : ''}</button>
+    <button class="search-show-all-btn" onclick="showSearchView('${escapeJsString(query)}')">Show all ${allItems.length} result${allItems.length !== 1 ? 's' : ''}</button>
   </div>`;
 
   results.innerHTML = itemsHtml + footerHtml;
@@ -236,16 +236,16 @@ function showSearchView(query) {
   const itemsHtml = allItems.length === 0
     ? '<div style="padding:20px 0;color:var(--text-muted);font-size:13px">No results found.</div>'
     : allItems.map(it => {
-        const h = it.line.substring(0, 120).replace(re, '<mark>$1</mark>');
+        const h = escapeHtml(it.line.substring(0, 120)).replace(re, '<mark>$1</mark>');
         return `<div class="search-view-item" onclick="showFile(${it.idx});searchScroll(${it.lineNum})">
-          <div class="file-label">${it.file.title}</div>
+          <div class="file-label">${escapeHtml(it.file.title)}</div>
           <div class="match-text">${h}${it.line.length > 120 ? '...' : ''}</div>
         </div>`;
       }).join('');
 
   view.innerHTML = `
     <div class="search-view-header">
-      <div class="search-view-title">Search results for <em style="color:var(--accent)">${query.replace(/</g,'&lt;')}</em></div>
+      <div class="search-view-title">Search results for <em style="color:var(--accent)">${escapeHtml(query)}</em></div>
       <span class="search-view-count">${allItems.length} match${allItems.length !== 1 ? 'es' : ''}</span>
       <button class="search-view-close" onclick="closeSearchView()">&#x2715; Close</button>
     </div>

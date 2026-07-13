@@ -51,7 +51,7 @@ function enterEditMode() {
       }
     ],
     previewRender: (plainText) => {
-      return marked.parse(stripFrontmatter(plainText), { gfm: true, breaks: false });
+      return safeMarked(stripFrontmatter(plainText));
     }
   });
 

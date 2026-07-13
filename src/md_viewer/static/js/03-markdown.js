@@ -1,3 +1,6 @@
+const _SAFE_HTML_CONFIG = {};
+const safeMarked = (md) => DOMPurify.sanitize(marked.parse(md, { gfm: true, breaks: false }), _SAFE_HTML_CONFIG);
+
 function stripFrontmatter(text) {
   if (!text.startsWith('---')) return text;
   const idx = text.indexOf('\n---', 3);
@@ -46,7 +49,7 @@ async function init() {
       document.getElementById('editBtn').style.display = 'none';
     }
     const pathEl = document.getElementById('badgePath');
-    pathEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg><span class="path-text">' + data.root + '</span>';
+    pathEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg><span class="path-text">' + escapeHtml(data.root) + '</span>';
     pathEl.title = data.root;
   } catch {
     document.getElementById('loading').innerHTML = `

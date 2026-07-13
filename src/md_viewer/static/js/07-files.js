@@ -92,7 +92,7 @@ async function showFile(idx) {
   await loadFile(idx);
 
   const md = stripFrontmatter(fileContents[idx] || '');
-  const html = marked.parse(md, { gfm: true, breaks: false });
+  const html = safeMarked(md);
 
   const content = document.getElementById('content');
   content.innerHTML = html;
@@ -109,10 +109,10 @@ async function showFile(idx) {
     const parts = f.folder.split('/');
     bc.innerHTML = parts.map((p, i) => {
       const path = parts.slice(0, i + 1).join('/');
-      return `<a class="bc-folder-link" onclick="showDashboard('${path}')">${p}</a>`;
-    }).join('<span class="sep">/</span>') + `<span class="sep">/</span><span>${f.name}</span>`;
+      return `<a class="bc-folder-link" onclick="showDashboard('${escapeJsString(path)}')">${escapeHtml(p)}</a>`;
+    }).join('<span class="sep">/</span>') + `<span class="sep">/</span><span>${escapeHtml(f.name)}</span>`;
   } else {
-    bc.innerHTML = `<span>${f.name}</span>`;
+    bc.innerHTML = `<span>${escapeHtml(f.name)}</span>`;
   }
   document.getElementById('breadcrumbBar').style.display = 'flex';
 
