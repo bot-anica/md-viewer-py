@@ -65,6 +65,7 @@ _STATE_FILE = _STATE_DIR / "state.json"
 
 _MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MiB — generous for markdown; keeps a single PUT from OOM-ing the process
 _MAX_THEME_BYTES = 1024
+_MAX_READ_BYTES = 50 * 1024 * 1024  # 50 MiB — comfortably above any real markdown/image/audio; keeps a single GET from OOM-ing the process
 
 
 def _load_state():
@@ -246,6 +247,9 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
                 if ct is None:
                     self.send_error(404, f"File not found: {rel_path}")
                     return
+                if file_path.stat().st_size > _MAX_READ_BYTES:
+                    self.send_error(413, "File too large")
+                    return
                 data = file_path.read_bytes()
                 self.send_response(200)
                 self.send_header("Content-Type", ct)
@@ -269,6 +273,9 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(403, "Access denied")
                 return
             if file_path.is_file() and file_path.suffix == ".md":
+                if file_path.stat().st_size > _MAX_READ_BYTES:
+                    self.send_error(413, "File too large")
+                    return
                 data = file_path.read_bytes()
                 self._send_gzip(data, "text/plain; charset=utf-8")
                 return
@@ -303,6 +310,9 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             }.get(ext)
             if ct is None:
                 self.send_error(404, f"Vendor asset type not allowed: {rel}")
+                return
+            if file_path.stat().st_size > _MAX_READ_BYTES:
+                self.send_error(413, "File too large")
                 return
             data = file_path.read_bytes()
             self.send_response(200)
