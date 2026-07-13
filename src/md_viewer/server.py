@@ -82,29 +82,38 @@ def _save_state(state):
 
 
 class _ChangeTracker(FileSystemEventHandler):
-    """Tracks .md file changes and notifies SSE clients."""
+    """Tracks .md file changes and broadcasts to all SSE subscribers."""
 
     def __init__(self):
-        self._event = threading.Event()
+        self._events = set()
+        self._lock = threading.Lock()
 
     def _handle(self, event):
         if event.is_directory:
             return
         src = getattr(event, "src_path", "") or ""
         dest = getattr(event, "dest_path", "") or ""
-        if src.endswith(".md") or dest.endswith(".md"):
-            self._event.set()
+        if not (src.endswith(".md") or dest.endswith(".md")):
+            return
+        with self._lock:
+            subscribers = list(self._events)
+        for ev in subscribers:
+            ev.set()
 
     on_created = _handle
     on_modified = _handle
     on_deleted = _handle
     on_moved = _handle
 
-    def wait(self, timeout=30):
-        """Block until a change occurs or timeout. Returns True if changed."""
-        triggered = self._event.wait(timeout=timeout)
-        self._event.clear()
-        return triggered
+    def subscribe(self):
+        ev = threading.Event()
+        with self._lock:
+            self._events.add(ev)
+        return ev
+
+    def unsubscribe(self, ev):
+        with self._lock:
+            self._events.discard(ev)
 
 
 _change_tracker = _ChangeTracker()
@@ -192,16 +201,20 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Cache-Control", "no-cache")
             self.send_header("Connection", "keep-alive")
             self.end_headers()
+            ev = _change_tracker.subscribe()
             try:
                 while True:
-                    if _change_tracker.wait(timeout=30):
+                    triggered = ev.wait(timeout=30)
+                    if triggered:
+                        ev.clear()
                         self.wfile.write(b"data: changed\n\n")
-                        self.wfile.flush()
                     else:
                         self.wfile.write(b": keepalive\n\n")
-                        self.wfile.flush()
+                    self.wfile.flush()
             except (BrokenPipeError, ConnectionResetError, OSError):
                 pass
+            finally:
+                _change_tracker.unsubscribe(ev)
             return
 
         if path.startswith("/files-raw/"):
