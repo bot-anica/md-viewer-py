@@ -91,17 +91,32 @@ async function showFile(idx) {
   // Lazy-load content on first view
   await loadFile(idx);
 
-  const md = stripFrontmatter(fileContents[idx] || '');
-  const html = safeMarked(md);
-
   const content = document.getElementById('content');
-  content.innerHTML = html;
+  let view = renderedViews[idx];
+  if (!view) {
+    const md = stripFrontmatter(fileContents[idx] || '');
+    const html = safeMarked(md);
+    view = document.createElement('div');
+    view.innerHTML = html;
+    makeSectionsCollapsible(view);
+    view.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+    addCopyButtons(view);
+    renderedViews[idx] = view;
+    // Attach before addHeadingAnchors/buildToc — they query `.md h1..h4`
+    // against the document, relying on #content's "md" class as ancestor.
+    content.replaceChildren(view);
+    addHeadingAnchors();
+    interceptMdLinks(view, f.path);
+    resolveWikiLinks(view, f.path);
+    resolveImagePaths(view, f.path);
+    convertAudioImages(view);
+    convertImageTablesToSliders(view);
+    wrapStandaloneImages(view);
+  } else {
+    content.replaceChildren(view);
+  }
   content.style.display = 'block';
   document.getElementById('loading').style.display = 'none';
-
-  makeSectionsCollapsible(content);
-  content.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
-  addCopyButtons(content);
 
   // Breadcrumb bar (file name + collapse/expand)
   const bc = document.getElementById('breadcrumb');
@@ -118,13 +133,6 @@ async function showFile(idx) {
 
   buildToc();
   moveTocToPosition();
-  addHeadingAnchors();
-  interceptMdLinks(content, f.path);
-  resolveWikiLinks(content, f.path);
-  resolveImagePaths(content, f.path);
-  convertAudioImages(content);
-  convertImageTablesToSliders(content);
-  wrapStandaloneImages(content);
   runMermaid();
 
   // Tab management

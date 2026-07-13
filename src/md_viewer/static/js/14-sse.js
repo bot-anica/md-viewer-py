@@ -41,24 +41,8 @@ function connectSSE() {
     // Reload currently viewed file (skip if editing)
     if (activeFileIdx !== null && !isEditMode) {
       delete fileContents[activeFileIdx];
-      await loadFile(activeFileIdx);
-      const md = stripFrontmatter(fileContents[activeFileIdx] || '');
-      const html = safeMarked(md);
-      const content = document.getElementById('content');
-      content.innerHTML = html;
-      makeSectionsCollapsible(content);
-      content.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
-      addCopyButtons(content);
-      addHeadingAnchors();
-      const f = FILES[activeFileIdx];
-      if (f) interceptMdLinks(content, f.path);
-      if (f) resolveWikiLinks(content, f.path);
-      if (f) resolveImagePaths(content, f.path);
-      convertAudioImages(content);
-      convertImageTablesToSliders(content);
-      wrapStandaloneImages(content);
-      buildToc();
-      runMermaid();
+      delete renderedViews[activeFileIdx];
+      await showFile(activeFileIdx);
     }
   };
   es.onerror = () => {

@@ -1,6 +1,7 @@
 let FILES = [];
 let fileContents = {};
 let activeFileIdx = null;
+let renderedViews = {}; // { [fileIdx]: HTMLElement } — cached, ready-to-swap file view
 
 // ---- Tab state ----
 let openTabs = []; // [{idx, scrollPos}]

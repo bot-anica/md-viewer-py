@@ -130,6 +130,7 @@ async function saveFile() {
     if (resp.ok) {
       originalContent = content;
       fileContents[activeFileIdx] = content;
+      delete renderedViews[activeFileIdx];
       exitEditMode();
       showToast('File saved successfully');
     } else {
