@@ -275,6 +275,44 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, f"File not found: {rel_path}")
             return
 
+        if path.startswith("/vendor/"):
+            rel = path[len("/vendor/"):]
+            # Reject absolute paths, traversal, and empty segments
+            if not rel or ".." in rel.split("/") or rel.startswith("/"):
+                self.send_error(403, "Access denied")
+                return
+            file_path = _STATIC_DIR / "vendor" / rel
+            try:
+                file_path.resolve().relative_to((_STATIC_DIR / "vendor").resolve())
+            except ValueError:
+                self.send_error(403, "Access denied")
+                return
+            if not file_path.is_file():
+                self.send_error(404, f"Vendor asset not found: {rel}")
+                return
+            ext = file_path.suffix.lower()
+            ct = {
+                ".js": "application/javascript; charset=utf-8",
+                ".css": "text/css; charset=utf-8",
+                ".woff2": "font/woff2",
+                ".woff": "font/woff",
+                ".ttf": "font/ttf",
+                ".otf": "font/otf",
+                ".eot": "application/vnd.ms-fontobject",
+                ".svg": "image/svg+xml",
+            }.get(ext)
+            if ct is None:
+                self.send_error(404, f"Vendor asset type not allowed: {rel}")
+                return
+            data = file_path.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", ct)
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+            self.end_headers()
+            self.wfile.write(data)
+            return
+
         self.send_error(404, "Not found")
 
     def do_POST(self):
