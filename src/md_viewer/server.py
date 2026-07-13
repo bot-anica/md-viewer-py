@@ -490,7 +490,7 @@ def main():
         sys.exit(1)
     url = f"http://localhost:{port}"
     update_msg = _check_for_update()
-    non_local_bind = host in ("", "0.0.0.0", "::") or (host and host not in ("localhost", "127.0.0.1", "::1"))
+    non_local_bind = host in ("0.0.0.0", "::") or (host and host not in ("localhost", "127.0.0.1", "::1"))
     print(f"\n  Markdown Viewer v{__version__}")
     print(f"  {'─' * 40}")
     print(f"  Directory:  {root_dir}")
