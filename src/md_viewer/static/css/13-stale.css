@@ -1,0 +1,47 @@
+    /* Blue dot on nav-item / tab-item when file is marked stale by SSE */
+    .nav-item.stale::after,
+    .tab-item.stale::after {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #3b82f6;
+        margin-left: 6px;
+        flex-shrink: 0;
+        vertical-align: middle;
+        box-shadow: 0 0 4px rgba(59, 130, 246, 0.6);
+    }
+    .nav-item.stale { position: relative; }
+    .tab-item.stale { position: relative; }
+
+    /* Loading pill centered at top of the content area */
+    .content-loading {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--bg-elevated, rgba(30, 30, 40, 0.9));
+        color: var(--text-secondary, #cbd5e1);
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 999px;
+        padding: 5px 12px 5px 8px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 20;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: contentLoadingFadeIn 0.15s ease-out;
+        pointer-events: none;
+    }
+    .content-loading-spinner {
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(59, 130, 246, 0.25);
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: contentLoadingSpin 0.8s linear infinite;
+    }
+    @keyframes contentLoadingSpin { to { transform: rotate(360deg); } }
+    @keyframes contentLoadingFadeIn { from { opacity: 0; transform: translate(-50%, -4px); } to { opacity: 1; transform: translate(-50%, 0); } }

@@ -13,6 +13,7 @@ function toggleEditMode() {
 
 function enterEditMode() {
   if (activeFileIdx === null) return;
+  hideContentLoading();
 
   const content = document.getElementById('content');
   const editorWrapper = document.getElementById('editorWrapper');

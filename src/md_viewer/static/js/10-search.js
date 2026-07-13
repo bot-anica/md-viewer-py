@@ -191,6 +191,7 @@ function searchScroll(lineNum) {
 }
 
 function showSearchView(query) {
+  hideContentLoading();
   closeSearchDropdown();
   document.getElementById('search').value = query;
   saveCurrentTabScroll();

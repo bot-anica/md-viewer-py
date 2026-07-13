@@ -38,10 +38,21 @@ function connectSSE() {
         }
       }
     } catch {}
+    // Mark every non-active cached file as stale
+    for (const k in renderedViews) {
+      const i = Number(k);
+      if (i !== activeFileIdx) {
+        staleViews.add(i);
+        markStaleUI(i);
+      }
+    }
+
     // Reload currently viewed file (skip if editing)
     if (activeFileIdx !== null && !isEditMode) {
       delete fileContents[activeFileIdx];
       delete renderedViews[activeFileIdx];
+      staleViews.delete(activeFileIdx);
+      clearStaleUI(activeFileIdx);
       await showFile(activeFileIdx);
     }
   };

@@ -1,6 +1,7 @@
 let _dashboardFolder = null; // null = root, string = subfolder path
 
 function showDashboard(folder) {
+  hideContentLoading();
   saveCurrentTabScroll();
   _dashboardFolder = folder || null;
   activeFileIdx = null;

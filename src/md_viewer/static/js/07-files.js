@@ -1,3 +1,20 @@
+function markStaleUI(idx) {
+  document.getElementById('nav-' + idx)?.classList.add('stale');
+  document.getElementById('tab-' + idx)?.classList.add('stale');
+}
+function clearStaleUI(idx) {
+  document.getElementById('nav-' + idx)?.classList.remove('stale');
+  document.getElementById('tab-' + idx)?.classList.remove('stale');
+}
+function showContentLoading() {
+  const el = document.getElementById('contentLoading');
+  if (el) el.style.display = 'flex';
+}
+function hideContentLoading() {
+  const el = document.getElementById('contentLoading');
+  if (el) el.style.display = 'none';
+}
+
 let _navSkipHistory = false;
 
 function _pushNavHistory(idx) {
@@ -102,6 +119,8 @@ async function showFile(idx) {
     view.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
     addCopyButtons(view);
     renderedViews[idx] = view;
+    clearStaleUI(idx);
+    staleViews.delete(idx);
     // Attach before addHeadingAnchors/buildToc — they query `.md h1..h4`
     // against the document, relying on #content's "md" class as ancestor.
     content.replaceChildren(view);
@@ -114,6 +133,31 @@ async function showFile(idx) {
     wrapStandaloneImages(view);
   } else {
     content.replaceChildren(view);
+    if (staleViews.has(idx)) {
+      // Background refresh — swap in fresh view when done
+      staleViews.delete(idx);
+      clearStaleUI(idx);
+      showContentLoading();
+      (async () => {
+        const prev = fileContents[idx];
+        delete fileContents[idx];
+        try {
+          await loadFile(idx);
+        } catch {
+          hideContentLoading();
+          return;
+        }
+        if (fileContents[idx] === prev) {
+          hideContentLoading();
+          return; // no actual change
+        }
+        delete renderedViews[idx];
+        if (activeFileIdx === idx) {
+          await showFile(idx); // re-render with fresh content
+        }
+        hideContentLoading();
+      })();
+    }
   }
   content.style.display = 'block';
   document.getElementById('loading').style.display = 'none';
