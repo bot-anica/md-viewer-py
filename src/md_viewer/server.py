@@ -63,6 +63,9 @@ def _html_for_theme(theme: str):
 _STATE_DIR = Path.home() / ".config" / "md-viewer-py"
 _STATE_FILE = _STATE_DIR / "state.json"
 
+_MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MiB — generous for markdown; keeps a single PUT from OOM-ing the process
+_MAX_THEME_BYTES = 1024
+
 
 def _load_state():
     try:
@@ -286,7 +289,17 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         if path == "/api/theme":
-            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                self.send_error(400, "Invalid Content-Length")
+                return
+            if length < 0:
+                self.send_error(400, "Invalid Content-Length")
+                return
+            if length > _MAX_THEME_BYTES:
+                self.send_error(413, "Payload too large")
+                return
             try:
                 body = json.loads(self.rfile.read(length) or b"{}")
             except json.JSONDecodeError:
@@ -311,6 +324,18 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(403, "Server is in read-only mode")
             return
 
+        try:
+            content_length = int(self.headers.get("Content-Length", 0))
+        except ValueError:
+            self.send_error(400, "Invalid Content-Length")
+            return
+        if content_length < 0:
+            self.send_error(400, "Invalid Content-Length")
+            return
+        if content_length > _MAX_UPLOAD_BYTES:
+            self.send_error(413, "Payload too large")
+            return
+
         path = unquote(self.path)
 
         if path.startswith("/files/"):
@@ -329,7 +354,6 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             # Read request body
-            content_length = int(self.headers.get("Content-Length", 0))
             content = self.rfile.read(content_length)
 
             try:
