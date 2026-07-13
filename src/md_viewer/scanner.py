@@ -79,6 +79,11 @@ def scan_md_files(root):
     """Recursively find all .md files, skipping ignored directories."""
     root_patterns = parse_gitignore(root)
     files = []
+    # Track resolved directory paths to avoid symlink cycles
+    try:
+        seen = {root.resolve()}
+    except OSError:
+        seen = set()
     # Each entry: (directory, accumulated_patterns)
     dirs = [(root, root_patterns)]
     while dirs:
@@ -92,8 +97,16 @@ def scan_md_files(root):
         patterns = parent_patterns + local if local else parent_patterns
         for entry in entries:
             if entry.is_dir():
-                if not _is_dir_ignored(entry.name, patterns):
-                    dirs.append((entry, patterns))
+                if _is_dir_ignored(entry.name, patterns):
+                    continue
+                try:
+                    resolved = entry.resolve()
+                except OSError:
+                    continue
+                if resolved in seen:
+                    continue
+                seen.add(resolved)
+                dirs.append((entry, patterns))
             elif entry.suffix == ".md" and entry.is_file():
                 rel = entry.relative_to(root)
                 if is_ignored(rel, patterns):
