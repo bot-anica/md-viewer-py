@@ -16,7 +16,8 @@ function renderTabBar() {
   bar.innerHTML = openTabs.map(tab => {
     const f = FILES[tab.idx];
     const isActive = tab.idx === activeFileIdx;
-    return `<div class="tab-item${isActive ? ' active' : ''}" id="tab-${tab.idx}" onclick="tabClick(event,${tab.idx})" onmousedown="tabMousedown(event,${tab.idx})" oncontextmenu="showTabContextMenu(event,${tab.idx})" title="${escapeHtml(f.title)}"><span class="tab-title">${escapeHtml(f.name)}</span><span class="tab-close" onclick="closeTab(event,${tab.idx})">&#x2715;</span></div>`;
+    const isStale = staleViews.has(tab.idx);
+    return `<div class="tab-item${isActive ? ' active' : ''}${isStale ? ' stale' : ''}" id="tab-${tab.idx}" onclick="tabClick(event,${tab.idx})" onmousedown="tabMousedown(event,${tab.idx})" oncontextmenu="showTabContextMenu(event,${tab.idx})" title="${escapeHtml(f.title)}"><span class="tab-title">${escapeHtml(f.name)}</span><span class="tab-close" onclick="closeTab(event,${tab.idx})">&#x2715;</span></div>`;
   }).join('');
   const activeTabEl = document.getElementById('tab-' + activeFileIdx);
   if (activeTabEl) activeTabEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
