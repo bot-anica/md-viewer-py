@@ -33,7 +33,7 @@
 ## Ideas: New Features
 
 22. [x] **Right-side TOC panel** — move Table of Contents to a dedicated right sidebar. Collapsible to the right edge with the section name displayed vertically (rotated 90°) in collapsed state, so the user always sees which section they're in. Click the vertical label or a toggle to expand back to full TOC
-23. [ ] **Static HTML export** — `mdview --export ./output` to generate a static site
+23. [ ] **Static HTML export** — `mdview --export ./output` to generate a static site. **Needs decision**: does this fit mdview's scope (a local viewer), or is it better as a separate tool? Would solve the public-hosting use-case (GitHub Pages, Netlify, S3) without a Python server and eliminate all the security surface we've been hardening.
 24. [x] **In-browser markdown editing** — toggle between view and edit mode with a split-pane or full-screen editor. Save changes back to disk. Live preview as user type.
 25. [ ] **File metadata from frontmatter** — parse YAML frontmatter for title, author, date instead of stripping it
 26. [ ] **Custom sidebar ordering** — config file (`.mdview.yml`) for sidebar structure
