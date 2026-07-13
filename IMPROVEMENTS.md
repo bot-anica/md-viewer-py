@@ -24,7 +24,7 @@
 
 15. [x] **Naive argument parsing** (`server.py:80-88`) — no `--help`, no port range validation, order-dependent args. Consider `argparse`
 16. [x] **Incomplete .gitignore parsing** (`scanner.py:33`) — negation patterns (`!pattern`) skipped. Subdirectory .gitignore files now supported
-17. [ ] **No max file size limit** (`server.py:63`) — `read_bytes()` loads entire file into memory, large files could OOM
+17. [ ] **No max file size limit on GET** (`server.py`) — `read_bytes()` in `/files/*` and `/files-raw/*` still loads entire file into memory. PUT/POST capped in 1.6.0; GET remains unlimited.
 18. [ ] **Global JS state** (`app.js:1-4`) — `FILES`, `fileContents`, `activeFileIdx` as globals with no encapsulation
 19. [x] **Mermaid errors silently swallowed** (`app.js:29`) — empty `catch` block, user gets no feedback on diagram syntax errors
 20. ~~**Python 3.8 minimum** (`pyproject.toml:11`) — 3.8 is EOL since Nov 2024, bump to 3.10+~~
