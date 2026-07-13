@@ -212,6 +212,9 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             except ValueError:
                 self.send_error(403, "Access denied")
                 return
+            if any(p.startswith(".") for p in file_path.relative_to(self.root_dir).parts):
+                self.send_error(403, "Access denied")
+                return
             if file_path.is_file():
                 ext = file_path.suffix.lower()
                 ct = {
@@ -223,7 +226,10 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
                     ".ogg": "audio/ogg", ".oga": "audio/ogg",
                     ".m4a": "audio/mp4", ".aac": "audio/aac",
                     ".flac": "audio/flac", ".opus": "audio/opus",
-                }.get(ext, "application/octet-stream")
+                }.get(ext)
+                if ct is None:
+                    self.send_error(404, f"File not found: {rel_path}")
+                    return
                 data = file_path.read_bytes()
                 self.send_response(200)
                 self.send_header("Content-Type", ct)
@@ -243,6 +249,9 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             except ValueError:
                 self.send_error(403, "Access denied")
                 return
+            if any(p.startswith(".") for p in file_path.relative_to(self.root_dir).parts):
+                self.send_error(403, "Access denied")
+                return
             if file_path.is_file() and file_path.suffix == ".md":
                 data = file_path.read_bytes()
                 self._send_gzip(data, "text/plain; charset=utf-8")
@@ -250,7 +259,7 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, f"File not found: {rel_path}")
             return
 
-        super().do_GET()
+        self.send_error(404, "Not found")
 
     def do_POST(self):
         path = unquote(self.path)
@@ -468,11 +477,17 @@ def main():
         sys.exit(1)
     url = f"http://localhost:{port}"
     update_msg = _check_for_update()
+    non_local_bind = host in ("", "0.0.0.0", "::") or (host and host not in ("localhost", "127.0.0.1", "::1"))
     print(f"\n  Markdown Viewer v{__version__}")
     print(f"  {'─' * 40}")
     print(f"  Directory:  {root_dir}")
     print(f"  Files:      {len(scan_md_files(root_dir))} .md files found")
     print(f"  URL:        {url}")
+    if non_local_bind and not args.readonly:
+        print(
+            "  WARNING: Binding to a non-local interface without --readonly. Anyone on the network can edit your files. Use --readonly for public hosting, or --host 127.0.0.1 for local-only.",
+            file=sys.stderr,
+        )
     if update_msg:
         print(f"  Update:     {update_msg}")
     print(f"  {'─' * 40}")
