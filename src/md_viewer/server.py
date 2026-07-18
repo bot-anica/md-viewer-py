@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import base64
 import gzip
@@ -104,7 +106,7 @@ class _ChangeTracker(FileSystemEventHandler):
             return
         src = getattr(event, "src_path", "") or ""
         dest = getattr(event, "dest_path", "") or ""
-        if not (src.endswith(".md") or dest.endswith(".md")):
+        if not (src.lower().endswith(".md") or dest.lower().endswith(".md")):
             return
         with self._lock:
             subscribers = list(self._events)
@@ -420,7 +422,7 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 # Ensure parent directory exists
                 file_path.parent.mkdir(parents=True, exist_ok=True)
-                tmp_path = file_path.with_suffix(".tmp")
+                tmp_path = file_path.with_name(file_path.name + ".tmp")
                 tmp_path.write_bytes(content)
                 tmp_path.replace(file_path)
                 self.send_response(200)
