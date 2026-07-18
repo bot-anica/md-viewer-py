@@ -8,7 +8,7 @@ import os
 import sys
 import threading
 import webbrowser
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from urllib.parse import unquote
 
 from urllib.request import urlopen
@@ -156,6 +156,23 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
         except BrokenPipeError:
             pass
 
+    def _safe_local_path(self, rel_path):
+        """Resolve a request-relative path inside root_dir, or None if not allowed."""
+        if not rel_path:
+            return None
+        if rel_path.startswith("/") or rel_path.startswith("\\"):
+            return None
+        if Path(rel_path).is_absolute() or PureWindowsPath(rel_path).is_absolute():
+            return None
+        if any(p.startswith(".") for p in Path(rel_path).parts):
+            return None
+        file_path = (self.root_dir / rel_path).resolve()
+        try:
+            file_path.relative_to(self.root_dir.resolve())
+        except ValueError:
+            return None
+        return file_path
+
     def do_GET(self):
         path = unquote(self.path)
 
@@ -223,13 +240,8 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
 
         if path.startswith("/files-raw/"):
             rel_path = path[11:]
-            file_path = self.root_dir / rel_path
-            try:
-                file_path.resolve().relative_to(self.root_dir.resolve())
-            except ValueError:
-                self.send_error(403, "Access denied")
-                return
-            if any(p.startswith(".") for p in file_path.relative_to(self.root_dir).parts):
+            file_path = self._safe_local_path(rel_path)
+            if file_path is None:
                 self.send_error(403, "Access denied")
                 return
             if file_path.is_file():
@@ -263,13 +275,8 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
 
         if path.startswith("/files/"):
             rel_path = path[7:]
-            file_path = self.root_dir / rel_path
-            try:
-                file_path.resolve().relative_to(self.root_dir.resolve())
-            except ValueError:
-                self.send_error(403, "Access denied")
-                return
-            if any(p.startswith(".") for p in file_path.relative_to(self.root_dir).parts):
+            file_path = self._safe_local_path(rel_path)
+            if file_path is None:
                 self.send_error(403, "Access denied")
                 return
             if file_path.is_file() and file_path.suffix == ".md":
@@ -388,12 +395,10 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
 
         if path.startswith("/files/"):
             rel_path = path[7:]
-            file_path = self.root_dir / rel_path
 
             # Security: ensure path is within root_dir
-            try:
-                file_path.resolve().relative_to(self.root_dir.resolve())
-            except ValueError:
+            file_path = self._safe_local_path(rel_path)
+            if file_path is None:
                 self.send_error(403, "Access denied")
                 return
 
