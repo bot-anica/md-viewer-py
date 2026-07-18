@@ -1,6 +1,6 @@
 # Contributing to md-viewer-py
 
-Thanks for your interest in contributing! This project values simplicity — zero Python dependencies, installable via pip, and easy to hack on.
+Thanks for your interest in contributing! This project values simplicity — minimal Python dependencies, installable via pip, and easy to hack on.
 
 ## Philosophy
 
