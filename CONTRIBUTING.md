@@ -4,7 +4,7 @@ Thanks for your interest in contributing! This project values simplicity — zer
 
 ## Philosophy
 
-**Zero dependencies is a feature, not a limitation.** Every change should keep the Python side dependency-free. If it can't be done with Python's standard library plus a CDN link on the client, it probably doesn't belong here.
+**Minimal dependencies is a feature, not a limitation.** The Python side is stdlib plus a single dependency (watchdog, for file-change notifications). If it can't be done with that plus a CDN link on the client, it probably doesn't belong here.
 
 ## How to Contribute
 
@@ -37,7 +37,7 @@ src/md_viewer/
 
 ## Guidelines
 
-- **No external Python dependencies.** The stdlib is the only allowed import.
+- **No new external Python dependencies.** Only the stdlib and the existing watchdog import are permitted.
 - **Test manually** with folders containing varied Markdown (nested directories, large files, tables, code blocks, images).
 - **Match the existing code style** — consistent formatting, clear variable names, comments where helpful.
 - **Client-side libraries are OK** if loaded from a CDN (like marked.js, highlight.js, mermaid.js), but keep them minimal.
