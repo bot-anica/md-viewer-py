@@ -23,6 +23,13 @@ from .scanner import scan_md_files
 _STATIC_DIR = Path(__file__).parent / "static"
 
 
+class _ViewerServer(http.server.ThreadingHTTPServer):
+    # SO_REUSEADDR on Windows lets bind() succeed on an already-occupied port,
+    # which breaks the port-fallback loop in main(). POSIX keeps reuse enabled
+    # to avoid TIME_WAIT rebind failures.
+    allow_reuse_address = os.name != "nt"
+
+
 def _build_html_template():
     html = (_STATIC_DIR / "index.html").read_text(encoding="utf-8")
     css_dir = _STATIC_DIR / "css"
@@ -279,7 +286,7 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
             if file_path is None:
                 self.send_error(403, "Access denied")
                 return
-            if file_path.is_file() and file_path.suffix == ".md":
+            if file_path.is_file() and file_path.suffix.lower() == ".md":
                 if file_path.stat().st_size > _MAX_READ_BYTES:
                     self.send_error(413, "File too large")
                     return
@@ -402,22 +409,30 @@ class ViewerHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(403, "Access denied")
                 return
 
-            if file_path.suffix != ".md":
+            if file_path.suffix.lower() != ".md":
                 self.send_error(400, "Only .md files are allowed")
                 return
 
             # Read request body
             content = self.rfile.read(content_length)
 
+            tmp_path = None
             try:
                 # Ensure parent directory exists
                 file_path.parent.mkdir(parents=True, exist_ok=True)
-                file_path.write_bytes(content)
+                tmp_path = file_path.with_suffix(".tmp")
+                tmp_path.write_bytes(content)
+                tmp_path.replace(file_path)
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps({"success": True}).encode("utf-8"))
             except Exception as e:
+                if tmp_path is not None:
+                    try:
+                        tmp_path.unlink()
+                    except OSError:
+                        pass
                 self.send_error(500, f"Failed to save file: {e}")
             return
 
@@ -518,6 +533,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except AttributeError:
+            pass
+
     parser = _build_arg_parser()
     args = parser.parse_args()
 
@@ -558,7 +579,7 @@ def main():
     max_attempts = 10
     for attempt in range(max_attempts):
         try:
-            server = http.server.ThreadingHTTPServer((host, port), ViewerHandler)
+            server = _ViewerServer((host, port), ViewerHandler)
             break
         except OSError:
             port += 1

@@ -107,7 +107,7 @@ def scan_md_files(root):
                     continue
                 seen.add(resolved)
                 dirs.append((entry, patterns))
-            elif entry.suffix == ".md" and entry.is_file():
+            elif entry.suffix.lower() == ".md" and entry.is_file():
                 rel = entry.relative_to(root)
                 if is_ignored(rel, patterns):
                     continue
