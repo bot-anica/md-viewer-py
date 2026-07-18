@@ -123,8 +123,8 @@ def scan_md_files(root):
                 except OSError:
                     line_count = 0
                 files.append({
-                    "path": str(rel),
-                    "folder": str(rel.parent) if str(rel.parent) != "." else "",
+                    "path": rel.as_posix(),
+                    "folder": rel.parent.as_posix() if str(rel.parent) != "." else "",
                     "name": rel.name,
                     "title": title,
                     "lines": line_count,
